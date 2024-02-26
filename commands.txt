@@ -1,0 +1,62 @@
+Win64 PowerShell:
+
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+to be able to run scripts (activate environment)
+
+Python:
+
+Go to
+
+Settings -> Interpreter -> set Default Interpreter Path 
+
+to make python cmd visible in terminal.
+
+Create environment:
+
+python -m venv pth\to\environment
+
+Commands to run and test model:
+
+python fourth-rnaf-q-111.py 1q9a ILP-1q9a-q3.lp 3
+python fourth-rnaf-q-111.py 1l2x ILP-1l2x-q3.lp 3
+python fourth-rnaf-q-111.py 5v3f ILP-5v3f-q3.lp 3
+
+python fourth-rnaf-pqw-all-222.py 5v3f ILP-5v3f-pqw-350.lp 350000
+
+gurobi_cl resultfile=1q9a-q3.sol ILP-1q9a-q3.lp
+gurobi_cl resultfile=1l2x-q3.sol ILP-1l2x-q3.lp
+gurobi_cl resultfile=5v3f-q3.sol ILP-5v3f-q3.lp
+
+gurobi_cl resultfile=6n5n-motifs.sol 6n5n-motifs.lp
+gurobi_cl MIPGap=1e-6 resultfile=6n5n-motifs-loop6.sol 6n5n-motifs-loop6.lp
+
+python sol-converter.py 1l2x-q3.sol 28
+python sol-converter.py 1q9a-q3.sol 25
+python sol-converter.py 5v3f-q3.sol 31
+
+python sol-converter.py 6n5n-motifs.sol 125
+
+python sol-q-score.py 1l2x-q3.sol 1l2x
+python sol-qw-score.py 1l2x-q3.sol 1l2x
+
+1q9a GCUCCUAGUACGAGAGGACCGGAGU 25
+1l2x GGCGCGGCACCGUCCGCGGAACAAACGG 28
+5v3f GUGCGAAGGGACGGUGCGGAGAGGAGAGCAC 31
+
+
+gurobi_cl resultfile=2KE6_A-decomposition.sol 2KE6_A-decomposition.lp
+
+
+python fourth-rnaf-q-111.py 1q9a ILP-1q9a-q3.lp 3
+gurobi_cl resultfile=1l2x-q3.sol ILP-1l2x-q3.lp
+
+
+python fourth-rnaf-q-111.py 5v3f ILP-5v3f-q3.lp 3
+
+gurobi_cl SolFiles="./1etg" PoolSearchMode=2 PoolGap=0.0 PoolObjBound=116880 PoolSolutions=10 MipGap=0 1etg-motifs-dl.lp
+
+gurobi_cl resultfile=1etg-motifs-dl.lp 1etg-motifs-dl.lp
+
+findstr /C:"WW(2,8) 1" *.sol
+
+

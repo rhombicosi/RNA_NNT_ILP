@@ -1,0 +1,28 @@
+
+Gurobi 10.0.2 (win64, gurobi_cl) logging started Sun Nov 26 15:25:35 2023
+
+Set parameter Username
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - expires 2024-11-22
+Using license file C:\Users\Okrlk\gurobi.lic
+
+Gurobi Optimizer version 10.0.2 build v10.0.2rc0 (win64)
+Copyright (c) 2023, Gurobi Optimization, LLC
+
+
+Error 10003: Unable to open file '3G4S_9-decomposition.lp' for input
+
+
+Gurobi 10.0.2 (win64, gurobi_cl) logging started Sun Nov 26 15:25:47 2023
+
+Set parameter Username
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - expires 2024-11-22
+Using license file C:\Users\Okrlk\gurobi.lic
+
+Gurobi Optimizer version 10.0.2 build v10.0.2rc0 (win64)
+Copyright (c) 2023, Gurobi Optimization, LLC
+
+
+Error 10003: Unable to open file '3G4S_9-decomposition.lp' for input
+

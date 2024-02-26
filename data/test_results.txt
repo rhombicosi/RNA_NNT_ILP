@@ -1,0 +1,172 @@
+1Q9A 25nts
+
+GCUCCUAGUACGAGAGGACCGGAGU
+
+Reference structure:
+
+(((((.....(....)....)))))
+
+Loop decompositon model:
+time: 0s MFE: 738
+
+(((((..((.(....).)).)))))
+
+
+hairpin constraints:
+Line 472: P(1,25) 1
+Line 480: P(2,24) 1
+Line 493: P(3,23) 1
+Line 501: P(4,22) 1
+Line 507: P(5,21) 1
+Line 523: P(8,19) 1
+Line 531: P(9,18) 1
+(((((..((........)).)))))
+
+3IAB_R 46nts
+
+GGACUCAGUAAUAUGCUUUGGAAACGAAGCUUACAAAAUGGAGUCC
+
+Reference structure:
+
+((((((........((((((....))))))..........))))))
+((((((...(..).(((((((..)))))))..........))))))
+
+Loop decompositon model:
+
+time: 290s MFE: 1400
+
+((((((((((...)))((((.((.(...).)).)))).)).)))))
+
+Include constraint on numH <= 1:
+
+time: 11s MFE: 1398
+
+(((((((((((...(((.((....)).)))))))....)).)))))
+
+
+2KU0_A 38nts
+
+GGAGGAACUACUGUCUUCCUUCGGGUCGUGCAGCCUCC
+
+Reference structure:
+
+(((((.....(((((..((....))..).)))))))))
+
+Loop decompositon model:
+
+time: 90s MFE: 1136
+
+(((((.....(((((.(((...)))..).)))))))))
+
+2MXL_A 39nts
+
+GGAUUUGCAGGCCUACCAGAAACGGAUGGGAGUGCAGAU
+
+Reference structure:
+
+..(((((((..((((((......)).))))..)))))))
+..(((((((.(((((((.(..).)).))))).)))))))
+                        ()             
+               (         )     
+			   
+Loop decomposition model:
+
+time: 50s MFE: 1142
+
+..(((.(((..((((.(.(...).).))))..))).)))
+
+Include constraint on numH <= 1 numI <= 1:
+
+time: 1s MFE: 1069
+
+..(((((((..((((((......)).))))..)))))))
+
+2ZY6_A 38nts
+
+GCCCGGAUAGUGUCCUUGGGAAACCGAGUCCGGGCACC
+
+Reference structure:
+
+(((((((..(.(...........))...)))))))...
+((((((((((.(......).....))).)))))))...
+           (           )     
+		   
+Loop decomposition model:
+
+time: 75s MFE: 1234(1242)
+
+((((((((.((.(((...))).))...))))))))...
+
+Include constraint on numH <= 1 numI <= 1:
+
+time: 2s MFE: 1154
+
+((((((((..(((((...)))...)).))))))))...
+
+2KUV_A 48nts
+
+GGCUCGAUUGUAUUUUUAAAUUAAUUCUUAAAAACUACAAAUCGAGCC
+
+Reference structure:
+
+(((((((((((((((((((........))))))).))).)))))))))
+(((((((((((((((((((((....))))))))).))).)))))))))
+                    (     )
+
+Loop decomposition model:
+
+time: 726s MFE: 1639
+
+((((((((((((.((((....(((...))))))).)))).))))))))
+
+Conclusion: add bulge loops, calculate max possible number of each kind of loops.
+
+
+2KE6_A 47nts
+
+GGCUUGAUUGUAUUUUUAAAUUAAUUCUUAAAAACUACAAAUUAAGCC
+
+Reference structure:
+
+(((((.(((((((((((((........))))))).))).))).)))))
+
+
+
+Reference structure (ext):
+
+(((((.(((((((((((((.(....).))))))).))).))).)))))
+
+(((.((.((((((((.((((.....).))).))).))).)).)).)))
+((((((((((((.((((....(((...))))))).)))).))))))))
+
+
+Loop decomposition model: 
+
+obj: bps + stem + hairpin + internal + bulge
+constraints1: bps + stem + hairpin + internal + bulge
+constraints2: numofhairpin + numofinternal + numofbulge
+(((.(((((((((((.((((.....).))).))).))).))))).)))
+
+
+((((((((((((.((((....(((...))))))).))).)))))))))
+((((((((((((.((((....(((...))))))).))).)))))))))
+((((((((((((.((((....(((...))))))).)))).))))))))
+(((.(((((.((.((((....(((...))))))).))..))))).)))
+((((((((((((.((((....(((...))))))).)))).))))))))
+((((((((.((((((..((........)))))...)))..))))))))
+
+time: s MFE: 
+
+2LU0 49nts
+
+GGAAUAUGCUCAACGAAAGUGAAUCAGCUUCGGCUGAGAGCUAAGUUCC
+
+Reference structure:
+
+(((((..((((.((....))...(((((....)))))))))...)))))
+
+
+time: 1086s MFE:
+
+
+
