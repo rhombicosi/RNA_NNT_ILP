@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 c = 100
-asymmetry = 0.6
+asymmetry = 0.6 * c
 AU_end_penalty = 0.7 * c
 GU_end_penalty = 0.7 * c
 
@@ -64,16 +64,18 @@ int11 = np.array([[[[1.9, 1.9, 1.9, 1.9],[1.9, 1.9, 1.9, 1.9],[1.9, 1.9,-0.7, 1.
                    [[1.9, 1.9, 1.9, 1.9],[1.9, 1.9, 1.9, 1.9],[1.9, 1.9,-0.7, 1.9],[1.9, 1.9, 1.9, 1.9]], \
                    [[1.9, 1.9, 1.9, 1.9],[1.9, 1.9, 1.9, 1.9],[1.9, 1.9,-0.7, 1.9],[1.9, 1.9, 1.9, 1.6]]]])
 
-int11_data = int11.reshape(nucleotides.size*bps.size, nucleotides.size*bps.size)
+
+int11_t=int11.transpose(0,2,1,3)
+int11_data = int11_t.reshape(nucleotides.size*bps.size, nucleotides.size*bps.size)
 
 midx = pd.MultiIndex.from_product([bps, nucleotides])
 nidx = pd.MultiIndex.from_product([bps, nucleotides])
 
-int11_df = pd.DataFrame(int11_data, index = midx, columns=nidx) 
+int11_df = pd.DataFrame(int11_data * c, index = midx, columns=nidx) 
 
 # print(int11_data)
 # print(int11_df)
-# print(int11_df.loc['AU', 'A']['GC','G'])
+# print(int11_df.loc['AU', 'A']['CG','G'])
 
 # 1x2 internal loops energies
 
@@ -231,13 +233,13 @@ int12_data = int12_t.reshape(bps.size*nucleotides.size, nucleotides.size*bps.siz
 midx = pd.MultiIndex.from_product([bps, nucleotides])
 nidx = pd.MultiIndex.from_product([nucleotides, bps, nucleotides])
 
-int12_df = pd.DataFrame(int12_data, index = midx, columns=nidx)
+int12_df = pd.DataFrame(int12_data * c, index = midx, columns=nidx)
 
-print(int12_df.iloc[0:24,0:36])
+# print(int12_df.iloc[0:24,0:36])
 
 # int12_df.loc['P1','X']['N','P2','Y']
 
-print(int12_df.loc['UG','A']['A','CG','C'])
+# print(int12_df.loc['UG','A']['A','CG','C'])
 
 # 2x2 internal loops energies
 
@@ -329,30 +331,9 @@ int22_data = int22_t.reshape(bps.size*nps.size, bps.size*nps.size)
 midx = pd.MultiIndex.from_product([bps, nps])
 nidx = pd.MultiIndex.from_product([bps, nps])
 
-int22_df = pd.DataFrame(int22_data, index = midx, columns=nidx)
+int22_df = pd.DataFrame(int22_data * c, index = midx, columns=nidx)
 
 # print(int22_df)
-# print(int22_df.loc['UG','GA']['GC','AG'])
 
-
-# arr1=['3.6  2.7  1.9  2.7  2.7  2.7  2.7  2.7  3.6  2.7  1.4  2.7  2.7  2.7  2.7  3.3',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.7  3.4  2.6  3.4  3.4  4.0  3.4  4.0  3.0  3.4  3.4  3.4  3.4  4.0  3.4  3.4',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.4  3.1  2.9  3.1  3.1  3.1  3.1  3.1  3.3  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.4  3.1  2.9  3.1  3.1  3.1  3.1  3.1  3.3  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '2.2  1.7  0.2  1.7  1.7  2.3  1.7  2.3  1.3  1.7  1.7  1.7  1.7  2.3  1.7  1.7',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '2.1  1.8  2.3  1.8  1.8  1.8  1.8  1.8  2.7  1.8  3.1  1.8  1.8  1.8  1.8  3.1',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.4  3.1  2.9  3.1  3.1  3.1  3.1  3.1  3.3  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '3.4  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  1.8  3.1  3.1  3.1  3.1  3.1',
-#   '4.0  3.1  2.3  3.1  3.1  3.1  3.1  3.1  2.7  3.1  3.1  3.1  3.1  3.1  3.1  3.1'
-# ]
-
-# mtrx = [[float(x) for x in y.split('  ')] for y in arr1 ]
-# print(mtrx)
-
+# int22_df.loc['P1','X1X2']['P2','Y1Y2']
+print(int22_df.loc['UG','GA']['GC','AG'])

@@ -14,7 +14,7 @@ def num_to_range(num, inMin, inMax, outMin, outMax):
 sc = 1
 hc = 1
 ic = hc
-init = 0
+init = 1
 
 def G_stem(i,j):
     G = f'{wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[i] + RNA[j-2]]}'
@@ -43,30 +43,50 @@ def G_hairpin(i,j):
     G = f'{G1}' if RNA[i-1] + RNA[j-1] == 'GU' else f'{G2}'     
     return G
 
-def int11(i,k,j,l):
-    if k-i-1 and l-j-1:
+def int11(i,k,l,j):
+    if k-i-1 == 1 and j-l-1 == 1:
         return True
 
 def G_internal_11(i,k,l,j):
+    # print(f'{RNA[i-1] + RNA[j-1]},{RNA[i]}::{RNA[k-1] + RNA[l-1]},{RNA[l]}')
     return int11_df.loc[RNA[i-1] + RNA[j-1], RNA[i]][RNA[k-1] + RNA[l-1],RNA[l]]
 
-def int12(i,k,j,l):
-    if k-i-1 and l-j-1:
+def int12(i,k,l,j):
+    if k-i-1==1 and j-l==3:
         return True
 
+def G_internal_12(i,k,l,j):
+    return int12_df.loc[RNA[i-1] + RNA[j-1], RNA[i]][RNA[l],RNA[k-1] + RNA[l-1],RNA[l+1]]
 
+def int22(i,k,l,j):
+    if k-i==3 and j-l==3:
+        return True
+    
+def G_internal_22(i,k,l,j):
+    return int22_df.loc[RNA[i-1] + RNA[j-1],RNA[i]+RNA[l+1]][RNA[k-1] + RNA[l-1],RNA[i+1]+RNA[l]]
 
 def G_internal(i,k,l,j):
-    if (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' and RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU'):
-        G = f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]] + 2*AU_end_penalty}' 
-    elif (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' or RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU'):
-        G = f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]] + AU_end_penalty}' 
+
+    if int11(i,k,l,j):
+        # print("1x1")
+        return G_internal_11(i,k,l,j)
+    elif int12(i,k,l,j):
+        # print("1x2")
+        return G_internal_12(i,k,l,j)
+    elif int22(i,k,l,j):
+        # print("2x2")
+        return G_internal_22(i,k,l,j)
     else:
-        G = f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]]}' 
-    return G
+        # print("n1xn2")
+        if (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' and RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU'):
+            return f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]] + 2*AU_end_penalty}' 
+        elif (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' or RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU'):
+            return f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]] + AU_end_penalty}' 
+        else:
+            return f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]]}' 
 
 def G_bulge(i,k,l,j):
-    
+
     if k==i+1:
         if j-l-1 == 1:
             G = f'{initiation_df.loc[j-l-1,"bulge"] + wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[k-1] + RNA[l-1]] + Cbulge*(RNA[l] == "C") - RT*np.log(3)}'
@@ -93,7 +113,19 @@ def G_bulge(i,k,l,j):
 # print(G_bulge(11,12,19,21))
 # print(G_bulge(2,3,18,22))
 
-print(G_hairpin(13,17))
-print(G_internal(5,8,23,25))
-print(G_internal(10,12,18,21))
+# print(G_hairpin(13,17))
+# print(G_internal(5,8,23,25))
+# print(G_internal(10,12,18,21))
+
+print(G_hairpin(11,16))
+print(G_internal(9, 11, 16, 18))
+print(G_stem(8,19))
+
+print(G_internal(5,8,19,21))
+
+print(G_stem(4,22))
+print(G_stem(3,23))
+print(G_stem(2,24))
+print(G_stem(1,25))
+
 

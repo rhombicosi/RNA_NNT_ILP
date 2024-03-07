@@ -7,7 +7,23 @@ Reference structure:
 (((((.....(....)....)))))
 
 Loop decompositon model:
-time: 0s MFE: 738
+time: 0s MFE: 13184
+Line 4: Q(1,25) 1
+Line 10: Q(2,24) 1
+Line 16: Q(3,23) 1
+Line 18: Q(4,22) 1
+Line 24: Q(8,19) 1
+Line 120: H(11,16) 1
+Line 352: I(5,8,19,21) 1
+Line 440: I(9,11,16,18) 1
+Line 642: P(1,25) 1
+Line 650: P(2,24) 1
+Line 663: P(3,23) 1
+Line 671: P(4,22) 1
+Line 677: P(5,21) 1
+Line 693: P(8,19) 1
+Line 701: P(9,18) 1
+Line 707: P(11,16) 1
 
 (((((..((.(....).)).)))))
 
