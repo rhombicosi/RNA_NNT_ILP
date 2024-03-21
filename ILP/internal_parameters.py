@@ -1,31 +1,16 @@
 import pandas as pd
 import numpy as np
 
+bps = np.array(['AU','CG','GC','UA','GU','UG'])
+nucleotides = np.array(['A', 'C', 'G', 'U'])
+nps = np.array([x+y for x in nucleotides for y in nucleotides])
+
 c = 100
 asymmetry = 0.6 * c
 AU_end_penalty = 0.7 * c
 GU_end_penalty = 0.7 * c
 
-int_mismatch = {'AG' : -0.8 * c, 'GA': -1.0 * c, 'GG':-1.2 * c, 'UU' : -0.7 * c}
-
-# 2×3 internal loops mismatch
-
-RY = np.array(['AU','GC','GU']) # PURINES-PYRAMIDINES
-YR = np.array(['CG','UA','UG']) # PYRAMIDINES-PURINES
-
-ag = [0, -0.5 * c]
-ga = [-1.2 * c, -1.1 * c]
-
-int_2x3_mismatch = {'GG': -0.8 * c, 'UU': -0.4 * c}
-
 # 1x1 internal loops energies
-
-bps = np.array(['AU','CG','GC','UA','GU','UG'])
-
-nucleotides = np.array(['A', 'C', 'G', 'U'])
-
-nps = np.array([x+y for x in nucleotides for y in nucleotides])
-
 
 int11 = np.array([[[[1.9, 1.9, 1.9, 1.9],[1.9, 1.9, 1.9, 1.9],[1.9, 1.9,-0.7, 1.9],[1.9, 1.9, 1.9, 1.5]], \
                    [[1.2, 1.2, 1.2, 1.2],[1.2, 1.2, 1.2, 1.2],[1.2, 1.2,-1.4, 1.2],[1.2, 1.2, 1.2, 0.8]], \
@@ -64,14 +49,13 @@ int11 = np.array([[[[1.9, 1.9, 1.9, 1.9],[1.9, 1.9, 1.9, 1.9],[1.9, 1.9,-0.7, 1.
                    [[1.9, 1.9, 1.9, 1.9],[1.9, 1.9, 1.9, 1.9],[1.9, 1.9,-0.7, 1.9],[1.9, 1.9, 1.9, 1.9]], \
                    [[1.9, 1.9, 1.9, 1.9],[1.9, 1.9, 1.9, 1.9],[1.9, 1.9,-0.7, 1.9],[1.9, 1.9, 1.9, 1.6]]]])
 
-
 int11_t=int11.transpose(0,2,1,3)
 int11_data = int11_t.reshape(nucleotides.size*bps.size, nucleotides.size*bps.size)
 
 midx = pd.MultiIndex.from_product([bps, nucleotides])
 nidx = pd.MultiIndex.from_product([bps, nucleotides])
 
-int11_df = pd.DataFrame(int11_data * c, index = midx, columns=nidx) 
+int11_df = pd.DataFrame(int11_data * c, index=midx, columns=nidx) 
 
 # print(int11_data)
 # print(int11_df)
@@ -336,4 +320,46 @@ int22_df = pd.DataFrame(int22_data * c, index = midx, columns=nidx)
 # print(int22_df)
 
 # int22_df.loc['P1','X1X2']['P2','Y1Y2']
-print(int22_df.loc['UG','GA']['GC','AG'])
+# print(int22_df.loc['UG','GA']['GC','AG'])
+
+# 2×3 internal loops mismatch
+# 5' --> 3' bottom pair i --> j
+# 3' <-- 5' top pair k <-- l
+
+RY = np.array(['AU','GC','GU']) # PURINES-PYRAMIDINES
+YR = np.array(['CG','UA','UG']) # PYRAMIDINES-PURINES
+
+int23 = np.zeros((16,6))
+
+int23_df = pd.DataFrame(int23, index=nps, columns=bps)
+
+for yr in YR:
+    int23_df.loc['AG'][yr] = -0.5
+    int23_df.loc['GA'][yr] = -1.1
+
+for ry in RY:
+    int23_df.loc['GA'][ry] = -1.2
+
+for bp in bps:
+    int23_df.loc['GG'][bp] = -0.8
+    int23_df.loc['UU'][bp] = -0.4
+
+int23_df = int23_df.transpose() * c
+
+# print(int23_df)
+
+# n1xn2 internal loops mismatch
+
+intnn = np.zeros((16,6))
+
+intnn_df = pd.DataFrame(intnn, index=nps, columns=bps)
+
+for bp in bps:
+  intnn_df.loc['AG'][bp] = -0.8
+  intnn_df.loc['GA'][bp] = -1.0
+  intnn_df.loc['GG'][bp] = -1.2
+  intnn_df.loc['UU'][bp] = -0.7
+
+intnn_df = intnn_df.transpose() * c
+
+# print(intnn_df)

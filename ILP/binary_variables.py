@@ -31,13 +31,18 @@ def legal(i,j):
     else:
         return 0
 
-# create P and Q variables
+# create P and F variables
 for i in range(1, len(RNA)): 
     for j in range(i + minD + 1, len(RNA) + 1):
         if RNA[i-1] + RNA[j-1] in cbp_list:
             listP = listP + f'P({i},{j})\n'
-            listQ = listQ + f'Q({i},{j})\n'
             listF = listF + f'F({i},{j})\n'
+
+# create Q and L variables
+for i in range(1, len(RNA)): 
+    for j in range(i + minD + 1, len(RNA) + 1):
+        if RNA[i-1] + RNA[j-1] and RNA[i] + RNA[j-2] in cbp_list:
+            listQ = listQ + f'Q({i},{j})\n'
             listL = listL + f'L({i},{j})\n'
 
 # create X variables for each nucleotide

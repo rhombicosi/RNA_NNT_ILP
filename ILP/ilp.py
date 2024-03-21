@@ -9,7 +9,7 @@ OUT.write("E \n")
 
 OUT.write("\nsuch that \n")
 
-objective = stemTerm(RNA) + fTerm(RNA) + lTerm(RNA) + hairpinTerm(RNA) + internalTerm(RNA) + bulgeTerm(RNA)
+objective = stemTerm(RNA) + hairpinTerm(RNA) + internalTerm(RNA) + bulgeTerm(RNA) #+ fTerm(RNA) + lTerm(RNA)
 
 OUT.write(f'{objective} - E = 0 \n\n')
 

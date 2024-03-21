@@ -24,9 +24,11 @@ def flParams(RNA):
 
     for i in range(1, len(RNA)):  
         for j in range(i + minD + 1, len(RNA) + 1): 
-            g[f'F{i}',f'F{j}'] = G_F(i,j)
-            if j < len(RNA):
-                g[f'L{i}',f'L{j}'] = G_L(i,j)
+            if legal(i,j):
+                if legal(i+1,j-1) and i+1 < j-1:
+                    g[f'F{i}',f'F{j}'] = G_F(i,j)
+                    if j < len(RNA):
+                        g[f'L{i}',f'L{j}'] = G_L(i,j)
 
     return g 
 
@@ -85,20 +87,19 @@ def pretty(d, indent=0):
 # pretty(bulgeParams(RNA))
 
 def normalize(RNA):
-    c = 1
-    q_params = {k: c*float(v) for k, v in stemParams(RNA).items()}
-    fl_params = {k: c*float(v) for k, v in flParams(RNA).items()}
-    h_params = {k: c*float(v) for k, v in hairpinParams(RNA).items()}
-    i_params = {k: c*float(v) for k, v in internalParams(RNA).items()}
-    b_params = {k: c*float(v) for k, v in bulgeParams(RNA).items()}
+    q_params = {k: float(v) for k, v in stemParams(RNA).items()}
+    fl_params = {k: float(v) for k, v in flParams(RNA).items()}
+    h_params = {k: float(v) for k, v in hairpinParams(RNA).items()}
+    i_params = {k: float(v) for k, v in internalParams(RNA).items()}
+    b_params = {k: float(v) for k, v in bulgeParams(RNA).items()}
 
 
     params = q_params | fl_params | h_params | i_params | b_params
 
-    inMax = max(params.values())
-    inMin = min(params.values())
-    outMin = 0.0
-    outMax = 100.0
+    # inMax = max(params.values())
+    # inMin = min(params.values())
+    # outMin = 0.0
+    # outMax = 100.0
 
     # print(inMin)
     # print(inMax)
@@ -143,7 +144,7 @@ def lTerm(RNA):
     for i in range (1, len(RNA)): 
         for j in range(i + minD + 1,  len(RNA)+1): 
             if i > 1 and j < len(RNA):
-                if legal(i,j) and legal(i-1,j+1):                
+                if legal(i,j) and legal(i+1,j-1):                
                     objective += f" + {norm[f'L{i}',f'L{j}']} L({i},{j})"
 
     return objective

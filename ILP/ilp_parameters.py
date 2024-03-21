@@ -2,7 +2,7 @@ import os
 
 # sequence path
 chain_dir = 'data'
-chain_f = '1q9a'
+chain_f = '2ke6_a'
 
 chain_fs = []
 
@@ -14,7 +14,8 @@ with open( chain_path, 'r') as file:
 
 # distance parameters
 minD = 3 # min allowed distance between paired nts, also min hairpin loop size
-maxH = 12 # max hairpin loop size
+maxH = 35 # max hairpin loop size
+noH = 30
 minI = 1 # min internal loop unpaired region size
 maxI = 6 # max internal loop one side size
 B = 1 # one nt bulge loop

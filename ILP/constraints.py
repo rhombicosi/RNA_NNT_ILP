@@ -92,7 +92,6 @@ def lastPairConstraints(RNA):
     for i in range (1, len(RNA)): 
         for j in range(i + minD + 1, len(RNA) + 1):            
             if legal(i,j):
-
                 if legal(i+1,j-1) and i+1 < j-1:
                     # print(f'L: {i} :: {j}')         
                     inequality += f'Q({i},{j}) - Q({i+1},{j-1}) - L({i},{j}) <= 0 \n'

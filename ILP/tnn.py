@@ -28,19 +28,35 @@ def G_F(i,j):
     return G
 
 def G_L(i,j):
-    if RNA[i] + RNA[j-2] == 'AU' or RNA[i] + RNA[j-2] == 'UA' or RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'UG':
-        G = f'{wcf_AU_end_penalty}' 
+    if RNA[i] + RNA[j-2] == 'AU' or RNA[i] + RNA[j-2] == 'UA' or RNA[i] + RNA[j-2] == 'GU' or RNA[i] + RNA[j-2] == 'UG':
+        G = wcf_AU_end_penalty
     else:
-        G = f'{0.0}'
+        G = 0.0
+
+    G = f'{G + mismatch_df.loc[RNA[i] + RNA[j-2],RNA[i+1]][RNA[j-3]]}'
 
     return G
 
 def G_hairpin(i,j):
 
-    G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
-    G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
+    # G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
+    # G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
 
-    G = f'{G1}' if RNA[i-1] + RNA[j-1] == 'GU' else f'{G2}'     
+    if j-i-1 <= noH:
+        G1 = initiation_df.loc[j-i-1,"hairpin"] + spec_GU_clos
+        G2 = initiation_df.loc[j-i-1,"hairpin"]
+    else:
+        G1 = 10000 + spec_GU_clos
+        G2 = 10000
+
+    G = G1 if RNA[i-1] + RNA[j-1] == 'GU' else G2  
+
+    if RNA[i] + RNA[j-2] == 'GA' or RNA[i] + RNA[j-2] == 'UU':
+        G = G + hp_mismatch['GA']
+
+    if RNA[i] + RNA[j-2] == 'GG':
+        G = G + hp_mismatch['GG']
+
     return G
 
 def int11(i,k,l,j):
@@ -65,7 +81,24 @@ def int22(i,k,l,j):
 def G_internal_22(i,k,l,j):
     return int22_df.loc[RNA[i-1] + RNA[j-1],RNA[i]+RNA[l+1]][RNA[k-1] + RNA[l-1],RNA[i+1]+RNA[l]]
 
+def int1n(i,k,l,j):
+    if k-i==2 or j-l==2:
+        return True
+    
+def int23(i,k,l,j):
+    if k-i==3 and j-l==4:
+        return True
+    
+def penalty2(i,k,l,j):
+    return (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' and RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU')
+
+def penalty1(i,k,l,j):
+    return (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' or RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU')
+
+
 def G_internal(i,k,l,j):
+
+    common_term = initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1))
 
     if int11(i,k,l,j):
         # print("1x1")
@@ -75,15 +108,29 @@ def G_internal(i,k,l,j):
         return G_internal_12(i,k,l,j)
     elif int22(i,k,l,j):
         # print("2x2")
-        return G_internal_22(i,k,l,j)
+        return G_internal_22(i,k,l,j)  
+    elif int23(i,k,l,j):        
+        if penalty2(i,k,l,j):
+            return f'{common_term + int23_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + int23_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + 2*AU_end_penalty}' 
+        elif penalty1(i,k,l,j):
+            return f'{common_term + int23_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + int23_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + AU_end_penalty}' 
+        else:
+            return f'{common_term + int23_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + int23_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]]}'   
+    elif int1n(i,k,l,j):
+        if penalty2(i,k,l,j):
+            return f'{common_term + 2*AU_end_penalty}' 
+        elif penalty1(i,k,l,j):            
+            return f'{common_term + AU_end_penalty}' 
+        else:
+            return f'{common_term}'
     else:
         # print("n1xn2")
-        if (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' and RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU'):
-            return f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]] + 2*AU_end_penalty}' 
-        elif (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' or RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU'):
-            return f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]] + AU_end_penalty}' 
+        if penalty2(i,k,l,j):
+            return f'{common_term + intnn_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + intnn_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + 2*AU_end_penalty}' 
+        elif penalty1(i,k,l,j):
+            return f'{common_term + intnn_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + intnn_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + AU_end_penalty}' 
         else:
-            return f'{initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1)) + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + mismatch_df.loc[RNA[k-1] + RNA[l-1],RNA[k-2]][RNA[l]]}' 
+            return f'{common_term + intnn_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + intnn_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]]}'
 
 def G_bulge(i,k,l,j):
 
@@ -104,28 +151,41 @@ def G_bulge(i,k,l,j):
             G = f'{initiation_df.loc[k-i-1,"bulge"] + 1.75*RT*np.log((k-i-1)/6)}'
 
     return G
-    
 
-# print(G_stem(1,9))
-# print(G_hairpin(1,5))
-# print(G_internal(1,3,17,20))
-# print(G_bulge(3,4,8,10))
-# print(G_bulge(11,12,19,21))
-# print(G_bulge(2,3,18,22))
+# # 3sn2 test
 
+# # reference MFE
+# print(G_stem(1,29))
+# print(G_stem(2,28))
+# print(G_stem(3,27))
+# print(G_stem(4,26))
+# print(G_stem(5,25))
+# print(G_bulge(6,8,23,24))
+# print(G_stem(8,23))
+# print(G_stem(9,22))
+# print(G_stem(10,21))
+# print(G_stem(11,20))
+# print(G_bulge(12,13,17,19))
 # print(G_hairpin(13,17))
+
+# print('TOTAL REFERENCE')
+# print(f'{float(G_stem(1,29)) + float(G_stem(2,28)) + float(G_stem(3,27)) + float(G_stem(4,26)) + float(G_stem(5,25)) + float(G_bulge(6,8,23,24)) + float(G_stem(8,23)) + float(G_stem(9,22)) + float(G_stem(10,21))+float(G_stem(11,20)) + float(G_bulge(12,13,17,19)) + float(G_hairpin(13,17))}')
+
+# # generated MFE
+# print(G_stem(1,29))
+# print(G_stem(2,28))
+# print(G_stem(3,27))
+# print(G_stem(4,26))
 # print(G_internal(5,8,23,25))
-# print(G_internal(10,12,18,21))
+# print(G_stem(8,23))
+# print(G_stem(9,22))
+# print(G_stem(10,21))
+# print(G_stem(11,20))
+# print(G_hairpin(12,19))
 
-print(G_hairpin(11,16))
-print(G_internal(9, 11, 16, 18))
-print(G_stem(8,19))
+# print('TOTAL GENERATED')
+# print(f'{float(G_stem(1,29)) + float(G_stem(2,28)) + float(G_stem(3,27)) + float(G_stem(4,26)) + float(G_stem(8,23)) + float(G_stem(9,22)) + float(G_stem(10,21))+float(G_stem(11,20)) + float(G_internal(5,8,23,25)) + float(G_hairpin(12,19))}')
 
-print(G_internal(5,8,19,21))
 
-print(G_stem(4,22))
-print(G_stem(3,23))
-print(G_stem(2,24))
-print(G_stem(1,25))
 
 

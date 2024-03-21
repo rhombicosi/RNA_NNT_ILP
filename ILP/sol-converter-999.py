@@ -2,7 +2,7 @@ import re
 from binary_variables import *
 
 filepath = f'{chain_f}-decomposition.sol'
-ref_brackets = '(((((.....(....)....)))))'    
+ref_brackets = '(((((.(((((((((((((........))))))).))).))).)))))'   
 
 def pairs2brackets(filepath, RNA):
     lngth = len(RNA)
@@ -21,6 +21,12 @@ def pairs2brackets(filepath, RNA):
         while line: 
             
             if " 1" in line and "Q(" in line:
+                print("Line {}: {}".format(cnt, line.strip()))
+            
+            if " 1" in line and "F(" in line:
+                print("Line {}: {}".format(cnt, line.strip()))
+
+            if " 1" in line and "L(" in line:
                 print("Line {}: {}".format(cnt, line.strip()))
 
             if " 1" in line and "H(" in line:
