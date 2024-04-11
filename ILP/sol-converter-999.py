@@ -1,8 +1,9 @@
 import re
-from binary_variables import *
+from binary_variables_grb import *
 
-filepath = f'{chain_f}-decomposition.sol'
-ref_brackets = '(((((.(((((((((((((........))))))).))).))).)))))'   
+filepath = f'{chain_f}-decomposition-grb.sol'
+ref_brackets = '(((((.....(....)....)))))'
+# ref_brackets = '(((((.....(....)....)))))'   
 
 def pairs2brackets(filepath, RNA):
     lngth = len(RNA)

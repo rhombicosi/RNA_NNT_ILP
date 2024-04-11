@@ -50,7 +50,7 @@ def stemConstraints(RNA):
             jm1 = j - 1
             if legal(i,j):
                 if legal(ip1,jm1) and ip1 < jm1:                     
-                    inequality = gp.LinExpr([1,-1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'P({ip1},{jm1})')])
+                    inequality = gp.LinExpr([2,-1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'P({ip1},{jm1})')])
                     mip.addConstr(inequality <= 0, f'CS0{i}-{j}')
                     # create the inequalities to enforce the converse, although it is
                     # redundant. You can test this fact by commenting these out. Does it make
@@ -182,7 +182,7 @@ def hairpinOnlyIfConstraints(RNA):
                         inequality.add(gp.LinExpr([1],[mip.getVarByName(s)]))
                     
                     inequality.add(gp.LinExpr([-1], [mip.getVarByName(f'P({i},{j})')]))
-                    mip.addConstr(inequality <= 1, f'CHIFO{i}-{j}-{u}')
+                    mip.addConstr(inequality <= 1, f'CHOIF{i}-{j}-{u}')
 
     return inequality
 
@@ -236,7 +236,6 @@ def internalNTConstraints(RNA):
 # if n1 nucleotides and n2 nucleotides are unpaired between two base pairs 
 # then internal loop is formed between these pairs
 def internalIfThenConstraints(RNA):
-    # inequality = gp.LinExpr(0)
 
     for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
         for k in range(i + minI + 1, min(i + maxI + 1, len(RNA) - minI - 1 - minD - 1)):
@@ -244,23 +243,94 @@ def internalIfThenConstraints(RNA):
                 for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):
                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
 
-                        inequalityTemp = gp.LinExpr(0)                        
+                        inequality = gp.LinExpr(0)                        
 
                         for u in range(i+1,k):
-                            inequalityTemp.add(gp.LinExpr([1],[mip.getVarByName(f'Y({u})')]))
-                            # inequalityTemp += f'+ Y({u}) '
+                            inequality.add(gp.LinExpr([1],[mip.getVarByName(f'Y({u})')]))
 
                         for u in range(l+1,j):
-                            inequalityTemp.add(gp.LinExpr([1],[mip.getVarByName(f'Y({u})')]))
-                            # inequalityTemp += f'+ Y({u}) '
+                            inequality.add(gp.LinExpr([1],[mip.getVarByName(f'Y({u})')]))
                             
-                        inequalityTemp.add(gp.LinExpr([1,1,-1],[mip.getVarByName(f'P({k},{l})'),mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'I({i},{k},{l},{j})')]))
+                        inequality.add(gp.LinExpr([1,1,-1],[mip.getVarByName(f'P({k},{l})'),mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'I({i},{k},{l},{j})')]))
 
-                        mip.addConstr(inequalityTemp <= k-i+j-l-1, f'CIIFT{i}-{k}-{l}-{j}')
+                        mip.addConstr(inequality <= k-i+j-l-1, f'CIIFT{i}-{k}-{l}-{j}')
 
-                        # inequality += inequalityTemp + f'+ P({k},{l}) + P({i},{j}) - I({i},{k},{l},{j}) <= {k-i+j-l-1}\n'
+    return inequality
 
-    return inequalityTemp
+def internalOnlyIfConstraints(RNA):
+    # inequality = ''
+    
+    for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
+        for k in range(i + minI + 1, min(i + maxI + 1, len(RNA) - minI - 1 - minD - 1)):
+            for l in range(k + minD + 1, len(RNA) - minI  - 1):
+                for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):
+                    if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:                        
+
+                        for u in range(i+1,k):
+                            inequality = gp.LinExpr(0)
+
+                            inequality.add(gp.LinExpr([3],[mip.getVarByName(f'I({i},{k},{l},{j})')]))
+                            # inequality += f'3 I({i},{k},{l},{j}) '
+                            set1 = set({})
+
+                            for v in range(1,u):
+                                if legal(v,u):
+                                    set1.add(f'P({v},{u})')                   
+
+                            for v in range(u+1,len(RNA)+1):
+                                if legal(u,v):
+                                    set1.add(f'P({u},{v})')
+
+                            for s in set1:
+                                inequality.add(gp.LinExpr([1],[mip.getVarByName(s)]))
+                                # inequality += f'+ {s} '
+
+                            inequality.add(gp.LinExpr([-1,-1],[mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'P({k},{l})')]))
+                            mip.addConstr(inequality <= 1, f'CIOIF{i}-{k}-{l}-{j}-{u}')
+                            # inequality += f'- P({i},{j}) - P({k},{l}) <= 1 \n'
+
+                        for u in range(l+1,j):
+                            inequality = gp.LinExpr(0)
+
+                            inequality.add(gp.LinExpr([3],[mip.getVarByName(f'I({i},{k},{l},{j})')]))
+                            # inequality += f'3 I({i},{k},{l},{j}) '
+                            set1 = set({})
+
+                            for v in range(1,len(RNA)+1):
+                                for v in range(1,u):
+                                    if legal(v,u):
+                                        set1.add(f'P({v},{u})')                   
+
+                            for v in range(u+1,len(RNA)+1):
+                                if legal(u,v):
+                                    set1.add(f'P({u},{v})')
+
+                            for s in set1:
+                                inequality.add(gp.LinExpr([1],[mip.getVarByName(s)]))
+                                # inequality += f'+ {s} '
+
+                            inequality.add(gp.LinExpr([-1,-1],[mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'P({k},{l})')]))
+                        mip.addConstr(inequality <= 1, f'CIOIF{i}-{k}-{l}-{j}-{u}')
+                            # inequality += f'- P({i},{j}) - P({k},{l}) <= 1 \n'
+    
+    return inequality
+
+def numInternalConstraints(RNA, numI):
+    # inequality = ''
+    inequality = gp.LinExpr(0)
+    
+    for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
+        for k in range(i + minI + 1, min(i + maxI + 1, len(RNA) - minI - 1 - minD - 1)):
+            for l in range(k + minD + 1, len(RNA) - minI  - 1):
+                for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):
+                    if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:                        
+                        inequality.add(gp.LinExpr([1],[mip.getVarByName(f'I({i},{k},{l},{j})')]))
+                        # inequality += f' + I({i},{k},{l},{j})'
+
+    mip.addConstr(inequality <= numI, 'CIN')
+    # inequality += f' <= {numI} \n'
+
+    return inequality
 
 onePairConstraints(RNA)
 noCrossConstraints(RNA)
@@ -273,69 +343,9 @@ hairpinOnlyIfConstraints(RNA)
 numHairpinConstraints(RNA, numH)
 internalNTConstraints(RNA)
 internalIfThenConstraints(RNA)
+internalOnlyIfConstraints(RNA)
+numInternalConstraints(RNA, numI)
 mip.write('1q9a_grb.lp')
-
-# def internalOnlyIfConstraints(RNA):
-#     inequality = ''
-    
-#     for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
-#         for k in range(i + minI + 1, min(i + maxI + 1, len(RNA) - minI - 1 - minD - 1)):
-#             for l in range(k + minD + 1, len(RNA) - minI  - 1):
-#                 for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):
-#                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
-
-#                         for u in range(i+1,k):
-
-#                             inequality += f'3 I({i},{k},{l},{j}) '
-#                             set1 = set({})
-
-#                             for v in range(1,u):
-#                                 if legal(v,u):
-#                                     set1.add(f'P({v},{u})')                   
-
-#                             for v in range(u+1,len(RNA)+1):
-#                                 if legal(u,v):
-#                                     set1.add(f'P({u},{v})')
-
-#                             for s in set1:
-#                                 inequality += f'+ {s} '
-
-#                             inequality += f'- P({i},{j}) - P({k},{l}) <= 1 \n'
-
-#                         for u in range(l+1,j):
-
-#                             inequality += f'3 I({i},{k},{l},{j}) '
-#                             set1 = set({})
-
-#                             for v in range(1,len(RNA)+1):
-#                                 for v in range(1,u):
-#                                     if legal(v,u):
-#                                         set1.add(f'P({v},{u})')                   
-
-#                             for v in range(u+1,len(RNA)+1):
-#                                 if legal(u,v):
-#                                     set1.add(f'P({u},{v})')
-
-#                             for s in set1:
-#                                 inequality += f'+ {s} '
-
-#                             inequality += f'- P({i},{j}) - P({k},{l}) <= 1 \n'
-    
-#     return inequality
-
-# def numInternalConstraints(RNA, numI):
-#     inequality = ''
-    
-#     for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
-#         for k in range(i + minI + 1, min(i + maxI + 1, len(RNA) - minI - 1 - minD - 1)):
-#             for l in range(k + minD + 1, len(RNA) - minI  - 1):
-#                 for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):
-#                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
-#                         inequality += f' + I({i},{k},{l},{j})'
-
-#     inequality += f' <= {numI} \n'
-
-#     return inequality
 
 # ############## BULGE LOOP :: SET OF CONSTRAINTS #############
 

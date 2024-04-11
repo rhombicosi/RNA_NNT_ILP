@@ -134,18 +134,3 @@ def objectiveTerm(RNA):
     return objective
 
 # print(objectiveTerm(RNA))
-
-try:
-    mip.setObjective(objectiveTerm(RNA), GRB.MINIMIZE)
-
-    mip.update()
-
-    mip.optimize()
-
-    print(f'Obj: {mip.ObjVal:g}')
-
-except gp.GurobiError as e:
-    print(f'Error code {e.errno}: {e}')
-
-except AttributeError:
-    print('Encountered an attribute error')
