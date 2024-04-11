@@ -2,7 +2,7 @@ import os
 
 # sequence path
 chain_dir = 'data'
-chain_f = '2ke6_a'
+chain_f = '1q9a'
 
 chain_fs = []
 
