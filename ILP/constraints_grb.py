@@ -479,22 +479,28 @@ def numBulgeConstraints(RNA, numB):
     
     return inequality
 
-onePairConstraints(RNA)
-noCrossConstraints(RNA)
-stemConstraints(RNA)
-firstPairConstraints(RNA)
-lastPairConstraints(RNA)
-hairpinNTConstraints(RNA)
-hairpinIfThenConstraints(RNA)
-hairpinOnlyIfConstraints(RNA)
-numHairpinConstraints(RNA, numH)
-internalNTConstraints(RNA)
-internalIfThenConstraints(RNA)
-internalOnlyIfConstraints(RNA)
-numInternalConstraints(RNA, numI)
-bulgeNTConstraints(RNA)
-bulgeIfThenConstraints(RNA)
-bulgeOnlyIfConstraints(RNA)
-numBulgeConstraints(RNA, numB)
-mip.write('1q9a_grb.lp')  
+
+
+# : :: ::: :::: test :::: ::: :: :
+
+# onePairConstraints(RNA)
+# noCrossConstraints(RNA)
+# stemConstraints(RNA)
+# firstPairConstraints(RNA)
+# lastPairConstraints(RNA)
+# hairpinNTConstraints(RNA)
+# hairpinIfThenConstraints(RNA)
+# hairpinOnlyIfConstraints(RNA)
+# numHairpinConstraints(RNA, numH)
+# internalNTConstraints(RNA)
+# internalIfThenConstraints(RNA)
+# internalOnlyIfConstraints(RNA)
+# numInternalConstraints(RNA, numI)
+# bulgeNTConstraints(RNA)
+# bulgeIfThenConstraints(RNA)
+# bulgeOnlyIfConstraints(RNA)
+# numBulgeConstraints(RNA, numB)
+
+
+# mip.write('1q9a_grb.lp')  
 

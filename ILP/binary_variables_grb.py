@@ -1,6 +1,6 @@
 import gurobipy as gp
 from gurobipy import GRB
-from ilp_parameters import * 
+from ilp_parameters_grb import * 
 
 # canonical base pairs
 cbp_list = ['AU','UA','CG','GC','GU','UG']
@@ -73,7 +73,9 @@ try:
     for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
         for k in range(i + minI + 1, min(i + maxI + 1, len(RNA) - minI - 1 - minD - 1)):
             for l in range(k + minD + 1, len(RNA) - minI  - 1):
-                for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):
+                for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):  
+                    # if(i==6):
+                    #     print(f'Internal: {i}-{k}-{l}-{j}')
                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
                         listI[f'I({i},{k},{l},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'I({i},{k},{l},{j})')
 

@@ -1,9 +1,14 @@
 import re
 from binary_variables_grb import *
 
-filepath = f'{chain_f}-decomposition-grb.sol'
-ref_brackets = '(((((.....(....)....)))))'
-# ref_brackets = '(((((.....(....)....)))))'   
+filepath = f'{chain_f}-decomposition-grb_76.sol'
+ref_brackets = '(((((.....(((((..((....))..).)))))))))'
+#'(((((((((((((((((((........))))))).))))).)))))))'
+# ref_brackets = '(((((((((.((....)).))))).))))'
+# ref_brackets = '(((((.....(....)....)))))' 
+# '(((((.....(((((..((....))..).)))))))))'  
+
+
 
 def pairs2brackets(filepath, RNA):
     lngth = len(RNA)
@@ -22,25 +27,25 @@ def pairs2brackets(filepath, RNA):
         while line: 
             
             if " 1" in line and "Q(" in line:
-                print("Line {}: {}".format(cnt, line.strip()))
+                print("{}".format(line.strip()))
             
             if " 1" in line and "F(" in line:
-                print("Line {}: {}".format(cnt, line.strip()))
+                print("{}".format(line.strip()))
 
             if " 1" in line and "L(" in line:
-                print("Line {}: {}".format(cnt, line.strip()))
+                print("{}".format(line.strip()))
 
             if " 1" in line and "H(" in line:
-                print("Line {}: {}".format(cnt, line.strip()))
+                print("{}".format(line.strip()))
             
             if " 1" in line and "I(" in line:
-                print("Line {}: {}".format(cnt, line.strip()))
+                print("{}".format(line.strip()))
 
             if " 1" in line and "B(" in line:
-                print("Line {}: {}".format(cnt, line.strip()))
+                print("{}".format(line.strip()))
 
             if " 1" in line and "P(" in line:
-                print("Line {}: {}".format(cnt, line.strip()))
+                print("{}".format(line.strip()))
                 substring = re.search(pattern, line).group(1)
                 indices = substring.split(",")
             

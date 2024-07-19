@@ -5,7 +5,9 @@ from objective_grb import *
 
 try:
     mip.setObjective(objectiveTerm(RNA), GRB.MINIMIZE)
-
+    mip.addConstr(objectiveTerm(RNA) >= MFE,"CMFE")
+    # mip.addConstr(mip.getVarByName(f'B(14,15,28,30)') == 1)
+    # mip.addConstr(mip.getVarByName(f'H(19,24)') == 1)
     onePairConstraints(RNA)
     noCrossConstraints(RNA)
     stemConstraints(RNA)
@@ -19,10 +21,19 @@ try:
     internalIfThenConstraints(RNA)
     internalOnlyIfConstraints(RNA)
     numInternalConstraints(RNA, numI)
+    bulgeNTConstraints(RNA)
+    bulgeIfThenConstraints(RNA)
+    bulgeOnlyIfConstraints(RNA)
+    numBulgeConstraints(RNA, numB)
 
     mip.update()
 
     mip.write(f'{chain_f}-decomposition-grb.lp')
+
+    # mip.setParam("MIPGap", 0.2)
+    mip.setParam("PoolSolutions", 20)
+    mip.setParam("PoolSearchMode", 2)
+    mip.setParam("SolFiles", f"{chain_f}-decomposition-grb")
 
     mip.optimize()
 

@@ -2,7 +2,7 @@ import os
 
 # sequence path
 chain_dir = 'data'
-chain_f = '1q9a'
+chain_f = '3IAB_R'
 
 chain_fs = []
 
@@ -17,9 +17,9 @@ minD = 3 # min allowed distance between paired nts, also min hairpin loop size
 maxH = 35 # max hairpin loop size
 noH = 30
 minI = 1 # min internal loop unpaired region size
-maxI = 6 # max internal loop one side size
+maxI = 9 # max internal loop one side size
 B = 1 # one nt bulge loop
-maxB = 7 # max bulge loop
+maxB = 10 # max bulge loop
 
 # number of loops parameters
 numH = len(RNA)//5
