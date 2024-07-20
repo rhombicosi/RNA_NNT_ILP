@@ -15,9 +15,10 @@ relative_path = '../../ARCHIVE II/'
 src_path = (mod_path /relative_path).resolve()
 
 
-filename = os.path.join(src_path, '5s_Acanthamoeba-castellanii-1.ct')
+filename_ct = os.path.join(src_path, '5s_Acanthamoeba-castellanii-1.ct')
 
-print(filename)
+
+print(filename_ct)
 
 def parse_ct_file(filename):
     """
@@ -54,8 +55,40 @@ def parse_ct_file(filename):
 
 # Example usage
 # filename = 'example.ct'
-nucleotide_data = parse_ct_file(filename)
+nucleotide_data = parse_ct_file(filename_ct)
 
 # Print parsed data
 for nucleotide in nucleotide_data:
     print(nucleotide)
+
+def parse_seq_file(filename):
+    """
+    Parses a .seq file and returns a dictionary with the sequence identifier and sequence.
+
+    Args:
+    filename (str): The path to the .seq file.
+
+    Returns:
+    dict: A dictionary containing the sequence identifier and sequence.
+    """
+    sequence_data = {}
+
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    # for line in lines:
+    #     line = line.strip()
+    #     print(line)
+    
+    sequence_data['identifier'] = lines[1]
+    seq = ''.join(lines[2])
+    sequence_data['sequence'] = seq[:-2]
+    return sequence_data
+
+# Example usage
+filename_seq = os.path.join(src_path, '5s_Acanthamoeba-castellanii-1.seq')
+seq_data = parse_seq_file(filename_seq)
+
+# Print parsed data
+print(f"Identifier: {seq_data['identifier']}")
+print(f"Sequence: {seq_data['sequence']}")
