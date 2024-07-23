@@ -5,7 +5,7 @@ from objective_grb import *
 
 try:
     mip.setObjective(objectiveTerm(RNA), GRB.MINIMIZE)
-    mip.addConstr(objectiveTerm(RNA) >= MFE,"CMFE")
+    # mip.addConstr(objectiveTerm(RNA) >= MFE,"CMFE")
     # mip.addConstr(mip.getVarByName(f'B(14,15,28,30)') == 1)
     # mip.addConstr(mip.getVarByName(f'H(19,24)') == 1)
     onePairConstraints(RNA)

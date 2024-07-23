@@ -1,16 +1,40 @@
 import os
 from icecream import ic
+from archive_prepro_parse import *
 
-# sequence path
-chain_dir = 'data'
-chain_f = '2ku0_a' #'2k5z'#'2KE6_A' 
+# path to archive ii .ct and .seq files 
+# t = archive_path
+# seq_len_dir = f'RNA_seq_{seq_len}'
+# ct_len_dir = f'RNA_ct_{seq_len}'
+# sequences = get_filenames(archive_path, ".seq")
+# ct_list = get_filenames(archive_path, ".ct")
 
-chain_fs = []
 
-chain_path = os.path.join(chain_dir, chain_f)
+
+# sequence path os.path.join(dest_dir, new_folder_name)
+chain_dir = os.path.join(archive_path, seq_len_dir)
+seq_files = get_filenames(chain_dir, '.seq')
+
+seq_number = 1
+ic(seq_files[seq_number])
+ic(len(seq_files))
+
+chain_path = seq_files[seq_number]
+chain_f = f'seq-{seq_number}' #os.path.basename(chain_path)
+
+# with open(chain_path, 'r') as file:
+seq_data = parse_seq_file(chain_path)
+RNA = seq_data['sequence']
+# RNA = file.read().rstrip() 
+sizeRNA = len(RNA)
+ic(chain_f,RNA)
+ic(sizeRNA)
+
+
 
 with open( chain_path, 'r') as file:
-    RNA = file.read().rstrip() 
+
+    RNA = seq_data['sequence']
     sizeRNA = len(RNA)
     ic(chain_f,RNA)
     ic(sizeRNA)
@@ -22,13 +46,13 @@ MFE = -970
 
 # distance parameters
 minD = 3 # min allowed distance between paired nts, also min hairpin loop size
-maxH = 35 # max hairpin loop size
-noH = 30 # initiation params for hairpins bigger than noH are approximated
+maxH = 20 # max hairpin loop size
+noH = 22 # initiation params for hairpins bigger than noH are approximated
 minI = 1 # min internal loop unpaired region size
-maxI = 35 # max internal loop one side size
-noI = 30 # initiation params for internals bigger than noH are approximated
-maxB = 35 # max bulge loop
-noB = 30
+maxI = 22 # max internal loop one side size
+noI = 22 # initiation params for internals bigger than noH are approximated
+maxB = 20 # max bulge loop
+noB = 20
 
 # number of loops parameters
 numH = len(RNA)//5

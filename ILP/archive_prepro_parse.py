@@ -15,8 +15,7 @@ archive_path = (code_path/arch_rel_path).resolve()
 print(code_path)
 print(archive_path)
 
-
-def list_of_files(dir_path, f_type):
+def get_filenames(dir_path, f_type):
     f_list = []
     # list all .seq files in the archive directory
     for file in os.listdir(dir_path):
@@ -85,55 +84,6 @@ def parse_seq_file(filename):
     sequence_data['sequence'] = seq[:-2]
     return sequence_data
 
-
-seq_list = list_of_files(archive_path, ".seq")
-ct_list = list_of_files(archive_path, ".ct")
-
-# for z in zip(seq_list[0:1300],ct_list[0:1300]):
-#     ic(z)
-
-# ic(len(seq_list))
-# ic(len(ct_list))
-
-# def seq_length(seq_list, seq_len):
-#     seq_len_list = []
-#     ct_len_list = []
-#     for seq in seq_list:
-#         # filename_seq = os.path.join(archive_path, '5s_Acanthamoeba-castellanii-1.seq')
-#         seq_data = parse_seq_file(seq)
-
-#         if len(seq_data['sequence']) <= seq_len:
-#             seq_len_list.append(seq_data)
-#             print(seq)
-#             print(f"Identifier: {seq_data['identifier']}")
-#             print(f"Sequence: {seq_data['sequence']}")
-
-#     return seq_len_list
-
-# seq_len = 60
-# seq_length(seq_list,seq_len)
-
-# filename_ct = os.path.join(archive_path, '5s_Acanthamoeba-castellanii-1.ct')
-# print(filename_ct)
-
-# # Example usage
-# nucleotide_data = parse_ct_file(filename_ct)
-
-# # Print parsed data
-# for nucleotide in nucleotide_data:
-#     print(nucleotide)
-
-
-# # Example usage
-# filename_seq = os.path.join(archive_path, '5s_Acanthamoeba-castellanii-1.seq')
-# seq_data = parse_seq_file(filename_seq)
-
-# # Print parsed data
-# print(f"Identifier: {seq_data['identifier']}")
-# print(f"Sequence: {seq_data['sequence']}")
-
-
-
 def find_files_without_pairs(directory):
     # Create a dictionary to store files by their base name
     files_dict = defaultdict(set)
@@ -156,7 +106,6 @@ def find_files_without_pairs(directory):
     
     return files_without_pairs
 
-
 def create_directory_and_move_selected_files(src_dir, dest_dir, new_folder_name, selected_files):
     # Create the new directory
     new_folder_path = os.path.join(dest_dir, new_folder_name)
@@ -170,26 +119,111 @@ def create_directory_and_move_selected_files(src_dir, dest_dir, new_folder_name,
         if os.path.isfile(src_file):
             # Move the file to the new directory
             shutil.move(src_file, new_folder_path)
-            print(f"Moved: {filename}")
+            # ic(f"Moved: {filename}")
+        else:
+            ic(f"File not found: {filename}")
+    
+    ic(f"Selected files have been moved to {new_folder_path}")
+
+def create_directory_and_copy_selected_files(src_dir, dest_dir, new_folder_name, selected_files):
+    # Create the new directory
+    new_folder_path = os.path.join(dest_dir, new_folder_name)
+    os.makedirs(new_folder_path, exist_ok=True)
+    
+    # Copy selected files from the source directory to the new directory
+    for filename in selected_files:
+        src_file = os.path.join(src_dir, filename)
+        
+        # Check if the file exists in the source directory
+        if os.path.isfile(src_file):
+            # Copy the file to the new directory
+            shutil.copy(src_file, new_folder_path)
+            # ic(f"Copied: {filename}")
         else:
             print(f"File not found: {filename}")
     
-    print(f"Selected files have been moved to {new_folder_path}")
-
+    print(f"Selected files have been copied to {new_folder_path}")
 
 # find files that do not corresponding .ct or .seq paired file
 directory_path = archive_path  # Replace with your directory path
 unpaired_files = find_files_without_pairs(directory_path)
 
-print("Files without corresponding pairs:")
-for file in unpaired_files:
-    ic(file)
+# print("Files without corresponding pairs:")
+# for file in unpaired_files:
+#     ic(file)
 
-
-# move .seq files without .ct to 'noctfiles' folder
+# create 'noctfiles' folder and move .seq files without .ct to it 
 source_directory = archive_path  # Replace with the path to your source directory
 destination_directory = archive_path  # Replace with the path to your destination directory
 new_folder_name = 'noctfiles'  # Replace with your desired new folder name
 selected_files = unpaired_files  # Replace with the list of files you want to move
 
 create_directory_and_move_selected_files(source_directory, destination_directory, new_folder_name, selected_files)
+
+# get .seq and .ct files after clearing redundant files
+
+seq_list = get_filenames(archive_path, ".seq")
+ct_list = get_filenames(archive_path, ".ct")
+
+# for z in zip(seq_list[0:1300],ct_list[0:1300]):
+#     ic(z)
+
+ic(len(seq_list))
+ic(len(ct_list))
+
+# select sequences of length less then some value
+
+def get_seq_of_len(seq_list, seq_len, ct_list):
+    seq_len_list = []
+    ct_len_list = []
+    seq_len_files = []
+    ct_len_files = []
+
+    for (seq,ct) in zip(seq_list, ct_list):
+        # filename_seq = os.path.join(archive_path, '5s_Acanthamoeba-castellanii-1.seq')
+        seq_data = parse_seq_file(seq)
+        ct_data = parse_ct_file(ct)        
+
+        if len(seq_data['sequence']) <= seq_len:
+            seq_len_files.append(seq)
+            ct_len_files.append(ct)
+            seq_len_list.append(seq_data)
+            ct_len_list.append(ct_data)
+            # ic(seq)
+            # ic(f"Identifier: {seq_data['identifier']}")
+            # ic(f"Sequence: {seq_data['sequence']}")
+
+    # ic(seq_len_list)
+    # ic(ct_len_list)
+
+    return seq_len_files,ct_len_files
+
+seq_len = 60
+seq_len_files,ct_len_files = get_seq_of_len(seq_list,seq_len,ct_list)
+seq_len_dir = f'RNA_seq_{seq_len}'
+ct_len_dir = f'RNA_ct_{seq_len}'
+
+create_directory_and_copy_selected_files(source_directory, destination_directory, seq_len_dir, seq_len_files)
+create_directory_and_copy_selected_files(source_directory, destination_directory, ct_len_dir, ct_len_files)
+
+# seq_data = parse_seq_file(seq)
+# ct_data = parse_ct_file(ct)
+
+# filename_ct = os.path.join(archive_path, '5s_Acanthamoeba-castellanii-1.ct')
+# print(filename_ct)
+
+# # Example usage
+# nucleotide_data = parse_ct_file(filename_ct)
+
+# # Print parsed data
+# for nucleotide in nucleotide_data:
+#     print(nucleotide)
+
+
+# # Example usage
+# filename_seq = os.path.join(archive_path, '5s_Acanthamoeba-castellanii-1.seq')
+# seq_data = parse_seq_file(filename_seq)
+
+# # Print parsed data
+# print(f"Identifier: {seq_data['identifier']}")
+# print(f"Sequence: {seq_data['sequence']}")
