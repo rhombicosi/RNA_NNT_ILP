@@ -1,13 +1,18 @@
 import re
 from binary_variables_grb import *
+from constants_paths import *
 
-filepath = f'{chain_f}-decomposition-grb.sol'
-ref_brackets = '(((((.....(((.....(((....))).....)))..)))))....'
+lp_file_name = seq_data["identifier"].split(" ")[0]
+filepath = f'{sol_folder_name}/{lp_file_name}-decomposition-grb.sol'
+
+ic(lp_file_name)
+
+# archive referece
+ref_brackets = '..............................((((....(((....)))....))))'
+
+# rnastructure reference
 
 #'...((((.((.((((((.....((.......)).....)))))))).)))).'
-  
-
-
 
 def pairs2brackets(filepath, RNA):
     lngth = len(RNA)

@@ -1,6 +1,7 @@
 import os
 from icecream import ic
-from archive_prepro_parse import *
+from prepro_utils import *
+from constants_paths import *
 
 # path to archive ii .ct and .seq files 
 # t = archive_path
@@ -8,8 +9,6 @@ from archive_prepro_parse import *
 # ct_len_dir = f'RNA_ct_{seq_len}'
 # sequences = get_filenames(archive_path, ".seq")
 # ct_list = get_filenames(archive_path, ".ct")
-
-
 
 # sequence path os.path.join(dest_dir, new_folder_name)
 chain_dir = os.path.join(archive_path, seq_len_dir)
@@ -30,8 +29,6 @@ sizeRNA = len(RNA)
 ic(chain_f,RNA)
 ic(sizeRNA)
 
-
-
 with open( chain_path, 'r') as file:
 
     RNA = seq_data['sequence']
@@ -42,7 +39,6 @@ with open( chain_path, 'r') as file:
 
 # MFE parameter //  reference structure energy by RNAEval
 MFE = -970
-
 
 # distance parameters
 minD = 3 # min allowed distance between paired nts, also min hairpin loop size
