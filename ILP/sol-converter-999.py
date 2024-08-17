@@ -1,20 +1,27 @@
 import re
 from binary_variables_grb import *
 from constants_paths import *
+from prepro_run import *
+from prepro_utils import *
 
-lp_file_name = seq_data["identifier"].split(" ")[0]
-filepath = f'{sol_folder_name}/{lp_file_name}-decomposition-grb.sol'
+lp_file_name = prepro_run.chain_name_without_ext
+# seq_data["identifier"].split(" ")[0]
+# filepath = f'{sol_dir}/{lp_file_name}-loopdeco.sol'
 
-ic(lp_file_name)
+filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
+
+ic(filepath)
 
 # archive referece
-ref_brackets = '..............................((((....(((....)))....))))'
+ref_bracket_path = f'{dot_bracket_archive_dir}/{lp_file_name + ".txt"}'
+ref_brackets = dot_from_txt(ref_bracket_path)
+
 
 # rnastructure reference
 
 #'...((((.((.((((((.....((.......)).....)))))))).)))).'
 
-def pairs2brackets(filepath, RNA):
+def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)
     print(lngth)
 

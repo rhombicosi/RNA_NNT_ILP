@@ -65,12 +65,18 @@ ct_rnastruct_files = get_filenames(ct_rnastruct_dir, '.ct')
 # obtain dot-bracket notations for all rnastructure .ct references
 ct2dot(ct_rnastruct_files, 0, len(ct_rnastruct_files), dot_bracket_rnastructure_dir)
 
-#TODO: .ct and dot-bracket for RNAstructure secondary structures
+#TODO: calculate energies for loop-decomposition
 
-# result = subprocess.run(['ct2dot', "C:/Users/Okrlk/!maths/!RNA/model/ARCHIVE II/RNA_seq_60/srp_Bdel.bact._BX842656_RNAStructure.ct",'1',"C:/Users/Okrlk/!maths/!RNA/model/ARCHIVE II/RNA_seq_60/srp_Bdel.bact._BX842656_RNAStructure_cmd.txt"], capture_output=True, text=True)
+# path to sequence from archive ii os.path.join(dest_dir, new_folder_name)
+chain_dir = os.path.join(archive_path, seq_len_dir)
+seq_files = get_filenames(chain_dir, '.seq')
 
+ic(seq_files[seq_number])
+ic(len(seq_files))
 
-
+chain_file = seq_files[seq_number]
+chain_name_with_ext = os.path.basename(chain_file)
+chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
 
 
 

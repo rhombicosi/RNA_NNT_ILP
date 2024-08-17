@@ -30,10 +30,11 @@ try:
 
     mip.update()
     
-    lp_file_name = seq_data["identifier"].split(" ")[0]
+    # lp_file_name = seq_data["identifier"].split(" ")[0]
+    lp_file_name = prepro_run.chain_name_without_ext
 
     start_time = time.time()
-    mip.write(f'{prepro_run.lp_dir}/{lp_file_name}-decomposition-grb.lp')
+    mip.write(f'{prepro_run.lp_dir}/{lp_file_name}-loopdeco.lp')
     print(f"--- {time.time() - start_time} seconds ---")
 
     # uncomment optimization tuning params if needed
@@ -44,7 +45,7 @@ try:
 
     mip.optimize()
 
-    mip.write(f'{prepro_run.sol_dir}/{lp_file_name}-decomposition-grb.sol')
+    mip.write(f'{prepro_run.sol_dir}/{lp_file_name}-loopdeco.sol')
 
     print(f'Obj: {mip.ObjVal:g}')
 

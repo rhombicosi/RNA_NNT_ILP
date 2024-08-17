@@ -24,3 +24,6 @@ dot_bracket_folder_name = f'dot_bracket_{seq_len}'
 dot_bracket_archive_folder_name = f'dot_bracket_archive_{seq_len}'
 rnastructure_folder_name = f'RNAstructure_fold_{seq_len}'
 dot_bracket_rnastructure_folder_name = f'dot_bracket_RNAstructure_{seq_len}'
+
+# index of the sequence from archive ii currently under test
+seq_number = 1

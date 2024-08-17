@@ -182,9 +182,24 @@ def ct2dot(ct_files, first_file, last_file, dot_bracket_dir):
 def rnastruct_fold(seq_files, first_file, last_file, fold_dir):
     for seq_number in range(first_file, last_file):
         seq = seq_files[seq_number]
-        print(seq)
         seq_name_with_ext = os.path.basename(seq)
         seq_name_without_ext = os.path.splitext(seq_name_with_ext)[0]
 
         result = subprocess.run(['fold', seq, f'{fold_dir}/{seq_name_without_ext + ".ct"}'], capture_output=True, text=True)
         print(result.stdout)
+
+
+def dot_from_txt(f_txt):
+    # Open the file in read mode 'your_file.txt'
+    with open(f_txt, 'r') as file:
+        # Read all lines into a list
+        lines = file.readlines()
+        
+        # Check if the file has at least three lines
+        if len(lines) >= 3:
+            # Access the third line (index 2 because indexing starts from 0)
+            third_line = str(lines[2]).strip()
+            return(third_line)
+        else:
+            pass
+            # print("The file does not have three lines.")
