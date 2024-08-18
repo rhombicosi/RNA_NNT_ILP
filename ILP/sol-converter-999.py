@@ -16,10 +16,9 @@ ic(filepath)
 ref_bracket_path = f'{dot_bracket_archive_dir}/{lp_file_name + ".txt"}'
 ref_brackets = dot_from_txt(ref_bracket_path)
 
-
 # rnastructure reference
-
-#'...((((.((.((((((.....((.......)).....)))))))).)))).'
+rnastruct_bracket_path = f'{dot_bracket_rnastructure_dir}/{lp_file_name + ".txt"}'
+rnastruct_brackets = dot_from_txt(rnastruct_bracket_path)
 
 def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)

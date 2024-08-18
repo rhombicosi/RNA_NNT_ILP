@@ -3,38 +3,22 @@ from prepro_utils import *
 from constants_paths import *
 import prepro_run
 
-# path to archive ii .ct and .seq files 
-# t = archive_path
-# seq_len_dir = f'RNA_seq_{seq_len}'
-# ct_len_dir = f'RNA_ct_{seq_len}'
-# sequences = get_filenames(archive_path, ".seq")
-# ct_list = get_filenames(archive_path, ".ct")
-
-# path to sequence from archive ii os.path.join(dest_dir, new_folder_name)
-# chain_dir = os.path.join(archive_path, seq_len_dir)
-# seq_files = get_filenames(chain_dir, '.seq')
-
-# seq_number = 1
-# ic(seq_files[seq_number])
-# ic(len(seq_files))
-
-# chain_file = seq_files[seq_number]
-chain_f = f'seq-{prepro_run.seq_number}' #os.path.basename(chain_path)
+# chain_f = f'seq-{prepro_run.seq_number}' 
 
 # with open(chain_path, 'r') as file:
 seq_data = parse_seq_file(prepro_run.chain_file)
 RNA = seq_data['sequence']
 # RNA = file.read().rstrip() 
 sizeRNA = len(RNA)
-ic(chain_f,RNA)
+# ic(chain_f,RNA)
 ic(sizeRNA)
 
 with open( prepro_run.chain_file, 'r') as file:
 
     RNA = seq_data['sequence']
     sizeRNA = len(RNA)
-    ic(chain_f,RNA)
-    ic(sizeRNA)
+    # ic(chain_f,RNA)
+    # ic(sizeRNA)
 
 
 # MFE parameter //  reference structure energy by RNAEval

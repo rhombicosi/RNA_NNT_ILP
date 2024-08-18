@@ -113,7 +113,7 @@ def create_directory_and_move_selected_files(src_dir, dest_dir, new_folder_name,
         else:
             ic(f"File not found: {filename}")
     
-    ic(f"Selected files have been moved to {new_folder_path}")
+    # ic(f"Selected files have been moved to {new_folder_path}")
 
 def create_directory_and_copy_selected_files(src_dir, dest_dir, new_folder_name, selected_files):
     # Create the new directory
@@ -132,7 +132,7 @@ def create_directory_and_copy_selected_files(src_dir, dest_dir, new_folder_name,
         else:
             print(f"File not found: {filename}")
     
-    print(f"Selected files have been copied to {new_folder_path}")
+    # print(f"Selected files have been copied to {new_folder_path}")
 
 # select sequences of a specific length less then some value
 def get_seq_of_len(seq_list, seq_len, ct_list):
