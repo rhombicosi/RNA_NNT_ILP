@@ -1,4 +1,4 @@
-# Solution for model MIP
+# Solution for model MIP-1
 # Objective value = -743
 P(1,6) 0
 P(1,8) 0

@@ -2,7 +2,7 @@ from binary_variables_grb import *
 
 ############## BASE PAIRS :: SET OF CONSTRAINTS #############
 
-def onePairConstraints(RNA): 
+def onePairConstraints(RNA, mip): 
     for i in range(1,len(RNA)+1):
         inequality = gp.LinExpr(0)
 
@@ -26,7 +26,7 @@ def onePairConstraints(RNA):
 
     return inequality
 
-def noCrossConstraints(RNA):  
+def noCrossConstraints(RNA, mip):  
 
     for h in range(1, len(RNA) - 2):
         for i in range(h+1, len(RNA) - 1):
@@ -42,14 +42,14 @@ def noCrossConstraints(RNA):
 
 # ############## STEM LOOP :: SET OF CONSTRAINTS #############
 
-def stemConstraints(RNA):    
+def stemConstraints(RNA, mip):    
 
     for i in range (1, len(RNA)): 
         for j in range(i + minD + 1,  len(RNA)+1): 
             ip1 = i + 1
             jm1 = j - 1
-            if legal(i,j):
-                if legal(ip1,jm1) and ip1 < jm1:                     
+            if legal(RNA,i,j):
+                if legal(RNA,ip1,jm1) and ip1 < jm1:                     
                     inequality = gp.LinExpr([2,-1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'P({ip1},{jm1})')])
                     mip.addConstr(inequality <= 0, f'CS0{i}-{j}')
                     # create the inequalities to enforce the converse, although it is
@@ -69,14 +69,14 @@ def stemConstraints(RNA):
 
     return inequality
 
-def firstPairConstraints(RNA):
+def firstPairConstraints(RNA, mip):
 
     for i in range (1, len(RNA)): 
         for j in range(i + minD + 1, len(RNA) + 1):            
-            if legal(i,j):
-                if legal(i+1,j-1):
+            if legal(RNA,i,j):
+                if legal(RNA,i+1,j-1):
                     if i > 1 and j < len(RNA):            
-                        if legal(i-1,j+1):
+                        if legal(RNA,i-1,j+1):
                             inequality = gp.LinExpr([1,-1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'Q({i-1},{j+1})'),mip.getVarByName(f'F({i},{j})')])
                             mip.addConstr(inequality <= 0, f'CF0-{i}-{j}')
                             inequality = gp.LinExpr([2,-1,1],[mip.getVarByName(f'F({i},{j})'),mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'Q({i-1},{j+1})')])
@@ -92,13 +92,13 @@ def firstPairConstraints(RNA):
 
     return inequality
 
-def lastPairConstraints(RNA):
+def lastPairConstraints(RNA, mip):
 
     for i in range (1, len(RNA)): 
         for j in range(i + minD + 1, len(RNA) + 1):            
-            if legal(i,j):
-                if legal(i+1,j-1): 
-                    if legal(i+2,j-2):
+            if legal(RNA,i,j):
+                if legal(RNA,i+1,j-1): 
+                    if legal(RNA,i+2,j-2):
                         if i > 1 and j < len(RNA):                   
                             # print(f'{i+1},{j-1} :: {mip.getVarByName(f"Q({i+1},{j-1})")}')
                             inequality = gp.LinExpr([1,-1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'Q({i+1},{j-1})'),mip.getVarByName(f'L({i},{j})')])   
@@ -117,7 +117,7 @@ def lastPairConstraints(RNA):
 
 # ########### HAIRPIN LOOP :: SET OF CONSTRAINTS #############
 
-def hairpinNTConstraints(RNA):
+def hairpinNTConstraints(RNA, mip):
 
     for i in range(1,len(RNA)):
         inequality = gp.LinExpr(0)
@@ -144,7 +144,7 @@ def hairpinNTConstraints(RNA):
 
     return inequality
 
-def hairpinIfThenConstraints(RNA):
+def hairpinIfThenConstraints(RNA, mip):
     
     for i in range(1,len(RNA) - minD):
         for j in range(i + minD + 1, min(i + maxH + 1, len(RNA))):
@@ -159,7 +159,7 @@ def hairpinIfThenConstraints(RNA):
 
     return inequality
 
-def hairpinOnlyIfConstraints(RNA):
+def hairpinOnlyIfConstraints(RNA, mip):
     
     for i in range(1,len(RNA) - minD - 1):
         for j in range(i + minD + 1, min(i + maxH + 1, len(RNA) + 1)):
@@ -171,11 +171,11 @@ def hairpinOnlyIfConstraints(RNA):
                     set1 = set({})
                     
                     for v in range(1,u):
-                        if legal(v,u):
+                        if legal(RNA,v,u):
                             set1.add(f'P({v},{u})')                   
 
                     for v in range(u+1,len(RNA)+1):
-                        if legal(u,v):
+                        if legal(RNA,u,v):
                             set1.add(f'P({u},{v})')
 
                     for s in set1:
@@ -186,7 +186,7 @@ def hairpinOnlyIfConstraints(RNA):
 
     return inequality
 
-def numHairpinConstraints(RNA, numH):
+def numHairpinConstraints(RNA, numH, mip):
     
     inequality = gp.LinExpr(0)
     for i in range(1,len(RNA) - minD - 1):
@@ -203,7 +203,7 @@ def numHairpinConstraints(RNA, numH):
 # ############# INTERNAL LOOP :: SET OF CONSTRAINTS ############
 
 # unpaired nucleotides constraints
-def internalNTConstraints(RNA):
+def internalNTConstraints(RNA, mip):
 
     for i in range(1,len(RNA)):
 
@@ -235,7 +235,7 @@ def internalNTConstraints(RNA):
 
 # if n1 nucleotides and n2 nucleotides are unpaired between two base pairs 
 # then internal loop is formed between these pairs
-def internalIfThenConstraints(RNA):
+def internalIfThenConstraints(RNA, mip):
 
     for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
         for k in range(i + minI + 1, min(i + maxI + 1, len(RNA) - minI - 1 - minD - 1)):
@@ -257,7 +257,7 @@ def internalIfThenConstraints(RNA):
 
     return inequality
 
-def internalOnlyIfConstraints(RNA):
+def internalOnlyIfConstraints(RNA, mip):
     # inequality = ''
     
     for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
@@ -274,11 +274,11 @@ def internalOnlyIfConstraints(RNA):
                             set1 = set({})
 
                             for v in range(1,u):
-                                if legal(v,u):
+                                if legal(RNA,v,u):
                                     set1.add(f'P({v},{u})')                   
 
                             for v in range(u+1,len(RNA)+1):
-                                if legal(u,v):
+                                if legal(RNA,u,v):
                                     set1.add(f'P({u},{v})')
 
                             for s in set1:
@@ -298,11 +298,11 @@ def internalOnlyIfConstraints(RNA):
 
                             for v in range(1,len(RNA)+1):
                                 for v in range(1,u):
-                                    if legal(v,u):
+                                    if legal(RNA,v,u):
                                         set1.add(f'P({v},{u})')                   
 
                             for v in range(u+1,len(RNA)+1):
-                                if legal(u,v):
+                                if legal(RNA,u,v):
                                     set1.add(f'P({u},{v})')
 
                             for s in set1:
@@ -315,7 +315,7 @@ def internalOnlyIfConstraints(RNA):
     
     return inequality
 
-def numInternalConstraints(RNA, numI):
+def numInternalConstraints(RNA, numI, mip):
     inequality = gp.LinExpr(0)
     
     for i in range(1, len(RNA) - minI - 1 - minD - 1 - minI - 1):
@@ -334,7 +334,7 @@ def numInternalConstraints(RNA, numI):
 # unpaired nucleotides constraints
 # TODO: repeats X and Y 
 # should be joined into one function for all three variables
-def bulgeNTConstraints(RNA): 
+def bulgeNTConstraints(RNA, mip): 
 
     for i in range(1,len(RNA)):
 
@@ -367,7 +367,7 @@ def bulgeNTConstraints(RNA):
 # if base pairs are formed by i and j, l and k nucleotides
 # and all nucleotides are unpaired between l and j
 # then bulge loop is formed 
-def bulgeIfThenConstraints(RNA):
+def bulgeIfThenConstraints(RNA, mip):
 
     for i in range(1, len(RNA) - 1):
         for k in range(1, len(RNA) - 1):
@@ -397,7 +397,7 @@ def bulgeIfThenConstraints(RNA):
     
     return inequality
 
-def bulgeOnlyIfConstraints(RNA):
+def bulgeOnlyIfConstraints(RNA, mip):
 
     for i in range(1, len(RNA) - 1):
         for k in range(1, len(RNA) - 1):
@@ -413,11 +413,11 @@ def bulgeOnlyIfConstraints(RNA):
                                 set1 = set({})
 
                                 for v in range(1,u):
-                                    if legal(v,u):
+                                    if legal(RNA,v,u):
                                         set1.add(f'P({v},{u})')                   
 
                                 for v in range(u+1,len(RNA)+1):
-                                    if legal(u,v):
+                                    if legal(RNA,u,v):
                                         set1.add(f'P({u},{v})')
 
                                 for s in set1:
@@ -438,11 +438,11 @@ def bulgeOnlyIfConstraints(RNA):
                                 set1 = set({})
 
                                 for v in range(1,u):
-                                    if legal(v,u):
+                                    if legal(RNA,v,u):
                                         set1.add(f'P({v},{u})')                   
 
                                 for v in range(u+1,len(RNA)+1):
-                                    if legal(u,v):
+                                    if legal(RNA,u,v):
                                         set1.add(f'P({u},{v})')
 
                                 for s in set1:
@@ -453,7 +453,7 @@ def bulgeOnlyIfConstraints(RNA):
     
     return inequality
 
-def numBulgeConstraints(RNA, numB):
+def numBulgeConstraints(RNA, numB, mip):
     inequality = gp.LinExpr(0)
 
     for i in range(1, len(RNA) - 1):

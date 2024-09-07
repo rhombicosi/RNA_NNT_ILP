@@ -19,18 +19,18 @@ ic = hc
 init = 1
 M = 10000
 
-def G_stem(i,j):
+def G_stem(RNA,i,j):
     G = wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[i] + RNA[j-2]]
     return round(G)
 
-def G_F(i,j):
+def G_F(RNA,i,j):
     if RNA[i-1] + RNA[j-1] == 'AU' or RNA[i-1] + RNA[j-1] == 'UA' or RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'UG':        
         G = wcf_initiation*init + wcf_AU_end_penalty
     else: 
         G = wcf_initiation*init
     return round(G)
 
-def G_L(i,j):
+def G_L(RNA,i,j):
     if RNA[i] + RNA[j-2] == 'AU' or RNA[i] + RNA[j-2] == 'UA' or RNA[i] + RNA[j-2] == 'GU' or RNA[i] + RNA[j-2] == 'UG':
         G = wcf_AU_end_penalty
     else:
@@ -40,7 +40,7 @@ def G_L(i,j):
 
     return round(G)
 
-def G_hairpin(i,j):
+def G_hairpin(RNA,i,j):
 
     # G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
     # G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
@@ -66,7 +66,7 @@ def int11(i,k,l,j):
     if k-i-1 == 1 and j-l-1 == 1:
         return True
 
-def G_internal_11(i,k,l,j):
+def G_internal_11(RNA,i,k,l,j):
     # print(f'{RNA[i-1] + RNA[j-1]},{RNA[i]}::{RNA[k-1] + RNA[l-1]},{RNA[l]}')
     return int11_df.loc[RNA[i-1] + RNA[j-1], RNA[i]][RNA[k-1] + RNA[l-1],RNA[l]]
 
@@ -74,14 +74,14 @@ def int12(i,k,l,j):
     if k-i-1==1 and j-l==3:
         return True
 
-def G_internal_12(i,k,l,j):
+def G_internal_12(RNA,i,k,l,j):
     return int12_df.loc[RNA[i-1] + RNA[j-1], RNA[i]][RNA[l],RNA[k-1] + RNA[l-1],RNA[l+1]]
 
 def int22(i,k,l,j):
     if k-i==3 and j-l==3:
         return True
     
-def G_internal_22(i,k,l,j):
+def G_internal_22(RNA,i,k,l,j):
     return int22_df.loc[RNA[i-1] + RNA[j-1],RNA[i]+RNA[l+1]][RNA[k-1] + RNA[l-1],RNA[i+1]+RNA[l]]
 
 def int1n(i,k,l,j):
@@ -92,14 +92,14 @@ def int23(i,k,l,j):
     if k-i==3 and j-l==4:
         return True
     
-def penalty2(i,k,l,j):
+def penalty2(RNA,i,k,l,j):
     return (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' and RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU')
 
-def penalty1(i,k,l,j):
+def penalty1(RNA,i,k,l,j):
     return (RNA[i-1] + RNA[j-1] == 'GU' or RNA[i-1] + RNA[j-1] == 'AU' or RNA[k-1] + RNA[l-1] == 'GU' or RNA[k-1] + RNA[l-1] == 'AU')
 
 
-def G_internal(i,k,l,j):
+def G_internal(RNA,i,k,l,j):
 
     if k-i-1+j-l-1 <= noI:
         common_term = initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1))
@@ -108,21 +108,21 @@ def G_internal(i,k,l,j):
 
     if int11(i,k,l,j):
         # print("1x1")
-        G = G_internal_11(i,k,l,j)
+        G = G_internal_11(RNA,i,k,l,j)
         return round(G)
     elif int12(i,k,l,j):
         # print("1x2")
-        G = G_internal_12(i,k,l,j)
+        G = G_internal_12(RNA,i,k,l,j)
         return round(G)
     elif int22(i,k,l,j):
         # print("2x2")
-        G = G_internal_22(i,k,l,j)
+        G = G_internal_22(RNA,i,k,l,j)
         return round(G)  
     elif int23(i,k,l,j):        
-        if penalty2(i,k,l,j):
+        if penalty2(RNA,i,k,l,j):
             G = common_term + int23_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + int23_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + 2*AU_end_penalty
             return round(G) 
-        elif penalty1(i,k,l,j):
+        elif penalty1(RNA,i,k,l,j):
             G = common_term + int23_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + int23_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + AU_end_penalty
             return round(G) 
         else:
@@ -130,10 +130,10 @@ def G_internal(i,k,l,j):
             return round(G)   
     elif int1n(i,k,l,j):
         # print("1xn")
-        if penalty2(i,k,l,j):
+        if penalty2(RNA,i,k,l,j):
             G = common_term + 2*AU_end_penalty
             return round(G) 
-        elif penalty1(i,k,l,j):
+        elif penalty1(RNA,i,k,l,j):
             G = common_term + AU_end_penalty         
             return round(G) 
         else:
@@ -141,17 +141,17 @@ def G_internal(i,k,l,j):
             return round(G)
     else:
         # print("n1xn2")
-        if penalty2(i,k,l,j):
+        if penalty2(RNA,i,k,l,j):
             G = common_term + intnn_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + intnn_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + 2*AU_end_penalty
             return round(G) 
-        elif penalty1(i,k,l,j):
+        elif penalty1(RNA,i,k,l,j):
             G = common_term + intnn_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + intnn_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + AU_end_penalty
             return round(G) 
         else:
             G = common_term + intnn_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + intnn_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]]
             return round(G)
 
-def G_bulge(i,k,l,j):
+def G_bulge(RNA,i,k,l,j):
 
     if k-i-1+j-l-1 <= noB:
 

@@ -185,7 +185,21 @@ def rnastruct_fold(seq_files, first_file, last_file, fold_dir):
         seq_name_with_ext = os.path.basename(seq)
         seq_name_without_ext = os.path.splitext(seq_name_with_ext)[0]
 
-        result = subprocess.run(['fold', seq, f'{fold_dir}/{seq_name_without_ext + ".ct"}'], capture_output=True, text=True)
+        ct = os.path.join(fold_dir,f'{seq_name_without_ext + ".ct"}')
+
+        result = subprocess.run(['fold', seq, ct], capture_output=True, text=True)
+        print(result.stdout)
+
+# calculate energy based on .ct file data
+def rnastruct_efn2(ct_files, first_file, last_file, efn2_dir):
+    for ct_number in range(first_file, last_file):
+        ct = ct_files[ct_number]
+        ct_name_with_ext = os.path.basename(ct)
+        ct_name_without_ext = os.path.splitext(ct_name_with_ext)[0]
+
+        efn2 = os.path.join(efn2_dir,f'{ct_name_without_ext + ".txt"}')
+
+        result = subprocess.run(['efn2', ct, efn2], capture_output=True, text=True)
         print(result.stdout)
 
 
@@ -203,3 +217,29 @@ def dot_from_txt(f_txt):
         else:
             pass
             # print("The file does not have three lines.")
+
+def get_energy_from_ct_file(file_path):
+    with open(file_path, 'r') as file:
+        first_line = file.readline().strip()
+        # Check if "ENERGY" is in the first line and extract the value
+        if "ENERGY" or "Energy" in first_line:
+            # Split the line by spaces and get the ENERGY value
+            parts = first_line.split()
+            for i, part in enumerate(parts):
+                if part == "ENERGY" or part == "Energy":
+                    # The value should be the next part after "ENERGY ="
+                    energy_value = float(parts[i + 2])
+                    return energy_value
+        else:
+            print("ENERGY value not found in the first line.")
+            return None
+        
+def write_energy_results(energy_dir, f_type, results, energy_type):
+    files = get_filenames(energy_dir, f_type)
+
+    for seq_number in range(0, len(files)):
+        MFE = get_energy_from_ct_file(files[seq_number])
+        row_name = os.path.basename(files[seq_number])
+        results[row_name, energy_type] = MFE
+
+    return results

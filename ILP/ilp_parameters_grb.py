@@ -1,22 +1,22 @@
 from icecream import ic
+from prepro_run import *
 from prepro_utils import *
 from constants_paths import *
-import prepro_run
 
 # chain_f = f'seq-{prepro_run.seq_number}' 
 
 # with open(chain_path, 'r') as file:
-seq_data = parse_seq_file(prepro_run.chain_file)
+seq_data = parse_seq_file(chain_file)
 RNA = seq_data['sequence']
 # RNA = file.read().rstrip() 
 sizeRNA = len(RNA)
 # ic(chain_f,RNA)
 ic(sizeRNA)
 
-with open( prepro_run.chain_file, 'r') as file:
+# with open(chain_file, 'r') as file:
 
-    RNA = seq_data['sequence']
-    sizeRNA = len(RNA)
+#     RNA = seq_data['sequence']
+#     sizeRNA = len(RNA)
     # ic(chain_f,RNA)
     # ic(sizeRNA)
 

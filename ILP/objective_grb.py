@@ -10,9 +10,9 @@ def stemParams(RNA):
 
     for i in range(1, len(RNA)):  
         for j in range(i + minD + 1, len(RNA) + 1):
-            if legal(i,j):
-                if legal(i + 1, j - 1):
-                    g[f'Q{i}',f'Q{j}'] = G_stem(i,j)
+            if legal(RNA,i,j):
+                if legal(RNA,i + 1, j - 1):
+                    g[f'Q{i}',f'Q{j}'] = G_stem(RNA,i,j)
                     
     return g
 
@@ -21,9 +21,9 @@ def fParams(RNA):
 
     for i in range(1, len(RNA)):  
         for j in range(i + minD + 1, len(RNA) + 1): 
-            if legal(i,j):
-                if legal(i+1,j-1) and i+1 < j-1:
-                    g[f'F{i}',f'F{j}'] = G_F(i,j)
+            if legal(RNA,i,j):
+                if legal(RNA,i+1,j-1) and i+1 < j-1:
+                    g[f'F{i}',f'F{j}'] = G_F(RNA,i,j)
 
     return g
 
@@ -32,10 +32,10 @@ def lParams(RNA):
 
     for i in range(1, len(RNA)):  
         for j in range(i + minD + 1, len(RNA) + 1): 
-            if legal(i,j):
-                if legal(i+1,j-1) and i+1 < j-1:
+            if legal(RNA,i,j):
+                if legal(RNA,i+1,j-1) and i+1 < j-1:
                     if j < len(RNA):
-                        g[f'L{i}',f'L{j}'] = G_L(i,j)
+                        g[f'L{i}',f'L{j}'] = G_L(RNA,i,j)
 
     return g 
 
@@ -45,7 +45,7 @@ def hairpinParams(RNA):
     for i in range(1,len(RNA) - minD - 1):
         for j in range(i + minD + 1, min(i + maxH + 1, len(RNA) + 1)):
             if RNA[i-1] + RNA[j-1] in cbp_list:  
-                g[f'H{i}',f'H{j}'] = G_hairpin(i,j)
+                g[f'H{i}',f'H{j}'] = G_hairpin(RNA,i,j)
     
     return g
 
@@ -58,7 +58,7 @@ def internalParams(RNA):
                 for j in range(l + minI + 1, min(l + maxI + 1, len(RNA) + 1)):
                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
 
-                       g[f'I{i}',f'I{k}',f'I{l}',f'I{j}'] = G_internal(i,k,l,j)
+                       g[f'I{i}',f'I{k}',f'I{l}',f'I{j}'] = G_internal(RNA,i,k,l,j)
 
     return g
 
@@ -71,13 +71,13 @@ def bulgeParams(RNA):
                 for l in range(k + minD+1, len(RNA) - 2):
                     for j in range(l + 2, min(l + maxB, len(RNA) - 1)):
                         if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
-                            g[f'B{i}',f'B{k}',f'B{l}',f'B{j}'] = G_bulge(i,k,l,j)
+                            g[f'B{i}',f'B{k}',f'B{l}',f'B{j}'] = G_bulge(RNA,i,k,l,j)
 
             elif k == i-1:
                 for l in range(k-minD-1,4,-1):
                     for j in range(l - 2, max(l - maxB, 1), -1):
                         if RNA[j-1] + RNA[i-1] in cbp_list and RNA[l-1] + RNA[k-1] in cbp_list:
-                            g[f'B{j}',f'B{l}',f'B{k}',f'B{i}'] = G_bulge(j,l,k,i)
+                            g[f'B{j}',f'B{l}',f'B{k}',f'B{i}'] = G_bulge(RNA,j,l,k,i)
     
     return g
 
@@ -93,27 +93,27 @@ def pretty(d, indent=0):
 # pretty(internalParams(RNA))
 # pretty(bulgeParams(RNA))
 
-def stemTerm(RNA):
+def stemTerm(RNA, listQ):
     objective = gp.LinExpr(list(stemParams(RNA).values()), list(listQ.values())) 
     return objective
 
-def fTerm(RNA):
+def fTerm(RNA, listF):
     objective = gp.LinExpr(list(fParams(RNA).values()), list(listF.values()))
     return objective
 
-def lTerm(RNA):
+def lTerm(RNA, listL):
     objective = gp.LinExpr(list(lParams(RNA).values()), list(listL.values()))
     return objective
 
-def hairpinTerm(RNA):
+def hairpinTerm(RNA, listH):
     objective = gp.LinExpr(list(hairpinParams(RNA).values()), list(listH.values()))
     return objective
 
-def internalTerm(RNA):
+def internalTerm(RNA, listI):
     objective = gp.LinExpr(list(internalParams(RNA).values()), list(listI.values()))
     return objective
 
-def bulgeTerm(RNA):
+def bulgeTerm(RNA, listB):
     objective = gp.LinExpr(list(bulgeParams(RNA).values()), list(listB.values()))    
     return objective
 
@@ -124,11 +124,11 @@ def bulgeTerm(RNA):
 # print(internalTerm(RNA))
 # print(bulgeTerm(RNA))
 
-def objectiveTerm(RNA):
-    objective = stemTerm(RNA)
-    objective.add(hairpinTerm(RNA))
-    objective.add(internalTerm(RNA))
-    objective.add(bulgeTerm(RNA))
+def objectiveTerm(RNA, listQ, listH, listI, listB):
+    objective = stemTerm(RNA, listQ)
+    objective.add(hairpinTerm(RNA, listH))
+    objective.add(internalTerm(RNA, listI))
+    objective.add(bulgeTerm(RNA, listB))
     # objective = stemTerm(RNA) + hairpinTerm(RNA) + internalTerm(RNA) + bulgeTerm(RNA) #+ fTerm(RNA) + lTerm(RNA)
 
     return objective
