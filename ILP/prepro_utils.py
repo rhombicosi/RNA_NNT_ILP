@@ -233,13 +233,3 @@ def get_energy_from_ct_file(file_path):
         else:
             print("ENERGY value not found in the first line.")
             return None
-        
-def write_energy_results(energy_dir, f_type, results, energy_type):
-    files = get_filenames(energy_dir, f_type)
-
-    for seq_number in range(0, len(files)):
-        MFE = get_energy_from_ct_file(files[seq_number])
-        row_name = os.path.basename(files[seq_number])
-        results[row_name, energy_type] = MFE
-
-    return results

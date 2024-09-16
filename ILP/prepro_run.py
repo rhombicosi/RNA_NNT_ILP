@@ -81,12 +81,12 @@ if __name__ == "__main__":
 chain_dir = os.path.join(archive_path, seq_len_dir)
 seq_files = get_filenames(chain_dir, '.seq')
 
-ic(seq_files[seq_number])
-ic(len(seq_files))
+# ic(seq_files[seq_number])
+# ic(len(seq_files))
 
-chain_file = seq_files[seq_number]
-chain_name_with_ext = os.path.basename(chain_file)
-chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
+# chain_file = seq_files[seq_number]
+# chain_name_with_ext = os.path.basename(chain_file)
+# chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
 
 print(f' # of sequences of lengths <= {seq_len} :: {len(seq_files)}')
 
@@ -95,8 +95,8 @@ print(f' # of sequences of lengths <= {seq_len} :: {len(seq_files)}')
 # get all paths to efn2 .txt files 
 # efn2_archive_files = get_filenames(efn2_archive_dir, '.txt')
 
-# MFE_ref = get_energy_from_ct_file(efn2_archive_files[seq_number])
-# MFE_rna = get_energy_from_ct_file(ct_rnastruct_files[seq_number])
+# MFE_ref = get_energy_from_ct_file(efn2_archive_files[28])
+# MFE_rna = get_energy_from_ct_file(ct_rnastruct_files[28])
 
 # print(MFE_ref)
 # print(MFE_rna)

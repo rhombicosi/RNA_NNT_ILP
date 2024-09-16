@@ -4,8 +4,6 @@ from constants_paths import *
 from prepro_run import *
 from prepro_utils import *
 
-
-
 def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)
     print(lngth)
@@ -95,7 +93,6 @@ def compare2folds(generated, reference):
 
 def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir):
 
-
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
     chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
@@ -131,14 +128,14 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
     print(reference)
     print(rnastruct)
 
-    (f1_ref,f1beta_ref) = compare2folds(generated, reference)
-    (f1_rnastruct,f1beta_rnastruct) = compare2folds(generated, rnastruct)
+    (f1_ref,fbeta_ref) = compare2folds(generated, reference)
+    (f1_rnastruct,fbeta_rnastruct) = compare2folds(generated, rnastruct)
 
 
     print(f1_ref)
-    print(f1beta_ref)
+    print(fbeta_ref)
 
     print(f1_rnastruct)
-    print(f1beta_rnastruct)
+    print(fbeta_rnastruct)
 
-    return f1_ref, f1beta_ref, f1_rnastruct, f1beta_rnastruct
+    return f1_ref, fbeta_ref, f1_rnastruct, fbeta_rnastruct

@@ -6,8 +6,7 @@ import time
 from prepro_run import *
 
 
-def optimize(numH, numI, numB, seq_files, seq_number, lp_dir, sol_dir):
-
+def optimize(seq_files, seq_number, lp_dir, sol_dir):
     
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -16,16 +15,23 @@ def optimize(numH, numI, numB, seq_files, seq_number, lp_dir, sol_dir):
     seq_data = parse_seq_file(chain_file)
     this_RNA = seq_data['sequence']
 
+    print(chain_name_without_ext)
+    print(this_RNA)
+
     mip = gp.Model(f'MIP-{seq_number}')
+
+    # set the number of loops
+    numH = len(this_RNA)//5
+    numI = len(this_RNA)//4
+    numB = len(this_RNA)//3
 
     try:
         
         listP, listQ, listF, listL, listH, listI, listB, listX, listY, listZ = add_binary_vars(this_RNA, mip)
 
         mip.setObjective(objectiveTerm(this_RNA, listQ, listH, listI, listB), GRB.MINIMIZE)
-
         
-        # mip.addConstr(objectiveTerm(RNA) >= MFE,"CMFE")
+        # mip.addConstr(objectiveTerm(this_RNA, listQ, listH, listI, listB) >= MFE,"CMFE")
         # mip.addConstr(mip.getVarByName(f'B(14,15,28,30)') == 1)
         # mip.addConstr(mip.getVarByName(f'H(19,24)') == 1)
         onePairConstraints(this_RNA, mip)

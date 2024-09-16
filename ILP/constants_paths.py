@@ -9,7 +9,7 @@ arch_rel_path = '../../ARCHIVE II/'
 archive_path = (code_path/arch_rel_path).resolve()
 
 # length for sequences to be tested
-seq_len = 70
+seq_len = 60
 
 # folders to save .seq and .ct files with sequences of seq_len
 seq_len_dir = f'RNA_seq_{seq_len}'
@@ -28,7 +28,7 @@ dot_bracket_rnastructure_folder_name = f'dot_bracket_RNAstructure_{seq_len}'
 efn2_archive_folder_name = f'efn2_archive_{seq_len}'
 
 # index of the sequence from archive ii currently under test
-seq_number = 51
+# seq_number = 51
 
 # objective val
 obj_val = 0

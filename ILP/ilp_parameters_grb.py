@@ -6,12 +6,12 @@ from constants_paths import *
 # chain_f = f'seq-{prepro_run.seq_number}' 
 
 # with open(chain_path, 'r') as file:
-seq_data = parse_seq_file(chain_file)
-RNA = seq_data['sequence']
+# seq_data = parse_seq_file(chain_file)
+# RNA = seq_data['sequence']
 # RNA = file.read().rstrip() 
-sizeRNA = len(RNA)
+# sizeRNA = len(RNA)
 # ic(chain_f,RNA)
-ic(sizeRNA)
+# ic(sizeRNA)
 
 # with open(chain_file, 'r') as file:
 
@@ -22,12 +22,12 @@ ic(sizeRNA)
 
 
 # MFE parameter //  reference structure energy by RNAEval
-MFE = -970
+MFE = -1500
 
 # distance parameters
 minD = 3 # min allowed distance between paired nts, also min hairpin loop size
-maxH = 20 # max hairpin loop size
-noH = 22 # initiation params for hairpins bigger than noH are approximated
+maxH = 27 # max hairpin loop size
+noH = 27 # initiation params for hairpins bigger than noH are approximated
 minI = 1 # min internal loop unpaired region size
 maxI = 22 # max internal loop one side size
 noI = 22 # initiation params for internals bigger than noH are approximated
@@ -35,9 +35,9 @@ maxB = 20 # max bulge loop
 noB = 20
 
 # number of loops parameters
-numH = len(RNA)//5
-numI = len(RNA)//4
-numB = len(RNA)//3
+# numH = len(RNA)//5
+# numI = len(RNA)//4
+# numB = len(RNA)//3
 
 # print(numH)
 # print(numI)

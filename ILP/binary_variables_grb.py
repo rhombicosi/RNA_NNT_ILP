@@ -5,9 +5,6 @@ from ilp_parameters_grb import *
 # canonical base pairs
 cbp_list = ['AU','UA','CG','GC','GU','UG']
 
-
-
-
 def legal(RNA, i,j):
     if j - i > minD:
         if RNA[i-1] + RNA[j-1] in cbp_list:
