@@ -36,17 +36,17 @@ obj_val = 0
 # store generated .lp files
 lp_files = []
 
-# list to store objective values
-MFE_gen = []
+# # list to store objective values
+# gen_MFE = []
 
-# list to store f1_ref values
-f1_ref = []
+# # list to store f1_ref values
+# f1_ref = []
 
-# list to store f1_ref values
-f1_rnastruct = []
+# # list to store f1_ref values
+# f1_rnastruct = []
 
-# list to store f1beta_ref values
-f1beta_ref = []
+# # list to store f1beta_ref values
+# fbeta_ref = []
 
-# list to store f1beta_ref values
-f1beta_rnastruct = []
+# # list to store f1beta_ref values
+# fbeta_rnastruct = []

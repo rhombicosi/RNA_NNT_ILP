@@ -233,3 +233,33 @@ def get_energy_from_ct_file(file_path):
         else:
             print("ENERGY value not found in the first line.")
             return None
+        
+# def write_results_to_file(sequence_name, gen_mfe, ref_mfe, rna_mfe, f1_ref, f1_rna, fb_ref, fb_rna, filename="ilp_results.txt"):
+#     # Prepare the line to write into the file
+#     values = [sequence_name, gen_mfe, ref_mfe, rna_mfe, f1_ref, f1_rna, fb_ref, fb_rna]
+#     line = "\t".join(map(str, values)) + "\n"
+
+#     # Open the file in append mode, create if not exists
+#     with open(filename, 'a') as file:
+#         file.write(line)
+
+def write_results_to_file(sequence_name, rna_len, gen_mfe, ref_mfe, rna_mfe, f1_gen, f1_rna, fb_gen, fb_rna, filename="ilp_results.txt"):
+    # Format the floating point numbers to 2 decimal places and ensure all values are strings
+    values = [
+        sequence_name, 
+        rna_len,
+        f"{gen_mfe:.2f}", 
+        f"{ref_mfe:.2f}", 
+        f"{rna_mfe:.2f}", 
+        f"{f1_gen:.2f}", 
+        f"{f1_rna:.2f}", 
+        f"{fb_gen:.2f}", 
+        f"{fb_rna:.2f}"
+    ]
+    
+    # Format the output so that each value is aligned with tabs
+    line = "{:<15}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
+    
+    # Open the file in append mode, create if not exists
+    with open(filename, 'a') as file:
+        file.write(line)
