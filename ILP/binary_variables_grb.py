@@ -20,6 +20,7 @@ def add_binary_vars(RNA, mip):
     listH = {}      # listH are the hairpin loops variables
     listI = {}      # listI are the internal loops variables
     listB = {}      # listB are the bulge loop variables
+    listM = {}      # listM are the 3 multi loop variables
     listX = {}      # listX are nucleotides of the hairpin loop variables
     listY = {}      # listY are nucleotides of the internal loop variables
     listZ = {}      # listZ are nucleotides of the bulge loop variables
@@ -90,6 +91,8 @@ def add_binary_vars(RNA, mip):
                         for j in range(l - 2, max(l - maxB, 1), -1):
                             if RNA[j-1] + RNA[i-1] in cbp_list and RNA[l-1] + RNA[k-1] in cbp_list:
                                 listB[f'B({j},{l},{k},{i})'] = mip.addVar(vtype=GRB.BINARY, name=f'B({j},{l},{k},{i})')
+
+        # create M variables
         mip.update()
 
         # for v in mip.getVars():

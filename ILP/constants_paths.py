@@ -8,6 +8,9 @@ code_path = Path(__file__).parent.parent
 arch_rel_path = '../../ARCHIVE II/'
 archive_path = (code_path/arch_rel_path).resolve()
 
+# folder name for files that should be excluded from test
+badfiles_dir = 'noctfiles'  
+
 # length for sequences to be tested
 seq_len = 60
 
@@ -27,6 +30,9 @@ rnastructure_folder_name = f'RNAstructure_fold_{seq_len}'
 dot_bracket_rnastructure_folder_name = f'dot_bracket_RNAstructure_{seq_len}'
 efn2_archive_folder_name = f'efn2_archive_{seq_len}'
 
+# RNAstructure path
+rnastruct_path = "C:/Program Files/RNAstructure6.5/exe"
+
 # index of the sequence from archive ii currently under test
 # seq_number = 51
 
@@ -35,18 +41,3 @@ obj_val = 0
 
 # store generated .lp files
 lp_files = []
-
-# # list to store objective values
-# gen_MFE = []
-
-# # list to store f1_ref values
-# f1_ref = []
-
-# # list to store f1_ref values
-# f1_rnastruct = []
-
-# # list to store f1beta_ref values
-# fbeta_ref = []
-
-# # list to store f1beta_ref values
-# fbeta_rnastruct = []

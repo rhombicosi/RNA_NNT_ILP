@@ -21,39 +21,36 @@ ct_archive_dir = os.path.join(archive_path, ct_len_dir)
 # create path to rnastructure .ct files 
 ct_rnastruct_dir = os.path.join(archive_path, rnastructure_fold_dir)
 
-# create path to to .seq files 
+# create path to .seq files 
 seq_dir = os.path.join(archive_path, seq_len_dir)
 
 if __name__ == "__main__":
 
+    # clean up ARCHIVE dir by getting rid off .ct/.seq files that do not .seq/.ct counterpart
+
     # find files that do not corresponding .ct or .seq paired file
-    directory_path = archive_path  # Replace with your directory path
+    directory_path = archive_path 
     unpaired_files = find_files_without_pairs(directory_path)
 
-    # print("Files without corresponding pairs:")
-    # for file in unpaired_files:
-    #     ic(file)
-
     # create 'noctfiles' folder and move .seq files without .ct to it 
-    source_directory = archive_path  # Replace with the path to your source directory
-    destination_directory = archive_path  # Replace with the path to your destination directory
-    new_folder_name = 'noctfiles'  # Replace with your desired new folder name
-    selected_files = unpaired_files  # Replace with the list of files you want to move
+    source_directory = archive_path  
+    destination_directory = archive_path 
+    selected_files = unpaired_files 
 
-    create_directory_and_move_selected_files(source_directory, destination_directory, new_folder_name, selected_files)
-
-    # for z in zip(seq_list[0:1300],ct_list[0:1300]):
-    #     ic(z)
-    # ic(len(seq_list))
-    # ic(len(ct_list))
+    create_directory_and_move_selected_files(source_directory, destination_directory, badfiles_dir, selected_files)
 
     seq_len_files,ct_len_files = get_seq_of_len(seq_list,seq_len,ct_list)
 
     create_directory_and_copy_selected_files(source_directory, destination_directory, seq_len_dir, seq_len_files)
     create_directory_and_copy_selected_files(source_directory, destination_directory, ct_len_dir, ct_len_files)    
 
+    # prepare dot bracket notations and 
+    # get energies for ARCHIVE references;
+    # generate reference structures with RNAstructure and
+    # prepare dot bracket notations and 
+    # get energies for RNAstructure references
+
     # change working directory to path to RNAstructure exe files
-    rnastruct_path = "C:/Program Files/RNAstructure6.5/exe"
     os.chdir(rnastruct_path)
 
     # get all paths to archive .ct files 
@@ -77,29 +74,9 @@ if __name__ == "__main__":
     # obtain dot-bracket notations for all rnastructure .ct references
     ct2dot(ct_rnastruct_files, 0, len(ct_rnastruct_files), dot_bracket_rnastructure_dir)
 
-# path to sequence from archive ii os.path.join(dest_dir, new_folder_name)
+# path to sequences from archive ii that are currently under test
+# which should be available for further calculations
 chain_dir = os.path.join(archive_path, seq_len_dir)
 seq_files = get_filenames(chain_dir, '.seq')
 
-# ic(seq_files[seq_number])
-# ic(len(seq_files))
-
-# chain_file = seq_files[seq_number]
-# chain_name_with_ext = os.path.basename(chain_file)
-# chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
-
 print(f' # of sequences of lengths <= {seq_len} :: {len(seq_files)}')
-
-
-
-# get all paths to efn2 .txt files 
-# efn2_archive_files = get_filenames(efn2_archive_dir, '.txt')
-
-# MFE_ref = get_energy_from_ct_file(efn2_archive_files[28])
-# MFE_rna = get_energy_from_ct_file(ct_rnastruct_files[28])
-
-# print(MFE_ref)
-# print(MFE_rna)
-
-
-
