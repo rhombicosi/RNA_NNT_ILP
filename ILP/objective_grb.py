@@ -65,11 +65,11 @@ def internalParams(RNA):
 def bulgeParams(RNA):
     g = {}
     n = len(RNA)
-    for i in range(1, n - 1):
-        for k in range(1, n - 1):
+    for i in range(1, n + 1):
+        for k in range(1, n):
             if k == i+1:
-                for l in range(k + minD+1, n - 2):
-                    for j in range(l + 2, n - 1):
+                for l in range(k + minD+1, n - 1):
+                    for j in range(l + 2, n + 1):
                         if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
                             g[f'B{i}',f'B{k}',f'B{l}',f'B{j}'] = G_bulge(RNA,i,k,l,j)
 

@@ -51,7 +51,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         internalOnlyIfConstraints(this_RNA, mip)
         numInternalConstraints(this_RNA, numI, mip)
         bulgeNTConstraints(this_RNA, mip)
-        multiZeroConstraints(this_RNA, mip, maxB)
+        bulgeZeroConstraints(this_RNA, mip, maxB)
         bulgeIfThenConstraints(this_RNA, mip)
         # bulgeOnlyIfConstraints(this_RNA, mip)
         numBulgeConstraints(this_RNA, numB, mip)
@@ -95,7 +95,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         print("Object value was not assigned due to an error.")
 
 #### TEST #######
-# seq_number = 47
+# seq_number = 1
 # chain_file = seq_files[seq_number]
 # chain_name_with_ext = os.path.basename(chain_file)        
 # chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
@@ -113,8 +113,11 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
 # mip = gp.Model(f'MIP-{seq_number}')
 
 # add_binary_vars(RNA, mip)
+# bulgeNTConstraints(RNA, mip)
+# bulgeZeroConstraints(RNA, mip, maxB)
+# bulgeIfThenConstraints(RNA, mip)
+# bulgeOnlyIfConstraints(RNA, mip)
+# numBulgeConstraints(RNA, noB, mip)
 
-# multiZeroConstraints(RNA, mip, maxM)
 
-# multiIfThenConstraints(RNA, mip)
 

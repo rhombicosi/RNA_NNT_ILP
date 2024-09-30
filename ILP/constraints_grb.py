@@ -383,23 +383,23 @@ def bulgeNTConstraints(RNA, mip):
     return inequality
 
 # zero all variable that correspond to loops bigger then noB and maxB
-def multiZeroConstraints(RNA, mip, maxB):
+def bulgeZeroConstraints(RNA, mip, maxB):
     n = len(RNA)
-    for i in range(1, n - 1):
-        for k in range(1, n - 1):
+    for i in range(1, n+1):
+        for k in range(1, n):
             if k == i+1:
-                for l in range(k + minD + 1, n - 2):
-                    for j in range(l + 2, n - 1):
+                for l in range(k + minD + 1, n - 1):
+                    for j in range(l + 2, n + 1):
                         if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
                             if (j-l-1 > maxB):
-                                inequality = gp.LinExpr([1],[mip.getVarByName(f'B({i},{k},{l},{j})')])
+                                inequality = gp.LinExpr([1],[mip.getVarByName(f'B({i},{k},{l},{j})')])                                
                                 mip.addConstr(inequality == 0, f'CZB{i}-{k}-{l}-{j}')
             elif k == i-1:
                 for l in range(k-minD-1,4,-1):
                     for j in range(l - 2, 1, -1):
                         if RNA[j-1] + RNA[i-1] in cbp_list and RNA[l-1] + RNA[k-1] in cbp_list:
-                            if (l-j-1 > maxB) :
-                                inequality = gp.LinExpr([1],[mip.getVarByName(f'B({j},{l},{k},{i}')])
+                            if (l-j-1 > maxB):
+                                inequality = gp.LinExpr([1],[mip.getVarByName(f'B({j},{l},{k},{i})')])
                                 mip.addConstr(inequality == 0, f'CZB{j}-{l}-{k}-{i}')
 
 # if base pairs are formed by i and j, l and k nucleotides
@@ -407,11 +407,11 @@ def multiZeroConstraints(RNA, mip, maxB):
 # then bulge loop is formed 
 def bulgeIfThenConstraints(RNA, mip):
     n = len(RNA)
-    for i in range(1, n - 1):
-        for k in range(1, n - 1):
+    for i in range(1, n + 1):
+        for k in range(1, n):
             if k == i+1:
-                for l in range(k + minD+1, n - 2):
-                    for j in range(l + 2, n - 1):
+                for l in range(k + minD+1, n-1):
+                    for j in range(l + 2, n+1):
                         if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
                             inequality = gp.LinExpr(0)                        
 
@@ -437,11 +437,11 @@ def bulgeIfThenConstraints(RNA, mip):
 
 def bulgeOnlyIfConstraints(RNA, mip):
     n = len(RNA)
-    for i in range(1, n - 1):
-        for k in range(1, n - 1):
+    for i in range(1, n +1):
+        for k in range(1, n):
             if k == i+1:
-                for l in range(k + minD+1, n - 2):
-                    for j in range(l + 2, n - 1):
+                for l in range(k + minD+1, n - 1):
+                    for j in range(l + 2, n + 1):
                         if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
                             
                             for u in range(l+1,j):
@@ -494,23 +494,19 @@ def bulgeOnlyIfConstraints(RNA, mip):
 def numBulgeConstraints(RNA, numB, mip):
     n = len(RNA)
     inequality = gp.LinExpr(0)
-    for i in range(1, n - 1):
-        for k in range(1, n - 1):
+    for i in range(1, n +1):
+        for k in range(1, n):
             if k == i+1:
-                for l in range(k + minD + 1, n - 2):
-                    for j in range(l + 2, n - 1):
-                        if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
-                            
+                for l in range(k + minD + 1, n - 1):
+                    for j in range(l + 2, n +1):
+                        if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:                            
                             inequality.add(gp.LinExpr([1],[mip.getVarByName(f'B({i},{k},{l},{j})')]))
-                            # inequality += f' + B({i},{k},{l},{j})'
 
             elif k == i-1:
                 for l in range(k-minD-1,4,-1):
                     for j in range(l - 2, 1, -1):
-                        if RNA[j-1] + RNA[i-1] in cbp_list and RNA[l-1] + RNA[k-1] in cbp_list:
-                            
+                        if RNA[j-1] + RNA[i-1] in cbp_list and RNA[l-1] + RNA[k-1] in cbp_list:                            
                             inequality.add(gp.LinExpr([1],[mip.getVarByName(f'B({j},{l},{k},{i})')]))
-                            # inequality += f' + B({j},{l},{k},{i})'
 
     mip.addConstr(inequality <= numB, f'CBN')
     # inequality += f' <= {numB} \n'

@@ -83,12 +83,12 @@ def add_binary_vars(RNA, mip):
                         if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
                             listI[f'I({i},{k},{l},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'I({i},{k},{l},{j})')
 
-        # create B variabels
-        for i in range(1, n - 1):
-            for k in range(1, n - 1):
+        # create B variables
+        for i in range(1, n + 1):
+            for k in range(1, n):
                 if k == i+1:
-                    for l in range(k + minD + 1, n - 2):
-                        for j in range(l + 2, n - 1):
+                    for l in range(k + minD + 1, n - 1):
+                        for j in range(l + 2, n + 1):
                             if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
                                 listB[f'B({i},{k},{l},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'B({i},{k},{l},{j})')
                 elif k == i-1:
@@ -124,7 +124,7 @@ def add_binary_vars(RNA, mip):
     mip.update() 
     print(RNA)
     print(n)
-    # print(listM)
+    # print(listB)
     # print(len(listM))
 
     return listP, listQ, listF, listL, listH, listI, listB, listM, listX, listY, listZ, listW

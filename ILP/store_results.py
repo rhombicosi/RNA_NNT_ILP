@@ -26,7 +26,9 @@ n2 = 48
 
 for seq_no in range (n1, n2):
 
-    gen_MFE, lp_name = optimize(seq_files, seq_no, lp_dir, sol_dir)
+    # gen_MFE, lp_name = (-1158,'tRNA_tdbR00000398-Ascaris_suum-6253-Ser-UCU-loopdeco')
+
+    gen_MFE, lp_name = optimize(seq_files, seq_no, lp_dir, sol_dir) 
 
     f1_ref, fbeta_ref, f1_rnastruct, fbeta_rnastruct, rna_len = sol_analyse(seq_files, seq_no, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir)
 
