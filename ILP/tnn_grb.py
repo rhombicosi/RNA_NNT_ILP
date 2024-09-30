@@ -44,21 +44,24 @@ def G_hairpin(RNA,i,j):
 
     # G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
     # G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
-   
-    if j-i-1 <= noH:
-        G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
-        G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
+    if j-i-1 == 3:
+        G = initiation_df.loc[j-i-1,"hairpin"]
     else:
-        G1 = M + spec_GU_clos
-        G2 = M
+   
+        if j-i-1 <= noH:
+            G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
+            G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
+        else:
+            G1 = M + spec_GU_clos
+            G2 = M
 
-    G = G1 if RNA[i-1] + RNA[j-1] == 'GU' else G2  
+        G = G1 if RNA[i-1] + RNA[j-1] == 'GU' else G2  
 
-    if RNA[i] + RNA[j-2] == 'GA' or RNA[i] + RNA[j-2] == 'UU':
-        G = G + hp_mismatch['GA']
+        if RNA[i] + RNA[j-2] == 'GA' or RNA[i] + RNA[j-2] == 'UU':
+            G = G + hp_mismatch['GA']
 
-    if RNA[i] + RNA[j-2] == 'GG':
-        G = G + hp_mismatch['GG']
+        if RNA[i] + RNA[j-2] == 'GG':
+            G = G + hp_mismatch['GG']
 
     return round(G)
 
@@ -173,6 +176,14 @@ def G_bulge(RNA,i,k,l,j):
         G = M
 
     return round(G)
+
+def G_multi(i,i1,j1,i2,j2,j):
+    if i1-i-1+i2-j1-1+j-j2-1 <= noM:
+        G = c*(i1-i-1+i2-j1-1+j-j2-1) + b*3
+    else:
+        G = M
+    return round(G)
+
 
 # 1Q9A
 # generated -634

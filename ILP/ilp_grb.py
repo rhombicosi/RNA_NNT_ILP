@@ -24,12 +24,13 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
     numH = len(this_RNA)//5
     numI = len(this_RNA)//4
     numB = len(this_RNA)//3
+    numM = 1
 
     try:
         
-        listP, listQ, listF, listL, listH, listI, listB, listX, listY, listZ = add_binary_vars(this_RNA, mip)
+        listP, listQ, listF, listL, listH, listI, listB, listM, listX, listY, listZ, listW = add_binary_vars(this_RNA, mip)
 
-        mip.setObjective(objectiveTerm(this_RNA, listQ, listH, listI, listB), GRB.MINIMIZE)
+        mip.setObjective(objectiveTerm(this_RNA, listQ, listH, listI, listB, listM), GRB.MINIMIZE)
         
         # mip.addConstr(objectiveTerm(this_RNA, listQ, listH, listI, listB) >= MFE,"CMFE")
         # mip.addConstr(mip.getVarByName(f'B(14,15,28,30)') == 1)
@@ -40,17 +41,25 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         firstPairConstraints(this_RNA, mip)
         lastPairConstraints(this_RNA, mip)
         hairpinNTConstraints(this_RNA, mip)
+        hairpinZeroConstraints(this_RNA, mip, maxH)
         hairpinIfThenConstraints(this_RNA, mip)
-        hairpinOnlyIfConstraints(this_RNA, mip)
+        # hairpinOnlyIfConstraints(this_RNA, mip)
         numHairpinConstraints(this_RNA, numH, mip)
         internalNTConstraints(this_RNA, mip)
+        internalZeroConstraints(this_RNA, mip, maxI)
         internalIfThenConstraints(this_RNA, mip)
         internalOnlyIfConstraints(this_RNA, mip)
         numInternalConstraints(this_RNA, numI, mip)
         bulgeNTConstraints(this_RNA, mip)
+        multiZeroConstraints(this_RNA, mip, maxB)
         bulgeIfThenConstraints(this_RNA, mip)
-        bulgeOnlyIfConstraints(this_RNA, mip)
+        # bulgeOnlyIfConstraints(this_RNA, mip)
         numBulgeConstraints(this_RNA, numB, mip)
+        multiNTConstraints(this_RNA, mip)
+        multiZeroConstraints(this_RNA,mip,maxM)
+        multiIfThenConstraints(this_RNA, mip)
+        # multiOnlyIfConstraints(this_RNA, mip)
+        numMultiConstraints(this_RNA, numM, mip)
 
         mip.update()   
 
@@ -84,3 +93,28 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         return obj_val, lp_file_name
     else:
         print("Object value was not assigned due to an error.")
+
+#### TEST #######
+# seq_number = 47
+# chain_file = seq_files[seq_number]
+# chain_name_with_ext = os.path.basename(chain_file)        
+# chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
+# lp_file_name = chain_name_without_ext
+# seq_data = parse_seq_file(chain_file)
+# RNA = seq_data['sequence']
+
+# print(chain_name_without_ext)
+# print(RNA)
+
+# print(G_hairpin(RNA, 16,31))
+# print(G_bulge(RNA, 8,9,38,43))
+
+
+# mip = gp.Model(f'MIP-{seq_number}')
+
+# add_binary_vars(RNA, mip)
+
+# multiZeroConstraints(RNA, mip, maxM)
+
+# multiIfThenConstraints(RNA, mip)
+

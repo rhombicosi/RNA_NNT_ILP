@@ -5,13 +5,15 @@ MFE = -1500
 
 # distance parameters
 minD = 3 # min allowed distance between paired nts, also min hairpin loop size
-maxH = 27 # max hairpin loop size
-noH = 27 # initiation params for hairpins bigger than noH are approximated
+maxH = 10 # max hairpin loop size
+noH = 10 # initiation params for hairpins bigger than noH are approximated
 minI = 1 # min internal loop unpaired region size
-maxI = 22 # max internal loop one side size
-noI = 22 # initiation params for internals bigger than noH are approximated
-maxB = 20 # max bulge loop
-noB = 20
+maxI = 6 # max internal loop one side size
+noI = 12 # initiation params for internals bigger than noH are approximated #TODO 22 is max size of one side so max loop is 44
+maxB = 10 # max bulge loop
+noB = 10
+maxM = 5 # max size of one side of the multiloop
+noM = 15 # total max size of the internal loop
 
 # R = 1.9872036 × 10-3	kcal.K-1.mol-1 is the gas constant and T is the absolute temperature, 310.15 K
 RT = 0.616

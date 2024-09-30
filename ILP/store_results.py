@@ -21,13 +21,13 @@ add_column(results_df, 'MFE_ref', ref_MFEs)
 add_column(results_df, 'MFE_rna', rna_MFEs)
 print(results_df)
 
-n1 = 26
-n2 = 28
+n1 = 47
+n2 = 48
 
 for seq_no in range (n1, n2):
 
     gen_MFE, lp_name = optimize(seq_files, seq_no, lp_dir, sol_dir)
 
-    f1_ref, fbeta_ref, f1_rnastruct, fbeta_rnastruct,rna_len = sol_analyse(seq_files, seq_no, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir)
+    f1_ref, fbeta_ref, f1_rnastruct, fbeta_rnastruct, rna_len = sol_analyse(seq_files, seq_no, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir)
 
-    write_results_to_file(lp_name, rna_len, gen_MFE/100, ref_MFEs[seq_no], rna_MFEs[seq_no], round(f1_ref,2), round(f1_rnastruct,2), round(fbeta_ref,2), round(fbeta_rnastruct,2), filename="ilp_results.txt")
+    write_results_to_file(lp_name, rna_len, gen_MFE/100, ref_MFEs[seq_no], rna_MFEs[seq_no], round(f1_ref,2), round(f1_rnastruct,2), round(fbeta_ref,2), round(fbeta_rnastruct,2), filename="ilp_multi_results.txt")
