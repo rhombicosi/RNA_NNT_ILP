@@ -1,3 +1,45 @@
-* prepro_run.py
+## CODE FILES
+**prepro_run.py**
 
 executes several commands to prepare reference structures to test loop-decomposition milp model 
+
+**prepro_utils.py**
+
+functions to preprocess .seq and .ct files, create folders and writing results to files
+
+**constant_paths.py**
+
+initiates names and paths to folders:
+
+*arch_rel_path* -- path to ARCHIVE II directory of all references
+
+*badfiles_dir* -- folder to store .seq files that do not have corresponding .ct structures, not useful for testing
+
+*seq_len_dir*  -- directory to store sequences of size less or equal to {seq_len}
+
+*ct_len_dir*  -- directory to store structures of sequences of size less or equal to {seq_len}
+
+*lp_folder_name* -- folder to store models as .lp files
+
+*sol_folder_name* --  folder to store solutions .sol files
+
+*dot_bracket_folder_name* -- folder to store solutions in dot-bracket format
+
+*dot_bracket_archive_folder_name* -- folder to store archive reference structures in dot-bracket format
+
+*rnastructure_folder_name* -- folder to store structures .ct files ganerated by RNAstructure algorithm
+
+*dot_bracket_rnastructure_folder_name* -- folder to store RNAstructure structures in dot-bracket format
+
+*efn2_archive_folder_name* -- folder with .txt files with energies calculated with RNAstructure software for archive reference structures
+
+*rnastruct_path* -- path to "RNAstructure6.5/exe" execution files
+
+## HOW TO RUN THE CODE 
+
+1. Prepare archive II data folder and store it to the code relative path '../../ARCHIVE II/'
+
+2. Run prepro_run.py to initialize all folder names, paths and to prepare files for testing and references in correct format.
+
+2. Run store_results.py to solve the ILP model and store the results in *ilp_results.txt*
+

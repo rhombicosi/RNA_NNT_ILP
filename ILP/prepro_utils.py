@@ -258,7 +258,7 @@ def write_results_to_file(sequence_name, rna_len, gen_mfe, ref_mfe, rna_mfe, f1_
     ]
     
     # Format the output so that each value is aligned with tabs
-    line = "{:<15}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
+    line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
     
     # Open the file in append mode, create if not exists
     with open(filename, 'a') as file:

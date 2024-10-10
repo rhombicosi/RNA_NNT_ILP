@@ -21,8 +21,8 @@ add_column(results_df, 'MFE_ref', ref_MFEs)
 add_column(results_df, 'MFE_rna', rna_MFEs)
 print(results_df)
 
-n1 = 47
-n2 = 48
+n1 = 1
+n2 = 2
 
 for seq_no in range (n1, n2):
 
