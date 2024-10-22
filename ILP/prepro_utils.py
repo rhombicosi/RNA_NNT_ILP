@@ -234,32 +234,60 @@ def get_energy_from_ct_file(file_path):
             print("ENERGY value not found in the first line.")
             return None
         
-# def write_results_to_file(sequence_name, gen_mfe, ref_mfe, rna_mfe, f1_ref, f1_rna, fb_ref, fb_rna, filename="ilp_results.txt"):
-#     # Prepare the line to write into the file
-#     values = [sequence_name, gen_mfe, ref_mfe, rna_mfe, f1_ref, f1_rna, fb_ref, fb_rna]
-#     line = "\t".join(map(str, values)) + "\n"
+def save_data_to_txt(file_name, data):
+    # Define the headers
+    headers = ["RNA sequence name", "# of nts", "MFE ILP", "MFE ARCHIVE", "MFE RNAstr",
+               "F1 ILP", "F1 RNAstr", "Fb ILP", "Fb RNAstr"]
 
-#     # Open the file in append mode, create if not exists
-#     with open(filename, 'a') as file:
-#         file.write(line)
+    # Check if the file exists and is not empty
+    file_exists = os.path.exists(file_name) and os.path.getsize(file_name) > 0
 
-def write_results_to_file(sequence_name, rna_len, gen_mfe, ref_mfe, rna_mfe, f1_gen, f1_rna, fb_gen, fb_rna, filename="ilp_results.txt"):
+    # Open the file for appending
+    with open(file_name, 'a') as file:
+        # If the file does not exist or is empty, write the headers
+        if not file_exists:
+            file.write("\t".join(headers) + "\n")
+        
+        # Write the data rows
+        for row in data:
+            # Convert all items in row to string and join with tab
+            file.write("\t".join(map(str, row)) + "\n")
+
+def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rna, f1_gen, f1_rna, fb_gen, fb_rna, mcc_gen, mcc_rna, filename="ilp_results.txt"):
+    # Define the headers
+    headers = ["RNA sequence name", "# of nts", "Time(s)", "MFE ILP", "MFE ARCHIVE", "MFE RNAstr",
+               "F1 ILP", "F1 RNAstr", "Fb ILP", "Fb RNAstr", "INF ILP", "INF RNAstr"]
+    
+
+    # Check if the file exists and is not empty
+    file_exists = os.path.exists(filename) and os.path.getsize(filename) > 0
     # Format the floating point numbers to 2 decimal places and ensure all values are strings
     values = [
         sequence_name, 
         rna_len,
-        f"{gen_mfe:.2f}", 
-        f"{ref_mfe:.2f}", 
-        f"{rna_mfe:.2f}", 
+        f"{time:.2f}",
+        f"{mfe_gen:.2f}", 
+        f"{mfe_ref:.2f}", 
+        f"{mfe_rna:.2f}", 
         f"{f1_gen:.2f}", 
         f"{f1_rna:.2f}", 
         f"{fb_gen:.2f}", 
-        f"{fb_rna:.2f}"
+        f"{fb_rna:.2f}",
+        f"{mcc_gen:.2f}",
+        f"{mcc_rna:.2f}"
+
     ]
+
+    headers_line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*headers)
     
     # Format the output so that each value is aligned with tabs
-    line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
+    line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
     
     # Open the file in append mode, create if not exists
     with open(filename, 'a') as file:
+        # If the file does not exist or is empty, write the headers
+        if not file_exists:
+            file.write(headers_line)
+        
+        # Write the data rows
         file.write(line)

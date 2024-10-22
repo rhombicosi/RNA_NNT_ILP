@@ -89,7 +89,7 @@ def multiParams(RNA):
             for j1 in range(i1 + minD + 1, n - 4):
                 for i2 in range(j1 + 1, n - 3):
                     for j2 in range(i2 + minD + 1, n - 2):
-                        for j in range(j2 + 1, n - 1):
+                        for j in range(j2 + 1, n + 1):
                             # if legal(RNA,i,j) and legal(RNA,i1,j1) and legal(RNA,i2,j2):
                             if RNA[i-1] + RNA[j-1] in cbp_list and \
                             RNA[i1-1] + RNA[j1-1] in cbp_list and \

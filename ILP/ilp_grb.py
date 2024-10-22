@@ -5,7 +5,6 @@ from pathlib import Path
 import time
 from prepro_run import *
 
-
 def optimize(seq_files, seq_number, lp_dir, sol_dir):
     
     chain_file = seq_files[seq_number]
@@ -21,10 +20,10 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
     mip = gp.Model(f'MIP-{seq_number}')
 
     # set the number of loops
-    numH = len(this_RNA)//5
-    numI = len(this_RNA)//4
-    numB = len(this_RNA)//3
-    numM = 1
+    numH = 1#len(this_RNA)//5
+    numI = 3#len(this_RNA)//4
+    numB = 0#len(this_RNA)//3
+    numM = 0#len(this_RNA)//3
 
     try:
         
@@ -60,6 +59,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         multiIfThenConstraints(this_RNA, mip)
         # multiOnlyIfConstraints(this_RNA, mip)
         numMultiConstraints(this_RNA, numM, mip)
+        # numGreaterMultiConstraints(this_RNA, numM, mip)
 
         mip.update()   
 
@@ -72,8 +72,14 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         # mip.setParam("PoolSolutions", 20)
         # mip.setParam("PoolSearchMode", 2)
         # mip.setParam("SolFiles", f"{chain_f}-decomposition-grb")
-
+        mip.setParam("LogFile", f'gurobi_log/log-{lp_file_name}')
+        # mip.setParam("MIPFocus", 2)
+        # mip.setParam("ConcurrentMIP ", 5)
+        # mip.setParam("Presolve", 2)
+        
+        opt_start_time = time.time()        
         mip.optimize()
+        opt_time = time.time() - opt_start_time
 
         mip.write(f'{sol_dir}/{lp_file_name}-loopdeco.sol')
 
@@ -90,12 +96,12 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         obj_val = None
 
     if obj_val is not None:
-        return obj_val, lp_file_name
+        return obj_val, lp_file_name, opt_time
     else:
         print("Object value was not assigned due to an error.")
 
 #### TEST #######
-# seq_number = 1
+# seq_number = 3
 # chain_file = seq_files[seq_number]
 # chain_name_with_ext = os.path.basename(chain_file)        
 # chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]

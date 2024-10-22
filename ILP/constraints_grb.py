@@ -575,7 +575,7 @@ def multiIfThenConstraints(RNA, mip):
             for j1 in range(i1 + minD + 1, n - 4):
                 for i2 in range(j1 + 1, n - 3):
                     for j2 in range(i2 + minD + 1, n - 2):
-                        for j in range(j2 + 1, n - 1):
+                        for j in range(j2 + 1, n + 1):
                             if RNA[i-1] + RNA[j-1] in cbp_list and \
                             RNA[i1-1] + RNA[j1-1] in cbp_list and \
                             RNA[i2-1] + RNA[j2-1] in cbp_list:
@@ -605,7 +605,7 @@ def multiOnlyIfConstraints(RNA, mip):
             for j1 in range(i1 + minD + 1, n - 4):
                 for i2 in range(j1 + 1, n - 3):
                     for j2 in range(i2 + minD + 1, n - 2):
-                        for j in range(j2 + 1, n - 1):
+                        for j in range(j2 + 1, n + 1):
                             if RNA[i-1] + RNA[j-1] in cbp_list and \
                             RNA[i1-1] + RNA[j1-1] in cbp_list and \
                             RNA[i2-1] + RNA[j2-1] in cbp_list:                      
@@ -692,6 +692,26 @@ def numMultiConstraints(RNA, numM, mip):
                                 inequality.add(gp.LinExpr([1],[mip.getVarByName(f'M({i},{i1},{j1},{i2},{j2},{j})')]))
 
     mip.addConstr(inequality <= numM, 'CMN')
+
+    return inequality
+
+def numGreaterMultiConstraints(RNA, numM, mip):
+    inequality = gp.LinExpr(0)
+    
+    n = len(RNA)
+
+    for i in range(1, n - 6):
+        for i1 in range(i + 1, n - 5):
+            for j1 in range(i1 + minD + 1, n - 4):
+                for i2 in range(j1 + 1, n - 3):
+                    for j2 in range(i2 + minD + 1, n - 2):
+                        for j in range(j2 + 1, n - 1):
+                            if RNA[i-1] + RNA[j-1] in cbp_list and \
+                            RNA[i1-1] + RNA[j1-1] in cbp_list and \
+                            RNA[i2-1] + RNA[j2-1] in cbp_list:                         
+                                inequality.add(gp.LinExpr([1],[mip.getVarByName(f'M({i},{i1},{j1},{i2},{j2},{j})')]))
+
+    mip.addConstr(inequality >= numM, 'CMGN')
 
     return inequality
 

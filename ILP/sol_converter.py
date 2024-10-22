@@ -3,6 +3,7 @@ from binary_variables_grb import *
 from constants_paths import *
 from prepro_run import *
 from prepro_utils import *
+import math
 
 def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)
@@ -88,11 +89,19 @@ def compare2folds(generated, reference):
     f1 = 2*TP/(2*TP + FP + FN)
     fbeta = (1+beta**2)*TP/((1+beta**2)*TP + (beta**2)*FN + FP)
 
+
+    PPV = TP/(TP+FP)
+    STY = TP/(TP+FN)
+    MCC = math.sqrt(PPV*STY)
+
+
     # print(TP)
     # print(FN)
     # print(FP)
 
-    return (f1,fbeta)
+    return (f1,fbeta,MCC)
+
+
 
 def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir):
 
@@ -137,14 +146,16 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
     print(reference)
     print(rnastruct)
 
-    (f1_ref,fbeta_ref) = compare2folds(generated, reference)
-    (f1_rnastruct,fbeta_rnastruct) = compare2folds(generated, rnastruct)
+    (f1_lilp,fbeta_lilp,MCC_lilp) = compare2folds(generated, reference)
+    (f1_rnastruct,fbeta_rnastruct,MCC_rnastruct) = compare2folds(rnastruct, reference)
 
 
-    print(f1_ref)
-    print(fbeta_ref)
+    print(f1_lilp)
+    print(fbeta_lilp)
+    print(MCC_lilp)
 
     print(f1_rnastruct)
     print(fbeta_rnastruct)
+    print(MCC_rnastruct)
 
-    return f1_ref, fbeta_ref, f1_rnastruct, fbeta_rnastruct, rna_len
+    return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct
