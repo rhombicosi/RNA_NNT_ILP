@@ -5,6 +5,7 @@ from constants_paths import *
 # create folders to write .lp model and optimization .sol results
 lp_dir = create_dir(lp_path, lp_folder_name)
 sol_dir = create_dir(lp_path, sol_folder_name)
+solstart_dir = create_dir(lp_path, solstart_folder_name)
 dot_bracket_dir = create_dir(lp_path, dot_bracket_folder_name)
 dot_bracket_archive_dir = create_dir(archive_path, dot_bracket_archive_folder_name)
 rnastructure_fold_dir =  create_dir(archive_path, rnastructure_folder_name)

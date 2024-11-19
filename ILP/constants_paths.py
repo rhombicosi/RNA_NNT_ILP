@@ -24,6 +24,7 @@ lp_rel_path = '../'
 lp_path = (ilp_parent_dir/lp_rel_path).resolve()
 lp_folder_name = 'lp_multi'
 sol_folder_name = 'sol_multi'
+solstart_folder_name = 'sol_start'
 dot_bracket_folder_name = f'dot_bracket_{seq_len}'
 dot_bracket_archive_folder_name = f'dot_bracket_archive_{seq_len}'
 rnastructure_folder_name = f'RNAstructure_fold_{seq_len}'

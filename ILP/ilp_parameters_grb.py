@@ -14,6 +14,7 @@ maxB = 10 # max bulge loop
 noB = 10
 maxM = 5 # max size of one side of the multiloop
 noM = 15 # total max size of the internal loop
+L = 10 # maximum number of unpaired nucleotides
 
 # R = 1.9872036 × 10-3	kcal.K-1.mol-1 is the gas constant and T is the absolute temperature, 310.15 K
 RT = 0.616

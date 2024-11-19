@@ -343,7 +343,7 @@ def numInternalConstraints(RNA, numI, mip):
                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:                        
                         inequality.add(gp.LinExpr([1],[mip.getVarByName(f'I({i},{k},{l},{j})')]))
 
-    mip.addConstr(inequality <= numI, 'CIN')
+    mip.addConstr(inequality >= numI, 'CIN')
 
     return inequality
 
@@ -695,7 +695,7 @@ def numMultiConstraints(RNA, numM, mip):
 
     return inequality
 
-def numGreaterMultiConstraints(RNA, numM, mip):
+def numLowerMultiConstraints(RNA, numM, mip):
     inequality = gp.LinExpr(0)
     
     n = len(RNA)
@@ -714,6 +714,28 @@ def numGreaterMultiConstraints(RNA, numM, mip):
     mip.addConstr(inequality >= numM, 'CMGN')
 
     return inequality
+
+def consecutiveUnpairedConstraints(RNA, L, mip):
+
+    n = len(RNA)
+    step = minD+2
+
+    for i in range(1,n+1,step):
+        inequality = gp.LinExpr(0)
+        for k in range(i,min(i+L, n+1)):
+            for j in range(1, i):
+                if k - j > minD:
+                    if RNA[k-1] + RNA[j-1] in cbp_list: 
+                        inequality.add(gp.LinExpr([1.0],[mip.getVarByName(f'P({j},{k})')]))
+
+
+            for j in range(i+1, n+1):
+                if j - k > minD:
+                    if RNA[j-1] + RNA[k-1] in cbp_list:
+                        inequality.add(gp.LinExpr([1.0],[mip.getVarByName(f'P({k},{j})')]))
+
+        mip.addConstr(inequality >= 1, f'CUC{i}')
+
 
 # : :: ::: :::: test :::: ::: :: :
 
