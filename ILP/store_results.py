@@ -21,15 +21,19 @@ add_column(results_df, 'MFE_ref', ref_MFEs)
 add_column(results_df, 'MFE_rna', rna_MFEs)
 print(results_df)
 
-n1 = 3#36#47
-n2 = 4#37#48
+n1 = 45#47
+n2 = 46#48
 
 for seq_no in range (n1, n2):
 
     # gen_MFE, lp_name = (-1158,'tRNA_tdbR00000398-Ascaris_suum-6253-Ser-UCU-loopdeco')
 
-    gen_MFE, lp_name, opt_time = optimize(seq_files, seq_no, lp_dir, sol_dir) 
+    gen_MFE_start, lp_name_start, opt_time_start = optimize_start(seq_files, seq_no, lpstart_dir, solstart_dir)
+
+    gen_MFE, lp_name, opt_time = optimize(seq_files, seq_no, lp_dir, sol_dir)
 
     f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct = sol_analyse(seq_files, seq_no, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir)
+
+    # f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct = sol_analyse(seq_files, seq_no, solstart_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir)
 
     write_results_to_file(lp_name, rna_len, opt_time, gen_MFE/100, ref_MFEs[seq_no], rna_MFEs[seq_no], round(f1_gen,2), round(f1_rnastruct,2), round(fbeta_gen,2), round(fbeta_rnastruct,2), round(MCC_gen,2), round(MCC_rnastruct,2),filename="ilp_solstart_results.txt")

@@ -7,6 +7,8 @@
 /data
 /lp_multi
 /sol_multi
+/lp_start
+/sol_start
 /lp
 /sol
 /gurobi_log

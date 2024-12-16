@@ -114,6 +114,7 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
     this_RNA = seq_data['sequence']
 
     filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
+    # filepath = os.path.join(sol_dir, f'{lp_file_name}-startl.sol')
 
     ic(filepath)
 
