@@ -21,18 +21,20 @@ add_column(results_df, 'MFE_ref', ref_MFEs)
 add_column(results_df, 'MFE_rna', rna_MFEs)
 print(results_df)
 
-n1 = 45#47
-n2 = 46#48
+n1 = 1#65#33#50#19#45#47
+n2 = 2#66#34#51#20#46#48
 
 for seq_no in range (n1, n2):
 
     # gen_MFE, lp_name = (-1158,'tRNA_tdbR00000398-Ascaris_suum-6253-Ser-UCU-loopdeco')
 
-    gen_MFE_start, lp_name_start, opt_time_start = optimize_start(seq_files, seq_no, lpstart_dir, solstart_dir)
+    # gen_MFE_start, lp_name_start, opt_time_start = optimize_start(seq_files, seq_no, lpstart_dir, solstart_dir)
 
-    gen_MFE, lp_name, opt_time = optimize(seq_files, seq_no, lp_dir, sol_dir)
+    # f1_gen_start, fbeta_gen_start, MCC_gen_start, f1_rnastruct_start, fbeta_rnastruct_start, rna_len_start, MCC_rnastruct_start = sol_analyse(seq_files, seq_no, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir,1)
 
-    f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct = sol_analyse(seq_files, seq_no, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir)
+    gen_MFE, lp_name, opt_time = optimize(seq_files, seq_no, lp_dir, sol_dir) #optimize(seq_files, seq_no, lp_dir, sol_dir, solstart_dir)
+
+    f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct = sol_analyse(seq_files, seq_no, sol_dir,dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir,0)
 
     # f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct = sol_analyse(seq_files, seq_no, solstart_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir)
 

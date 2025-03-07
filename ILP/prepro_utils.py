@@ -291,3 +291,15 @@ def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rn
         
         # Write the data rows
         file.write(line)
+
+def read_sol(f_name):
+    solvars = {}
+    with open(f_name,'r') as f:
+            lines = f.readlines()
+            for line in lines[2:]:
+                parts = line.strip().split()
+                if len(parts) >= 2:  # Ensure at least two parts exist
+                    key, value = parts[0], parts[1]
+                    solvars[key] = value
+    
+    return solvars

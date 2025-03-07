@@ -5,7 +5,7 @@ from pathlib import Path
 import time
 from prepro_run import *
 
-def optimize(seq_files, seq_number, lp_dir, sol_dir):
+def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
     
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -29,7 +29,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
 
     try:
         
-        listP, listQ, listF, listL, listH, listI, listB, listM, listX, listY, listZ, listW = add_binary_vars(this_RNA, mip, start)
+        listP, listQ, listH, listI, listB, listM, listX, listY, listZ, listW = add_binary_vars(this_RNA, mip, start)
 
         mip.setObjective(objectiveTerm(this_RNA, listQ, listH, listI, listB, listM), GRB.MINIMIZE)
         
@@ -40,24 +40,24 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
         onePairConstraints(this_RNA, mip)
         noCrossConstraints(this_RNA, mip)
         stemConstraints(this_RNA, mip)
-        firstPairConstraints(this_RNA, mip)
-        lastPairConstraints(this_RNA, mip)
+        # firstPairConstraints(this_RNA, mip)
+        # lastPairConstraints(this_RNA, mip)
         hairpinNTConstraints(this_RNA, mip)
         # hairpinZeroConstraints(this_RNA, mip, maxH)
         hairpinIfThenConstraints(this_RNA, mip)
         # hairpinOnlyIfConstraints(this_RNA, mip)
         # numHairpinConstraints(this_RNA, numH, mip)
-        internalNTConstraints(this_RNA, mip)
+        # internalNTConstraints(this_RNA, mip)
         # internalZeroConstraints(this_RNA, mip, maxI)
         internalIfThenConstraints(this_RNA, mip)
         internalOnlyIfConstraints(this_RNA, mip)
         # numInternalConstraints(this_RNA, numI, mip)
-        bulgeNTConstraints(this_RNA, mip)
+        # bulgeNTConstraints(this_RNA, mip)
         # bulgeZeroConstraints(this_RNA, mip, maxB)
         bulgeIfThenConstraints(this_RNA, mip)
         # bulgeOnlyIfConstraints(this_RNA, mip)
         # numBulgeConstraints(this_RNA, numB, mip)
-        multiNTConstraints(this_RNA, mip)
+        # multiNTConstraints(this_RNA, mip)
         # multiZeroConstraints(this_RNA,mip,maxM)
         multiIfThenConstraints(this_RNA, mip)
         # multiOnlyIfConstraints(this_RNA, mip)
@@ -84,21 +84,41 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir):
 
         # mip.params.StartNumber = 1
 
-        solvars = {}
+        if start:
 
-        with open(f'{solstart_dir}/{lp_file_name}-start.sol','r') as f:
-            lines = f.readlines()
-            for line in lines[2:]:
-                parts = line.strip().split()
-                if len(parts) >= 2:  # Ensure at least two parts exist
-                    key, value = parts[0], parts[1]
-                    solvars[key] = value
+            solvars = read_sol(f'{solstart_dir}/{lp_file_name}-start.sol')
 
-            for v in mip.getVars():     
-                # print(v.varName)           
-                # print(v.Start)
-                if v.varName in solvars.keys():
-                    v.Start = int(solvars[v.varName])
+            # solvars = {}        
+
+            # with open(f'{solstart_dir}/{lp_file_name}-start.sol','r') as f:
+            #     lines = f.readlines()
+            #     for line in lines[2:]:
+            #         parts = line.strip().split()
+            #         if len(parts) >= 2:  # Ensure at least two parts exist
+            #             key, value = parts[0], parts[1]
+            #             solvars[key] = value
+
+            for v in mip.getVars(): 
+                if v.varName in solvars.keys():         
+                    v.Start = round(int(solvars[v.varName]), 1)
+                    # print(v.varName)           
+                    # print(v.Start)
+                # elif v.varName == "I(8,12,25,27)":
+                    # print(v.varName)           
+                    # print(v.Start)
+                #     v.Start = 1
+                # elif v.varName == "B(13,14,21,24)":
+                    # print(v.varName)           
+                    # print(v.Start)
+                #     v.Start = 1
+                # else:
+                #     v.Start = 0 
+            mip.update()
+
+            for v in mip.getVars(): 
+
+                if v.Start > 0:
+                    print(f'{v.varName}::{v.Start}')
         
         opt_start_time = time.time()        
         mip.optimize()
@@ -149,7 +169,7 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
 
     try:
         
-        listP, listQ, listF, listL, listX, listH = add_binary_vars(this_RNA, mip, start)
+        listP, listQ, listX, listH = add_binary_vars(this_RNA, mip, start)
 
         mip.setObjective(objectiveStartTerm(this_RNA, listQ, listH), GRB.MINIMIZE)
         
@@ -160,8 +180,8 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
         onePairConstraints(this_RNA, mip)
         noCrossConstraints(this_RNA, mip)
         stemConstraints(this_RNA, mip)
-        firstPairConstraints(this_RNA, mip)
-        lastPairConstraints(this_RNA, mip)
+        # firstPairConstraints(this_RNA, mip)
+        # lastPairConstraints(this_RNA, mip)
         hairpinNTConstraints(this_RNA, mip)
         # hairpinZeroConstraints(this_RNA, mip, maxH)
         hairpinIfThenConstraints(this_RNA, mip)
@@ -196,7 +216,7 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
         # mip.setParam("PoolSolutions", 20)
         # mip.setParam("PoolSearchMode", 2)
         # mip.setParam("SolFiles", f"{chain_f}-decomposition-grb")
-        mip.setParam("LogFile", f'gurobi_log/log-{lp_file_name}')
+        mip.setParam("LogFile", f'{grb_log_dir}/log-{lp_file_name}')
         # mip.setParam("MIPFocus", 2)
         # mip.setParam("ConcurrentMIP ", 5)
         # mip.setParam("Presolve", 2)

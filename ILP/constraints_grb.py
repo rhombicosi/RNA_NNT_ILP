@@ -132,7 +132,7 @@ def hairpinNTConstraints(RNA, mip):
                     inequality.add(gp.LinExpr([1.0],[mip.getVarByName(f'P({j},{i})')]))
                     inq1 = True        
 
-        for j in range(i+1, len(RNA)):
+        for j in range(i+1, len(RNA)+1):
             if j - i > minD:
                 if RNA[i-1] + RNA[j-1] in cbp_list:
                     inequality.add(gp.LinExpr([1.0],[mip.getVarByName(f'P({i},{j})')]))
@@ -140,7 +140,7 @@ def hairpinNTConstraints(RNA, mip):
 
         if inq1 or inq2:
             inequality.add(gp.LinExpr([1.0],[mip.getVarByName(f'X({i})')]))
-            mip.addConstr(inequality >= 1, f'CX{i}')
+            mip.addConstr(inequality == 1, f'CX{i}')
 
     return inequality
 
@@ -265,14 +265,14 @@ def internalIfThenConstraints(RNA, mip):
                         inequality = gp.LinExpr(0)                        
 
                         for u in range(i+1,k):
-                            inequality.add(gp.LinExpr([1],[mip.getVarByName(f'Y({u})')]))
+                            inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
 
                         for u in range(l+1,j):
-                            inequality.add(gp.LinExpr([1],[mip.getVarByName(f'Y({u})')]))
+                            inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
                             
                         inequality.add(gp.LinExpr([1,1,-1],[mip.getVarByName(f'P({k},{l})'),mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'I({i},{k},{l},{j})')]))
 
-                        mip.addConstr(inequality <= k-i+j-l-1, f'CIIFT{i}-{k}-{l}-{j}')
+                        mip.addConstr(inequality <= round(k-i+j-l-1,2), f'CIIFT{i}-{k}-{l}-{j}')
 
     return inequality
 
@@ -416,7 +416,7 @@ def bulgeIfThenConstraints(RNA, mip):
                             inequality = gp.LinExpr(0)                        
 
                             for u in range(l+1,j):
-                                inequality.add(gp.LinExpr([1],[mip.getVarByName(f'Z({u})')]))
+                                inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
 
                             inequality.add(gp.LinExpr([1,1,-1],[mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'P({k},{l})'),mip.getVarByName(f'B({i},{k},{l},{j})')]))
                             mip.addConstr(inequality <= j-l, f'CBIFT{i}-{k}-{l}-{j}')
@@ -428,7 +428,7 @@ def bulgeIfThenConstraints(RNA, mip):
                             inequality = gp.LinExpr(0)                       
 
                             for u in range(j+1,l):
-                                inequality.add(gp.LinExpr([1],[mip.getVarByName(f'Z({u})')]))
+                                inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
 
                             inequality.add(gp.LinExpr([1,1,-1],[mip.getVarByName(f'P({j},{i})'),mip.getVarByName(f'P({l},{k})'),mip.getVarByName(f'B({j},{l},{k},{i})')]))
                             mip.addConstr(inequality <= l-j, f'CBIFT{j}-{l}-{k}-{i}')
@@ -583,13 +583,13 @@ def multiIfThenConstraints(RNA, mip):
                                 inequality = gp.LinExpr(0)                        
 
                                 for u in range(i+1,i1):
-                                    inequality.add(gp.LinExpr([1],[mip.getVarByName(f'W({u})')]))
+                                    inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
 
                                 for u in range(j1+1,i2):
-                                    inequality.add(gp.LinExpr([1],[mip.getVarByName(f'W({u})')]))
+                                    inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
 
                                 for u in range(j2+1,j):
-                                    inequality.add(gp.LinExpr([1],[mip.getVarByName(f'W({u})')]))
+                                    inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
                                     
                                 inequality.add(gp.LinExpr([1,1,1,-1],[mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'P({i1},{j1})'),mip.getVarByName(f'P({i2},{j2})'),mip.getVarByName(f'M({i},{i1},{j1},{i2},{j2},{j})')]))
 

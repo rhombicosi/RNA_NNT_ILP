@@ -8,10 +8,12 @@ sol_dir = create_dir(lp_path, sol_folder_name)
 lpstart_dir = create_dir(lp_path, lpstart_folder_name)
 solstart_dir = create_dir(lp_path, solstart_folder_name)
 dot_bracket_dir = create_dir(lp_path, dot_bracket_folder_name)
+dot_bracket_start_dir = create_dir(lp_path, dot_bracket_start_folder_name)
 dot_bracket_archive_dir = create_dir(archive_path, dot_bracket_archive_folder_name)
 rnastructure_fold_dir =  create_dir(archive_path, rnastructure_folder_name)
 dot_bracket_rnastructure_dir = create_dir(archive_path, dot_bracket_rnastructure_folder_name)
 efn2_archive_dir = create_dir(archive_path, efn2_archive_folder_name)
+grb_log_dir = create_dir(lp_path, grb_log)
 
 # get .seq and .ct files after clearing redundant files
 seq_list = get_filenames(archive_path, ".seq")

@@ -4,6 +4,10 @@
 /dot_bracket_50
 /dot_bracket_60
 /dot_brakcet_70
+/dot_bracket_80
+/dot_bracket_start_60
+/dot_brakcet_start_70
+/dot_bracket_start_80
 /data
 /lp_multi
 /sol_multi
@@ -12,3 +16,4 @@
 /lp
 /sol
 /gurobi_log
+/gurobi_log-old

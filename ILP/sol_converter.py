@@ -103,7 +103,7 @@ def compare2folds(generated, reference):
 
 
 
-def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir):
+def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, start):
 
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -112,9 +112,12 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
 
     seq_data = parse_seq_file(chain_file)
     this_RNA = seq_data['sequence']
-
-    filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
-    # filepath = os.path.join(sol_dir, f'{lp_file_name}-startl.sol')
+    
+    if start:
+        print("START")
+        filepath = os.path.join(solstart_dir, f'{lp_file_name}-start.sol')
+    else:
+        filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
 
     ic(filepath)
 
@@ -132,7 +135,7 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
     print(gen_brackets)
     print(gen_pairs)
 
-    filename = f'{dot_bracket_folder_name}/{lp_file_name + "-dotbrackets.txt"}'
+    filename = f'{dot_bracket_dir}/{lp_file_name + "-dotbrackets.txt"}'
 
     with open(filename, 'a') as file:
         file.write(gen_brackets)
