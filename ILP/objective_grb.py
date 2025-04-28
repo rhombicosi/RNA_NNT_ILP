@@ -154,9 +154,10 @@ def objectiveTerm(RNA, listQ, listH, listI, listB, listM):
 
     return objective
 
-def objectiveStartTerm(RNA, listQ, listH):
+def objectiveStartTerm(RNA, listQ, listH, listI):
     objective = stemTerm(RNA, listQ)
     objective.add(hairpinTerm(RNA, listH))
+    objective.add(internalTerm(RNA, listI))
 
     return objective
 

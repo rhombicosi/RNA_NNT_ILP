@@ -25,11 +25,11 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
     numB = 0#len(this_RNA)//3
     numM = 0#len(this_RNA)//3
     
-    start = 0
+    # start = 0
 
     try:
         
-        listP, listQ, listH, listI, listB, listM, listX, listY, listZ, listW = add_binary_vars(this_RNA, mip, start)
+        listP, listQ, listH, listI, listB, listM, listX, listY, listZ, listW = add_binary_vars(this_RNA, mip, 0)
 
         mip.setObjective(objectiveTerm(this_RNA, listQ, listH, listI, listB, listM), GRB.MINIMIZE)
         
@@ -76,7 +76,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
         # mip.setParam("PoolSolutions", 20)
         # mip.setParam("PoolSearchMode", 2)
         # mip.setParam("SolFiles", f"{chain_f}-decomposition-grb")
-        mip.setParam("LogFile", f'gurobi_log/log-{lp_file_name}')
+        mip.setParam("LogFile", f'{grb_log_dir}/log-{lp_file_name}')
         # mip.setParam("MIPFocus", 2)
         # mip.setParam("ConcurrentMIP ", 5)
         # mip.setParam("Presolve", 2)
@@ -115,10 +115,10 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
                 #     v.Start = 0 
             mip.update()
 
-            for v in mip.getVars(): 
+            # for v in mip.getVars(): 
 
-                if v.Start > 0:
-                    print(f'{v.varName}::{v.Start}')
+            #     if v.Start > 0:
+            #         print(f'{v.varName}::{v.Start}')
         
         opt_start_time = time.time()        
         mip.optimize()
@@ -169,9 +169,9 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
 
     try:
         
-        listP, listQ, listX, listH = add_binary_vars(this_RNA, mip, start)
+        listP, listQ, listX, listH, listI = add_binary_vars(this_RNA, mip, start)
 
-        mip.setObjective(objectiveStartTerm(this_RNA, listQ, listH), GRB.MINIMIZE)
+        mip.setObjective(objectiveStartTerm(this_RNA, listQ, listH, listI), GRB.MINIMIZE)
         
         # mip.addConstr(objectiveTerm(this_RNA, listQ, listH, listI, listB) >= MFE,"CMFE")
         # mip.addConstr(mip.getVarByName(f'B(14,15,28,30)') == 1)
@@ -189,8 +189,8 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
         # numHairpinConstraints(this_RNA, numH, mip)
         # internalNTConstraints(this_RNA, mip)
         # internalZeroConstraints(this_RNA, mip, maxI)
-        # internalIfThenConstraints(this_RNA, mip)
-        # internalOnlyIfConstraints(this_RNA, mip)
+        internalIfThenConstraints(this_RNA, mip)
+        internalOnlyIfConstraints(this_RNA, mip)
         # numInternalConstraints(this_RNA, numI, mip)
         # bulgeNTConstraints(this_RNA, mip)
         # bulgeZeroConstraints(this_RNA, mip, maxB)

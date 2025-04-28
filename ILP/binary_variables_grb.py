@@ -62,6 +62,14 @@ def add_binary_vars(RNA, mip, start):
             for j in range(i + minD + 1, n + 1):
                 if RNA[i-1] + RNA[j-1] in cbp_list:
                     listH[f'H({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'H({i},{j})')
+        
+        # create I variables
+        for i in range(1, n - minI - 1 - minD - 1 - minI - 1):
+            for k in range(i + minI + 1, n - minI - 1 - minD - 1):
+                for l in range(k + minD + 1, n - minI - 1):
+                    for j in range(l + minI + 1, n + 1):                        
+                        if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
+                            listI[f'I({i},{k},{l},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'I({i},{k},{l},{j})')
 
         if not start:
 
@@ -76,14 +84,6 @@ def add_binary_vars(RNA, mip, start):
             # # create W variables for each nucleotide
             # for i in range(1, n):
             #     listW[f'W({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'W({i})')
-            
-            # create I variables
-            for i in range(1, n - minI - 1 - minD - 1 - minI - 1):
-                for k in range(i + minI + 1, n - minI - 1 - minD - 1):
-                    for l in range(k + minD + 1, n - minI - 1):
-                        for j in range(l + minI + 1, n + 1):                        
-                            if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
-                                listI[f'I({i},{k},{l},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'I({i},{k},{l},{j})')
 
             # create B variables
             for i in range(1, n + 1):
@@ -135,4 +135,4 @@ def add_binary_vars(RNA, mip, start):
     if not start:
         return listP, listQ, listH, listI, listB, listM, listX, listY, listZ, listW
     else:
-        return listP, listQ, listX, listH
+        return listP, listQ, listX, listH, listI

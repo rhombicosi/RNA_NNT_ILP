@@ -4,6 +4,12 @@ from collections import defaultdict
 from icecream import ic
 import shutil
 import subprocess
+import re
+
+def sort_numeric_alpha(lst):
+    def numeric_alpha_key(s):
+        return [int(part) if part.isdigit() else part for part in re.findall(r'\d+|\D+', s)]
+    return sorted(lst, key=numeric_alpha_key)
 
 def get_filenames(dir_path, f_type):
     f_list = []
@@ -135,27 +141,24 @@ def create_directory_and_copy_selected_files(src_dir, dest_dir, new_folder_name,
     # print(f"Selected files have been copied to {new_folder_path}")
 
 # select sequences of a specific length less then some value
-def get_seq_of_len(seq_list, seq_len, ct_list):
+def get_seq_of_len(seq_list, ct_list, seq_len):
     seq_len_list = []
     ct_len_list = []
     seq_len_files = []
     ct_len_files = []
 
+    seq_list = sort_numeric_alpha(seq_list)
+    ct_list = sort_numeric_alpha(ct_list)
+
     for (seq,ct) in zip(seq_list, ct_list):
         seq_data = parse_seq_file(seq)
-        ct_data = parse_ct_file(ct)        
+        ct_data = parse_ct_file(ct)
 
         if len(seq_data['sequence']) <= seq_len:
             seq_len_files.append(seq)
             ct_len_files.append(ct)
             seq_len_list.append(seq_data)
             ct_len_list.append(ct_data)
-            # ic(seq)
-            # ic(f"Identifier: {seq_data['identifier']}")
-            # ic(f"Sequence: {seq_data['sequence']}")
-
-    # ic(seq_len_list)
-    # ic(ct_len_list)
 
     return seq_len_files,ct_len_files
 
@@ -174,9 +177,10 @@ def ct2dot(ct_files, first_file, last_file, dot_bracket_dir):
         ct = ct_files[ct_number]
         ct_name_with_ext = os.path.basename(ct)
         ct_name_without_ext = os.path.splitext(ct_name_with_ext)[0]
+        #print(f'{ct_number}::{ct_name_with_ext}::{ct_name_without_ext}')
 
         result = subprocess.run(['ct2dot', ct,'1', f'{dot_bracket_dir}/{ct_name_without_ext + ".txt"}'], capture_output=True, text=True)
-        print(result.stdout)
+        # print(result.stdout)
 
 # generate .ct with RNA structure
 def rnastruct_fold(seq_files, first_file, last_file, fold_dir):
@@ -188,7 +192,7 @@ def rnastruct_fold(seq_files, first_file, last_file, fold_dir):
         ct = os.path.join(fold_dir,f'{seq_name_without_ext + ".ct"}')
 
         result = subprocess.run(['fold', seq, ct], capture_output=True, text=True)
-        print(result.stdout)
+        # print(result.stdout)
 
 # calculate energy based on .ct file data
 def rnastruct_efn2(ct_files, first_file, last_file, efn2_dir):
@@ -200,8 +204,7 @@ def rnastruct_efn2(ct_files, first_file, last_file, efn2_dir):
         efn2 = os.path.join(efn2_dir,f'{ct_name_without_ext + ".txt"}')
 
         result = subprocess.run(['efn2', ct, efn2], capture_output=True, text=True)
-        print(result.stdout)
-
+        # print(result.stdout)
 
 def dot_from_txt(f_txt):
     # Open the file in read mode 'your_file.txt'

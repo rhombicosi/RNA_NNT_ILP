@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     create_directory_and_move_selected_files(source_directory, destination_directory, badfiles_dir, selected_files)
 
-    seq_len_files,ct_len_files = get_seq_of_len(seq_list,seq_len,ct_list)
+    seq_len_files,ct_len_files = get_seq_of_len(seq_list,ct_list,seq_len)
 
     create_directory_and_copy_selected_files(source_directory, destination_directory, seq_len_dir, seq_len_files)
     create_directory_and_copy_selected_files(source_directory, destination_directory, ct_len_dir, ct_len_files)    
