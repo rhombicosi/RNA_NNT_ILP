@@ -42,10 +42,14 @@ def lParams(RNA):
 def hairpinParams(RNA):
     g = {}
     n = len(RNA)
-    for i in range(1,n - minD - 1):
+    for i in range(1,n - minD):
         for j in range(i + minD + 1, n + 1):
-            if RNA[i-1] + RNA[j-1] in cbp_list:  
-                g[f'H{i}',f'H{j}'] = G_hairpin(RNA,i,j)
+            if RNA[i-1] + RNA[j-1] in cbp_list:
+                if i == 1 or j == n:
+                    if legal(RNA,i+1,j-1): # check for isolated pairs
+                        g[f'H{i}',f'H{j}'] = G_hairpin(RNA,i,j)
+                elif legal(RNA,i+1,j-1) or legal(RNA,i-1,j+1): # check for isolated pairs
+                    g[f'H{i}',f'H{j}'] = G_hairpin(RNA,i,j)
     
     return g
 
@@ -57,7 +61,6 @@ def internalParams(RNA):
             for l in range(k + minD + 1, n - minI  - 1):
                 for j in range(l + minI + 1, n + 1):
                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
-
                        g[f'I{i}',f'I{k}',f'I{l}',f'I{j}'] = G_internal(RNA,i,k,l,j)
 
     return g
@@ -65,7 +68,7 @@ def internalParams(RNA):
 def bulgeParams(RNA):
     g = {}
     n = len(RNA)
-    for i in range(1, n + 1):
+    for i in range(1, n -minD + 1):
         for k in range(1, n):
             if k == i+1:
                 for l in range(k + minD+1, n - 1):

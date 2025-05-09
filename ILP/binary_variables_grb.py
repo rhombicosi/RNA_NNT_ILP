@@ -27,25 +27,32 @@ def add_binary_vars(RNA, mip, start):
     listW = {}      # listW are nucleotides of the bulge loop variables
 
     n = len(RNA)
+    
+    print(RNA)
+    print(n)
 
     try:
         # create P variables
-        for i in range(1, n): 
+        for i in range(1, n - minD): 
             for j in range(i + minD + 1, n + 1):
                 if legal(RNA,i,j):
-                        listP[f'P({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'P({i},{j})')                
+                    if i == 1 or j == n:
+                        if legal(RNA,i+1,j-1): # check for isolated pairs
+                            listP[f'P({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'P({i},{j})')
+                    elif legal(RNA,i+1,j-1) or legal(RNA,i-1,j+1): # check for isolated pairs 
+                        listP[f'P({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'P({i},{j})')           
                         
-                        # listF[f'F({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'F({i},{j})')
+                    # listF[f'F({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'F({i},{j})') # temporally omitted
         
         # create Q and F variables
-        for i in range(1, n): 
+        for i in range(1, n - minD): 
             for j in range(i + minD + 1, n + 1):
                 if legal(RNA,i,j):
                     if legal(RNA,i + 1, j - 1):
                             listQ[f'Q({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'Q({i},{j})')
-                            # listF[f'F({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'F({i},{j})')
+                            # listF[f'F({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'F({i},{j})') # temporally omitted
         
-        # # create L variables    
+        # # create L variables # temporally omitted   
         # for i in range(1, n): 
         #     for j in range(i + minD + 1, n + 1):
         #         if legal(RNA,i,j):
@@ -54,14 +61,18 @@ def add_binary_vars(RNA, mip, start):
         #                     listL[f'L({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'L({i},{j})')
 
         # create X variables for each nucleotide
-        for i in range(1, n+1):
+        for i in range(1, n + 1):
             listX[f'X({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'X({i})')
         
         # create H variables
-        for i in range(1,n - minD - 1):
+        for i in range(1, n - minD):
             for j in range(i + minD + 1, n + 1):
                 if RNA[i-1] + RNA[j-1] in cbp_list:
-                    listH[f'H({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'H({i},{j})')
+                    if i == 1 or j == n:
+                        if legal(RNA,i+1,j-1): # check for isolated pairs
+                            listH[f'H({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'H({i},{j})')
+                    elif legal(RNA,i+1,j-1) or legal(RNA,i-1,j+1): # check for isolated pairs
+                        listH[f'H({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'H({i},{j})')
         
         # create I variables
         for i in range(1, n - minI - 1 - minD - 1 - minI - 1):
@@ -73,25 +84,25 @@ def add_binary_vars(RNA, mip, start):
 
         if not start:
 
-            # # create Y variables for each nucleotide
+            # # create Y variables for each nucleotide #unified in one var X(i)
             # for i in range(1, n):
             #     listY[f'Y({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'Y({i})')
 
-            # # create Z variables for each nucleotide
+            # # create Z variables for each nucleotide #unified in one var X(i)
             # for i in range(1, n):
             #     listZ[f'Z({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'Z({i})')
 
-            # # create W variables for each nucleotide
+            # # create W variables for each nucleotide #unified in one var X(i)
             # for i in range(1, n):
             #     listW[f'W({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'W({i})')
 
             # create B variables
-            for i in range(1, n + 1):
+            for i in range(1, n - minD + 1):
                 for k in range(1, n):
                     if k == i+1:
                         for l in range(k + minD + 1, n - 1):
                             for j in range(l + 2, n + 1):
-                                if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
+                                if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:                                    
                                     listB[f'B({i},{k},{l},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'B({i},{k},{l},{j})')
                     elif k == i-1:
                         for l in range(k-minD-1,4,-1):
@@ -127,9 +138,7 @@ def add_binary_vars(RNA, mip, start):
         print('Encountered an attribute error')  
     
     mip.update() 
-    print(RNA)
-    print(n)
-    # print(listM)
+    # print(listP)
     # print(len(listM))
     
     if not start:

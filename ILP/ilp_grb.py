@@ -30,6 +30,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
     try:
         
         listP, listQ, listH, listI, listB, listM, listX, listY, listZ, listW = add_binary_vars(this_RNA, mip, 0)
+        mip.update()
 
         mip.setObjective(objectiveTerm(this_RNA, listQ, listH, listI, listB, listM), GRB.MINIMIZE)
         
@@ -42,7 +43,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
         stemConstraints(this_RNA, mip)
         # firstPairConstraints(this_RNA, mip)
         # lastPairConstraints(this_RNA, mip)
-        hairpinNTConstraints(this_RNA, mip)
+        loopNTConstraints(this_RNA, mip)
         # hairpinZeroConstraints(this_RNA, mip, maxH)
         hairpinIfThenConstraints(this_RNA, mip)
         # hairpinOnlyIfConstraints(this_RNA, mip)
@@ -64,6 +65,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
         # numMultiConstraints(this_RNA, numM, mip)
         # numGreaterMultiConstraints(this_RNA, numM, mip)
         consecutiveUnpairedConstraints(this_RNA, L, mip)
+        isolatedPairsConstraints(this_RNA, mip)
 
         mip.update()   
 
@@ -87,17 +89,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, start = solstart_dir):
         if start:
 
             solvars = read_sol(f'{solstart_dir}/{lp_file_name}-start.sol')
-
-            # solvars = {}        
-
-            # with open(f'{solstart_dir}/{lp_file_name}-start.sol','r') as f:
-            #     lines = f.readlines()
-            #     for line in lines[2:]:
-            #         parts = line.strip().split()
-            #         if len(parts) >= 2:  # Ensure at least two parts exist
-            #             key, value = parts[0], parts[1]
-            #             solvars[key] = value
-
+            
             for v in mip.getVars(): 
                 if v.varName in solvars.keys():         
                     v.Start = round(int(solvars[v.varName]), 1)
@@ -170,6 +162,7 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
     try:
         
         listP, listQ, listX, listH, listI = add_binary_vars(this_RNA, mip, start)
+        mip.update()
 
         mip.setObjective(objectiveStartTerm(this_RNA, listQ, listH, listI), GRB.MINIMIZE)
         
@@ -182,7 +175,7 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
         stemConstraints(this_RNA, mip)
         # firstPairConstraints(this_RNA, mip)
         # lastPairConstraints(this_RNA, mip)
-        hairpinNTConstraints(this_RNA, mip)
+        loopNTConstraints(this_RNA, mip)
         # hairpinZeroConstraints(this_RNA, mip, maxH)
         hairpinIfThenConstraints(this_RNA, mip)
         # hairpinOnlyIfConstraints(this_RNA, mip)
@@ -204,6 +197,7 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
         # numMultiConstraints(this_RNA, numM, mip)
         # numGreaterMultiConstraints(this_RNA, numM, mip)
         consecutiveUnpairedConstraints(this_RNA, L, mip)
+        isolatedPairsConstraints(this_RNA, mip)
 
         mip.update()   
 

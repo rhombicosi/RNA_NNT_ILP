@@ -55,7 +55,6 @@ def pairs2brackets(filepath, RNA):
                 fold[j - 1] = ")"
                 
             line = fp.readline()
-            # p_str = line.find("P(")
             cnt += 1
 
     fold = ''.join([str(elem) for elem in fold])
@@ -134,7 +133,8 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_arc
   
     file_bracket = f'{dot_bracket_dir}/{lp_file_name + "-dotbrackets.txt"}'
 
-    with open(file_bracket, 'a') as file:
+    # with open(file_bracket, 'a') as file:
+    with open(file_bracket, 'w') as file:
         file.write(gen_brackets)
         file.write("\n")
 

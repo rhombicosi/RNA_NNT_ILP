@@ -1,10 +1,10 @@
 import os
-# from pathlib import Path
 from collections import defaultdict
 from icecream import ic
 import shutil
 import subprocess
 import re
+import forgi.graph.bulge_graph as cgb
 
 def sort_numeric_alpha(lst):
     def numeric_alpha_key(s):
@@ -306,3 +306,34 @@ def read_sol(f_name):
                     solvars[key] = value
     
     return solvars
+
+def find_mloop(db_file_path):
+
+    with open(db_file_path, "r") as file:
+        db_string = file.read().strip()
+
+    bg = cgb.BulgeGraph.from_dotbracket(db_string)
+
+    multiloop_stem_dict = {}
+
+    for loop_id in bg.defines:
+        if loop_id.startswith('m'):  # multiloop
+            connected = bg.connections(loop_id)       
+            multiloop_stem_dict[loop_id] = connected
+
+    if not multiloop_stem_dict:
+        pass
+    else:
+        # Get the last key in the dictionary
+        last_key = list(multiloop_stem_dict.keys())[-1]
+
+        # Flip the list corresponding to the last key
+        multiloop_stem_dict[last_key] = multiloop_stem_dict[last_key][::-1]
+
+        last_mloop = list(bg.mloop_iterator())[-1]
+
+        for m in bg.mloop_iterator():
+            s_start, s_end = multiloop_stem_dict[m]
+            
+            start_idx = 1 if m == 'm0' else 3
+            end_idx = 2 if m == last_mloop else 0
