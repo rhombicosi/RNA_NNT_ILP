@@ -58,16 +58,16 @@ def add_binary_vars(RNA, mip):
             listX[f'X({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'X({i})')
 
         # create Y variables for each nucleotide
-        for i in range(1, n):
-            listY[f'Y({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'Y({i})')
+        # for i in range(1, n):
+        #     listY[f'Y({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'Y({i})')
 
         # create Z variables for each nucleotide
-        for i in range(1, n):
-            listZ[f'Z({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'Z({i})')
+        # for i in range(1, n):
+        #     listZ[f'Z({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'Z({i})')
 
         # create W variables for each nucleotide
-        for i in range(1, n):
-            listW[f'W({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'W({i})')
+        # for i in range(1, n):
+        #     listW[f'W({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'W({i})')
 
         # create H variables
         for i in range(1,n - minD - 1):
@@ -127,4 +127,4 @@ def add_binary_vars(RNA, mip):
     # print(listB)
     # print(len(listM))
 
-    return listP, listQ, listF, listL, listH, listI, listB, listM, listX, listY, listZ, listW
+    return listP, listQ, listF, listL, listH, listI, listB, listM, listX

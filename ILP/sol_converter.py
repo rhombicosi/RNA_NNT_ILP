@@ -3,6 +3,7 @@ from binary_variables_grb import *
 from constants_paths import *
 from prepro_run import *
 from prepro_utils import *
+import math
 
 def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)
@@ -54,7 +55,6 @@ def pairs2brackets(filepath, RNA):
                 fold[j - 1] = ")"
                 
             line = fp.readline()
-            # p_str = line.find("P(")
             cnt += 1
 
     fold = ''.join([str(elem) for elem in fold])
@@ -83,18 +83,23 @@ def compare2folds(generated, reference):
     FN = len(reference - generated) # pairs that have not been identified
     FP = len(generated - reference) # pairs that have been identified as part of the structure incorrectly
 
-    # precision = TP/(TP + FP)
-    # recall = TP/(TP + FN)
-    f1 = 2*TP/(2*TP + FP + FN)
-    fbeta = (1+beta**2)*TP/((1+beta**2)*TP + (beta**2)*FN + FP)
+    if TP == 0 and (FP == 0 or FN == 0):
+        f1 = 0
+        fbeta = 0
+        PPV = 0
+        STY = 0
+        MCC = 0
+    else:    
+        f1 = 2*TP/(2*TP + FP + FN)
+        fbeta = (1+beta**2)*TP/((1+beta**2)*TP + (beta**2)*FN + FP)
 
-    # print(TP)
-    # print(FN)
-    # print(FP)
+        PPV = TP/(TP+FP)
+        STY = TP/(TP+FN)
+        MCC = math.sqrt(PPV*STY)
 
-    return (f1,fbeta)
+    return (f1,fbeta,MCC)
 
-def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir):
+def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir):
 
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -103,7 +108,8 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
 
     seq_data = parse_seq_file(chain_file)
     this_RNA = seq_data['sequence']
-
+    
+    
     filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
 
     ic(filepath)
@@ -117,14 +123,15 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
     rnastruct_brackets = dot_from_txt(rnastruct_bracket_path)
 
 
-    (gen_brackets, gen_pairs,rna_len) = pairs2brackets(filepath, this_RNA)
+    (gen_brackets,gen_pairs,rna_len) = pairs2brackets(filepath, this_RNA)
 
     print(gen_brackets)
     print(gen_pairs)
+  
+    file_bracket = f'{dot_bracket_dir}/{lp_file_name + "-dotbrackets.txt"}'
 
-    filename = f'{dot_bracket_folder_name}/{lp_file_name + "-dotbrackets.txt"}'
-
-    with open(filename, 'a') as file:
+    # with open(file_bracket, 'a') as file:
+    with open(file_bracket, 'w') as file:
         file.write(gen_brackets)
         file.write("\n")
 
@@ -137,14 +144,15 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_archive_dir, dot_bra
     print(reference)
     print(rnastruct)
 
-    (f1_ref,fbeta_ref) = compare2folds(generated, reference)
-    (f1_rnastruct,fbeta_rnastruct) = compare2folds(generated, rnastruct)
+    (f1_lilp,fbeta_lilp,MCC_lilp) = compare2folds(generated, reference)
+    (f1_rnastruct,fbeta_rnastruct,MCC_rnastruct) = compare2folds(rnastruct, reference)
 
-
-    print(f1_ref)
-    print(fbeta_ref)
+    print(f1_lilp)
+    print(fbeta_lilp)
+    print(MCC_lilp)
 
     print(f1_rnastruct)
     print(fbeta_rnastruct)
+    print(MCC_rnastruct)
 
-    return f1_ref, fbeta_ref, f1_rnastruct, fbeta_rnastruct, rna_len
+    return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct
