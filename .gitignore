@@ -1,11 +1,16 @@
 /loops
-/__pycache__
+__pycache__/
 /generated_models
 /dot_bracket_50
 /dot_bracket_60
 /dot_brakcet_70
+/dot_bracket_start_60
 /data
+/lp_start
+/sol_start
 /lp_multi
 /sol_multi
 /lp
 /sol
+/gurobi_log
+ILP/__pycache__/

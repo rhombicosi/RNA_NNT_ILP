@@ -1,2 +1,4 @@
 RNA sequence name                            	# of nts  	Time(s)   	MFE ILP   	MFE ARCHIVE	MFE RNAstr	F1 ILP    	F1 RNAstr 	Fb ILP    	Fb RNAstr 	INF ILP   	INF RNAstr
 srp_Acin.spec._CR543861                      	47        	369.27    	-14.83    	-14.30    	-14.30    	1.00      	1.00      	1.00      	1.00      	1.00      	1.00      
+srp_Baci.amyl._CP000560                      	30        	0.59      	-7.43     	-5.00     	-5.00     	1.00      	1.00      	1.00      	1.00      	1.00      	1.00      
+srp_Baci.subt._X06803                        	53        	1665.20   	-10.38    	-8.00     	-8.40     	0.88      	0.92      	0.82      	0.88      	0.89      	0.93      
