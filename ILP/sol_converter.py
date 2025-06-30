@@ -157,7 +157,7 @@ def compare2folds(generated, reference):
 
 #     return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct
 
-def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, start):
+def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, start, s_start = 1):
 
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -169,7 +169,7 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_arc
     
     if start:
         print("START")
-        filepath = os.path.join(solstart_dir, f'{lp_file_name}-start.sol')
+        filepath = os.path.join(solstart_dir, f'{lp_file_name}-start-{s_start}.sol')
     else:
         filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
 

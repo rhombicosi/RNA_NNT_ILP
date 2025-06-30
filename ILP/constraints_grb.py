@@ -98,6 +98,17 @@ def lastPairConstraints(RNA, mip):
 
     return inequality
 
+def stemStartConstraints(RNA, mip, start, end):
+    n = len(RNA)
+    for i in range(1, n): 
+        for j in range(i + minD + 1, n + 1):
+            if legal(RNA,i,j):
+                if legal(RNA,i + 1, j - 1):
+                    if i < start or i > end or j < start or j > end:
+                        inequality = gp.LinExpr([1],[mip.getVarByName(f'Q({i},{j})')])
+                        mip.addConstr(inequality == 0, f'CSS{i}-{j}')
+
+
 # ########### HAIRPIN LOOP :: SET OF CONSTRAINTS #############
 
 def hairpinNTConstraints(RNA, mip):
@@ -185,6 +196,15 @@ def numHairpinConstraints(RNA, numH, mip):
     mip.addConstr(inequality <= numH, f'CHN')
     
     return inequality
+
+def hairpinStartConstraints(RNA, mip, start, end):
+    n = len(RNA)
+    for i in range(1,n - minD - 1):
+        for j in range(i + minD + 1, n + 1):
+            if RNA[i-1] + RNA[j-1] in cbp_list:
+                if i < start or i > end or j < start or j > end:
+                    inequality = gp.LinExpr([1],[mip.getVarByName(f'H({i},{j})')])
+                    mip.addConstr(inequality == 0, f'CHS{i}-{j}')
 
 # ############# INTERNAL LOOP :: SET OF CONSTRAINTS ############
 
@@ -308,6 +328,17 @@ def numInternalConstraints(RNA, numI, mip):
     mip.addConstr(inequality <= numI, 'CIN')
 
     return inequality
+
+def internalStartConstraints(RNA, mip, start, end):
+    n = len(RNA)
+    for i in range(1, n - minI - 1 - minD - 1 - minI - 1):
+        for k in range(i + minI + 1, n - minI - 1 - minD - 1):
+            for l in range(k + minD + 1, n - minI  - 1):
+                for j in range(l + minI + 1, n + 1):
+                    if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
+                        if i < start or i > end or j < start or j > end:
+                            inequality = gp.LinExpr([1],[mip.getVarByName(f'I({i},{k},{l},{j})')])
+                            mip.addConstr(inequality == 0, f'CIS{i}-{k}-{l}-{j}')
 
 # ############## BULGE LOOP :: SET OF CONSTRAINTS #############
 
@@ -464,6 +495,25 @@ def numBulgeConstraints(RNA, numB, mip):
     mip.addConstr(inequality <= numB, f'CBN')
     
     return inequality
+
+def bulgeStartConstraints(RNA, mip, start, end):
+    n = len(RNA)
+    for i in range(1, n + 1):
+        for k in range(1, n):
+            if k == i+1:
+                for l in range(k + minD + 1, n - 1):
+                    for j in range(l + 2, n + 1):
+                        if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
+                            if i < start or i > end or j < start or j > end:
+                                inequality = gp.LinExpr([1],[mip.getVarByName(f'B({i},{k},{l},{j})')])
+                                mip.addConstr(inequality == 0, f'CBS{i}-{k}-{l}-{j}')
+            elif k == i-1:
+                for l in range(k-minD-1,4,-1):
+                    for j in range(l - 2, 1, -1):
+                        if RNA[j-1] + RNA[i-1] in cbp_list and RNA[l-1] + RNA[k-1] in cbp_list:
+                            if j < start or j > end or i < start or i > end:
+                                inequality = gp.LinExpr([1],[mip.getVarByName(f'B({j},{l},{k},{i})')])
+                                mip.addConstr(inequality == 0, f'CBS{j}-{l}-{k}-{i}')
 
 # ############# 3 MULTI LOOP :: SET OF CONSTRAINTS ############
 
