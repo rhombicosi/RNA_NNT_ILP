@@ -36,10 +36,3 @@ mismatch_df = pd.DataFrame(mismatch_data, index = midx, columns=nucleotides)
 # print(mismatch_df)
 
 # print(mismatch_df.loc['CG', 'G']['A'])
-
-
-
-
-
-
-
