@@ -310,10 +310,11 @@ int22 = np.array([[[[2.8, 2.3, 1.7, 2.3, 2.8, 2.8, 2.8, 2.8, 1.8, 2.3, 1.2, 2.3,
                    [[3.6, 2.7, 1.9, 2.7, 2.7, 2.7, 2.7, 2.7, 3.6, 2.7, 1.4, 2.7, 2.7, 2.7, 2.7, 3.3], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.7, 3.4, 2.6, 3.4, 3.4, 4.0, 3.4, 4.0, 3.0, 3.4, 3.4, 3.4, 3.4, 4.0, 3.4, 3.4], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.4, 3.1, 2.9, 3.1, 3.1, 3.1, 3.1, 3.1, 3.3, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.4, 3.1, 2.9, 3.1, 3.1, 3.1, 3.1, 3.1, 3.3, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [2.2, 1.7, 0.2, 1.7, 1.7, 2.3, 1.7, 2.3, 1.3, 1.7, 1.7, 1.7, 1.7, 2.3, 1.7, 1.7], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [2.1, 1.8, 2.3, 1.8, 1.8, 1.8, 1.8, 1.8, 2.7, 1.8, 3.1, 1.8, 1.8, 1.8, 1.8, 3.1], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.4, 3.1, 2.9, 3.1, 3.1, 3.1, 3.1, 3.1, 3.3, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [3.4, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 1.8, 3.1, 3.1, 3.1, 3.1, 3.1], [4.0, 3.1, 2.3, 3.1, 3.1, 3.1, 3.1, 3.1, 2.7, 3.1, 3.1, 3.1, 3.1, 3.1, 3.1, 3.1]]]])
 
 int22_t=int22.transpose(0,2,1,3)
-int22_data = int22_t.reshape(bps.size*nps.size, bps.size*nps.size)
+bps2 = np.array(['AU','CG','GC','GU','UA','UG'])
+int22_data = int22_t.reshape(bps2.size*nps.size, bps2.size*nps.size)
 
-midx = pd.MultiIndex.from_product([bps, nps])
-nidx = pd.MultiIndex.from_product([bps, nps])
+midx = pd.MultiIndex.from_product([bps2, nps])
+nidx = pd.MultiIndex.from_product([bps2, nps])
 
 int22_df = pd.DataFrame(int22_data * c, index = midx, columns=nidx)
 
@@ -334,15 +335,15 @@ int23 = np.zeros((16,6))
 int23_df = pd.DataFrame(int23, index=nps, columns=bps)
 
 for yr in YR:
-    int23_df.loc['AG'][yr] = -0.5
-    int23_df.loc['GA'][yr] = -1.1
+    int23_df.loc['AG', yr] = -0.5
+    int23_df.loc['GA', yr] = -1.1
 
 for ry in RY:
-    int23_df.loc['GA'][ry] = -1.2
+    int23_df.loc['GA', ry] = -1.2
 
 for bp in bps:
-    int23_df.loc['GG'][bp] = -0.8
-    int23_df.loc['UU'][bp] = -0.4
+    int23_df.loc['GG', bp] = -0.8
+    int23_df.loc['UU', bp] = -0.4
 
 int23_df = int23_df.transpose() * c
 
@@ -355,10 +356,10 @@ intnn = np.zeros((16,6))
 intnn_df = pd.DataFrame(intnn, index=nps, columns=bps)
 
 for bp in bps:
-  intnn_df.loc['AG'][bp] = -0.8
-  intnn_df.loc['GA'][bp] = -1.0
-  intnn_df.loc['GG'][bp] = -1.2
-  intnn_df.loc['UU'][bp] = -0.7
+  intnn_df.loc['AG', bp] = -0.8
+  intnn_df.loc['GA', bp] = -1.0
+  intnn_df.loc['GG', bp] = -1.2
+  intnn_df.loc['UU', bp] = -0.7
 
 intnn_df = intnn_df.transpose() * c
 

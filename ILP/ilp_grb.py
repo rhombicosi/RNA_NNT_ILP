@@ -21,10 +21,10 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
     mip = gp.Model(f'MIP-{seq_number}')
 
     # set the number of loops
-    numH = len(this_RNA)//5
-    numI = 3 #len(this_RNA)//4
-    numB = len(this_RNA)//3
-    numM = 0
+    numH = 1 #len(this_RNA)//5
+    numI = 1 #len(this_RNA)//4
+    numB = 0 #len(this_RNA)//3
+    numM = 1
 
     try:
         
@@ -42,22 +42,22 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
         # hairpinNTConstraints(this_RNA, mip)
         hairpinZeroConstraints(this_RNA, mip, maxH)
         hairpinIfThenConstraints(this_RNA, mip)
-        # hairpinOnlyIfConstraints(this_RNA, mip)
+        hairpinOnlyIfConstraints(this_RNA, mip)
         # numHairpinConstraints(this_RNA, numH, mip)
         # internalNTConstraints(this_RNA, mip)
         internalZeroConstraints(this_RNA, mip, maxI)
         internalIfThenConstraints(this_RNA, mip)
         internalOnlyIfConstraints(this_RNA, mip)
-        numInternalConstraints(this_RNA, numI, mip)
+        # numInternalConstraints(this_RNA, numI, mip)
         # bulgeNTConstraints(this_RNA, mip)
         bulgeZeroConstraints(this_RNA, mip, maxB)
         bulgeIfThenConstraints(this_RNA, mip)
-        # bulgeOnlyIfConstraints(this_RNA, mip)
+        bulgeOnlyIfConstraints(this_RNA, mip)
         # numBulgeConstraints(this_RNA, numB, mip)
         # multiNTConstraints(this_RNA, mip)
         multiZeroConstraints(this_RNA,mip,maxM)
         multiIfThenConstraints(this_RNA, mip)
-        # multiOnlyIfConstraints(this_RNA, mip)
+        multiOnlyIfConstraints(this_RNA, mip)
         numMultiConstraints(this_RNA, numM, mip)
         loopNTConstraints(this_RNA, mip)
 
@@ -84,7 +84,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
             mip.update()
 
             # iterate over all MIP starts
-            for s in range(1,mip.NumStart):
+            for s in range(0,mip.NumStart):
             
                 # set StartNumber
                 mip.params.StartNumber = s
@@ -98,9 +98,9 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
                     
             mip.update()
 
-        # vars_with_Q = [var for var in mip.getVars() if 'Q' in var.VarName]
-        # for i in range(len(vars_with_Q)):
-        #     vars_with_Q[i].setAttr("BranchPriority",100)
+        vars_with_Q = [var for var in mip.getVars() if 'Q' in var.VarName]
+        for i in range(len(vars_with_Q)):
+            vars_with_Q[i].setAttr("BranchPriority",100)
 
         # vars_with_H = [var for var in mip.getVars() if 'H' in var.VarName]
         # for i in range(len(vars_with_H)):
@@ -119,7 +119,6 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
         #     vars_with_M[i].setAttr("BranchPriority",50)
 
         mip.update()
-
 
         opt_start_time = time.time()
         mip.optimize()
@@ -284,7 +283,6 @@ def optimize_multi_start(seq_files, seq_number, lpstart_dir, solstart_dir, s_sta
         mip.update()
 
         mip.setObjective(objectiveStartTerm(this_RNA, listQ, listH, listI), GRB.MINIMIZE)
-        
         # mip.addConstr(objectiveStartTerm(this_RNA, listQ, listH, listI) >= MFE,"CMFE")
         # mip.addConstr(mip.getVarByName(f'B(14,15,28,30)') == 1)
         # mip.addConstr(mip.getVarByName(f'H(19,24)') == 1)
@@ -319,9 +317,9 @@ def optimize_multi_start(seq_files, seq_number, lpstart_dir, solstart_dir, s_sta
         loopNTConstraints(this_RNA, mip)        
 
         # add start constaints
-        stemStartConstraints(this_RNA, mip, s_start, subseq_len+s_start-1)
-        hairpinStartConstraints(this_RNA, mip, s_start, subseq_len+s_start-1)
-        internalStartConstraints(this_RNA, mip, s_start, subseq_len+s_start-1)
+        stemStartConstraints(this_RNA, mip, s_start, subseq_len+s_start)
+        hairpinStartConstraints(this_RNA, mip, s_start, subseq_len+s_start)
+        internalStartConstraints(this_RNA, mip, s_start, subseq_len+s_start)
 
         mip.update()   
 

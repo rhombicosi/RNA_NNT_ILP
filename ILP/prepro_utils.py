@@ -264,14 +264,56 @@ def get_energy_from_ct_file(file_path):
 #     with open(filename, 'a') as file:
 #         file.write(line)
 
-def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rna, f1_gen, f1_rna, fb_gen, fb_rna, mcc_gen, mcc_rna, filename="ilp_results.txt"):
-    # Define the headers
-    headers = ["RNA sequence name", "# of nts", "Time(s)", "MFE ILP", "MFE ARCHIVE", "MFE RNAstr",
-               "F1 ILP", "F1 RNAstr", "Fb ILP", "Fb RNAstr", "INF ILP", "INF RNAstr"]
+# def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rna, f1_gen, f1_rna, fb_gen, fb_rna, mcc_gen, mcc_rna, filename="ilp_results.txt"):
+#     # Define the headers
+#     headers = ["RNA sequence name", "# of nts", "Time(s)", "MFE ILP", "MFE ARCHIVE", "MFE RNAstr",
+#                "F1 ILP", "F1 RNAstr", "Fb ILP", "Fb RNAstr", "INF ILP", "INF RNAstr"]
     
 
+#     # Check if the file exists and is not empty
+#     file_exists = os.path.exists(filename) and os.path.getsize(filename) > 0
+#     # Format the floating point numbers to 2 decimal places and ensure all values are strings
+#     values = [
+#         sequence_name, 
+#         rna_len,
+#         f"{time:.2f}",
+#         f"{mfe_gen:.2f}", 
+#         f"{mfe_ref:.2f}", 
+#         f"{mfe_rna:.2f}", 
+#         f"{f1_gen:.2f}", 
+#         f"{f1_rna:.2f}", 
+#         f"{fb_gen:.2f}", 
+#         f"{fb_rna:.2f}",
+#         f"{mcc_gen:.2f}",
+#         f"{mcc_rna:.2f}"
+
+#     ]
+
+#     headers_line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*headers)
+    
+#     # Format the output so that each value is aligned with tabs
+#     line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
+    
+#     # Open the file in append mode, create if not exists
+#     with open(filename, 'a') as file:
+#         # If the file does not exist or is empty, write the headers
+#         if not file_exists:
+#             file.write(headers_line)
+        
+#         # Write the data rows
+#         file.write(line)
+
+def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rna, mfe_vienna, f1_gen, f1_rna, f1_vienna, fb_gen, fb_rna, fb_vienna, mcc_gen, mcc_rna, mcc_vienna, filename="ilp_results.txt"):
+    # Define the headers
+    headers = ["RNA sequence name", "# of nts", "Time(s)", "MFE ILP", "MFE ARCHIVE", "MFE RNAstr", "MFE RNAFold",
+               "F1 ILP", "F1 RNAstr", "F1 RNAFold", "Fb ILP", "Fb RNAstr", "Fb RNAFold", "INF ILP", "INF RNAstr", "INF RNAFold"]
+    
+    
+    parent_path = os.path.join("..", filename)
+    
     # Check if the file exists and is not empty
-    file_exists = os.path.exists(filename) and os.path.getsize(filename) > 0
+    file_exists = os.path.exists(parent_path) and os.path.getsize(parent_path) > 0
+    
     # Format the floating point numbers to 2 decimal places and ensure all values are strings
     values = [
         sequence_name, 
@@ -280,22 +322,26 @@ def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rn
         f"{mfe_gen:.2f}", 
         f"{mfe_ref:.2f}", 
         f"{mfe_rna:.2f}", 
+        f"{mfe_vienna:.2f}",
         f"{f1_gen:.2f}", 
-        f"{f1_rna:.2f}", 
+        f"{f1_rna:.2f}",
+        f"{f1_vienna:.2f}",
         f"{fb_gen:.2f}", 
         f"{fb_rna:.2f}",
+        f"{fb_vienna:.2f}",
         f"{mcc_gen:.2f}",
-        f"{mcc_rna:.2f}"
+        f"{mcc_rna:.2f}",
+        f"{mcc_vienna:.2f}"
 
     ]
 
-    headers_line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*headers)
+    headers_line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*headers)
     
     # Format the output so that each value is aligned with tabs
-    line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
+    line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
     
     # Open the file in append mode, create if not exists
-    with open(filename, 'a') as file:
+    with open(parent_path, 'a') as file:
         # If the file does not exist or is empty, write the headers
         if not file_exists:
             file.write(headers_line)

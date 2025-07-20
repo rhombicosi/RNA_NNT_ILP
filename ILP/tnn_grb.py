@@ -4,8 +4,7 @@ from hairpin_parameters import *
 from internal_parameters import *
 from initiation_parameters import *
 from terminal_mismatch import *
-
-from icecream import ic
+import ilp_parameters_grb
 
 #TODO: stem, hairpin, inernal, bulge classes
 #TODO: add multibranch loops, dangling ends and other structural motifs
@@ -107,7 +106,7 @@ def G_internal(RNA,i,k,l,j):
     if k-i-1+j-l-1 <= noI:
         common_term = initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1))
     else:
-        common_term = M + asymmetry * abs(k-i-1-(j-l-1))
+        common_term = M #+ asymmetry * abs(k-i-1-(j-l-1))
 
     if int11(i,k,l,j):
         # print("1x1")
@@ -178,10 +177,11 @@ def G_bulge(RNA,i,k,l,j):
     return round(G)
 
 def G_multi(i,i1,j1,i2,j2,j):
-    if i1-i-1+i2-j1-1+j-j2-1 <= noM:
-        G = c*(i1-i-1+i2-j1-1+j-j2-1) + b*3
-    else:
+    # if i1-i-1+i2-j1-1+j-j2-1 <= noM:
+    if (i1-i-1 > maxM) or (i2-j1-1 > maxM) or (j2-j-1 > maxM):
         G = M
+    else:
+        G = ilp_parameters_grb.c*(i1-i-1+i2-j1-1+j-j2-1) + b*2
     return round(G)
 
 

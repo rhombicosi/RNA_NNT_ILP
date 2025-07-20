@@ -58,7 +58,7 @@ def add_binary_vars(RNA, mip, start):
             listX[f'X({i})'] = mip.addVar(vtype=GRB.BINARY, name=f'X({i})')
 
         # create H variables
-        for i in range(1,n - minD - 1):
+        for i in range(1,n - minD):
             for j in range(i + minD + 1, n + 1):
                 if RNA[i-1] + RNA[j-1] in cbp_list:
                     listH[f'H({i},{j})'] = mip.addVar(vtype=GRB.BINARY, name=f'H({i},{j})')
@@ -87,12 +87,12 @@ def add_binary_vars(RNA, mip, start):
                                     listB[f'B({j},{l},{k},{i})'] = mip.addVar(vtype=GRB.BINARY, name=f'B({j},{l},{k},{i})')
 
             # create M variables
-            for i in range(1, n - 6):
-                for i1 in range(i + 1, n - 5):
-                    for j1 in range(i1 + minD + 1, n - 4):
-                        for i2 in range(j1 + 1, n - 3):
-                            for j2 in range(i2 + minD + 1, n - 2):
-                                for j in range(j2 + 1, n):
+            for i in range(1, n - 10):
+                for i1 in range(i + 1, n - 9):
+                    for j1 in range(i1 + minD + 1, n - 5):
+                        for i2 in range(j1 + 1, n - 4):
+                            for j2 in range(i2 + minD + 1, n):
+                                for j in range(j2 + 1, n + 1):
 
                                     # check whether all base pairs are either canonical or wobble
                                     # if legal(RNA,i,j) and legal(RNA,i1,j1) and legal(RNA,i2,j2):

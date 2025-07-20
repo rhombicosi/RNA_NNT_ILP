@@ -1,7 +1,7 @@
 # fixed params for creating ILP model
 
 # MFE parameter //  reference structure energy by RNAEval
-MFE = -1500
+MFE = -900
 
 # distance parameters
 minD = 3 # min allowed distance between paired nts, also min hairpin loop size

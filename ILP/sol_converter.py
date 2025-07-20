@@ -99,7 +99,7 @@ def compare2folds(generated, reference):
 
     return (f1,fbeta,MCC)
 
-# def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir):
+# def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, start, s_start = 1):
 
 #     chain_file = seq_files[seq_number]
 #     chain_name_with_ext = os.path.basename(chain_file)        
@@ -109,8 +109,11 @@ def compare2folds(generated, reference):
 #     seq_data = parse_seq_file(chain_file)
 #     this_RNA = seq_data['sequence']
     
-    
-#     filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
+#     if start:
+#         print("START")
+#         filepath = os.path.join(solstart_dir, f'{lp_file_name}-start-{s_start}.sol')
+#     else:
+#         filepath = os.path.join(sol_dir, f'{lp_file_name}-loopdeco.sol')
 
 #     ic(filepath)
 
@@ -157,7 +160,7 @@ def compare2folds(generated, reference):
 
 #     return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct
 
-def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, start, s_start = 1):
+def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, start, s_start = 1):
 
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -165,7 +168,7 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_arc
     lp_file_name = chain_name_without_ext
 
     seq_data = parse_seq_file(chain_file)
-    this_RNA = seq_data['sequence']
+    this_RNA = seq_data['sequence']    
     
     if start:
         print("START")
@@ -182,6 +185,13 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_arc
     # rnastructure reference
     rnastruct_bracket_path = f'{dot_bracket_rnastructure_dir}/{lp_file_name + ".txt"}'
     rnastruct_brackets = dot_from_txt(rnastruct_bracket_path)
+    
+    # viennaRNA reference
+    viennaRNA_bracket_path = f'{dot_bracket_viennaRNA_dir}/{lp_file_name + "_db.txt"}'
+    with open(viennaRNA_bracket_path, 'r') as file:
+        # Read all lines into a list
+        lines = file.readlines()        
+        veinnaRNA_brackets = str(lines[0]).strip()        
 
 
     (gen_brackets,gen_pairs,rna_len) = pairs2brackets(filepath, this_RNA)
@@ -200,13 +210,16 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_arc
     generated = set(gen_pairs)
     reference = set(brackets2pairs(ref_brackets))
     rnastruct = set(brackets2pairs(rnastruct_brackets))
+    viennaRNA = set(brackets2pairs(veinnaRNA_brackets))
 
     print(generated)
     print(reference)
     print(rnastruct)
+    print(viennaRNA)
 
     (f1_lilp,fbeta_lilp,MCC_lilp) = compare2folds(generated, reference)
     (f1_rnastruct,fbeta_rnastruct,MCC_rnastruct) = compare2folds(rnastruct, reference)
+    (f1_viennaRNA,fbeta_viennaRNA,MCC_viennaRNA) = compare2folds(viennaRNA, reference)
 
     print(f1_lilp)
     print(fbeta_lilp)
@@ -215,5 +228,9 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_arc
     print(f1_rnastruct)
     print(fbeta_rnastruct)
     print(MCC_rnastruct)
+    
+    print(f1_viennaRNA)
+    print(fbeta_viennaRNA)
+    print(MCC_viennaRNA)
 
-    return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct
+    return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_viennaRNA, fbeta_viennaRNA, MCC_viennaRNA, rna_len
