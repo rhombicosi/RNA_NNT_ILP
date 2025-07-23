@@ -42,7 +42,7 @@ def lParams(RNA):
 def hairpinParams(RNA):
     g = {}
     n = len(RNA)
-    for i in range(1,n - minD):
+    for i in range(1,n - minD + 1):
         for j in range(i + minD + 1, n + 1):
             if RNA[i-1] + RNA[j-1] in cbp_list:  
                 g[f'H{i}',f'H{j}'] = G_hairpin(RNA,i,j)
@@ -110,6 +110,7 @@ def pretty(d, indent=0):
 # pretty(internalParams(RNA))
 # pretty(bulgeParams(RNA))
 
+
 def stemTerm(RNA, listQ):
     objective = gp.LinExpr(list(stemParams(RNA).values()), list(listQ.values())) 
     return objective
@@ -161,4 +162,70 @@ def objectiveStartTerm(RNA, listQ, listH, listI):
 
     return objective
 
-# print(objectiveTerm(RNA))
+
+# RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
+# all_values = list(stemParams(RNA).values()) + list(hairpinParams(RNA).values()) + list(internalParams(RNA).values()) + list(bulgeParams(RNA).values()) + list(multiParams(RNA).values())
+
+# min_val = min(all_values)
+# max_val = max(all_values)
+
+# target_min = 1
+# target_max = int(max_val - min_val + 1)
+
+# def map_to_positive_region(value): 
+
+#     return target_min + (value - min_val) * (target_max - target_min) / (max_val - min_val)
+
+# print(stemParams(RNA).values())
+
+# print([map_to_positive_region(v) for v in stemParams(RNA).values()])
+
+# def get_values(RNA):
+#     all_values = list(internalParams(RNA).values()) + list(bulgeParams(RNA).values())
+
+#     return all_values
+
+# def map_to_positive_region(all_values, value):
+
+#     min_val = min(all_values)
+#     max_val = max(all_values)
+
+#     target_min = 1
+#     target_max = int(max_val - min_val + 1) 
+
+#     return target_min + (value - min_val) * (target_max - target_min) / (max_val - min_val)
+
+# def stemTerm(RNA, listQ):
+#     objective = gp.LinExpr(list(stemParams(RNA).values()), list(listQ.values())) 
+#     return objective
+
+# def fTerm(RNA, listF):
+#     objective = gp.LinExpr(list(fParams(RNA).values()), list(listF.values()))
+#     return objective
+
+# def lTerm(RNA, listL):
+#     objective = gp.LinExpr(list(lParams(RNA).values()), list(listL.values()))
+#     return objective
+
+# def hairpinTerm(RNA, listH):    
+#     objective = gp.LinExpr(list(hairpinParams(RNA).values()), list(listH.values()))
+#     return objective
+
+# def internalTerm(RNA, listI):
+#     all_values = internalParams(RNA).values()
+#     params = [map_to_positive_region(all_values,v) for v in internalParams(RNA).values()]
+#     objective = gp.LinExpr(params, list(listI.values()))
+#     return objective
+
+# def bulgeTerm(RNA, listB):
+#     all_values = bulgeParams(RNA).values()
+#     params = [map_to_positive_region(all_values,v) for v in bulgeParams(RNA).values()]
+#     objective = gp.LinExpr(params, list(listB.values()))
+#     return objective
+
+# def multiTerm(RNA, listM):
+#     all_values = get_values(RNA)
+#     params = [map_to_positive_region(all_values,v) for v in multiParams(RNA).values()]
+#     objective = gp.LinExpr(params, list(listM.values()))
+#     return objective
+

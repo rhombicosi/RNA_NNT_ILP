@@ -16,7 +16,8 @@ sc = 1
 hc = 1
 ic = hc
 init = 1
-M = 10000
+M = 5000
+cc = 100
 
 def G_stem(RNA,i,j):
     G = wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[i] + RNA[j-2]]
@@ -41,8 +42,6 @@ def G_L(RNA,i,j):
 
 def G_hairpin(RNA,i,j):
 
-    # G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
-    # G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
     if j-i-1 == 3:
         G = initiation_df.loc[j-i-1,"hairpin"]
     else:
@@ -51,10 +50,10 @@ def G_hairpin(RNA,i,j):
             G1 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]] + spec_GU_clos
             G2 = initiation_df.loc[j-i-1,"hairpin"] + mismatch_df.loc[RNA[i-1] + RNA[j-1],RNA[i]][RNA[j-2]]
         else:
-            G1 = M + spec_GU_clos
+            G1 = M
             G2 = M
 
-        G = G1 if RNA[i-1] + RNA[j-1] == 'GU' else G2  
+        G = G1 if (RNA[i-1] + RNA[j-1] == 'GU' and RNA[i-3] + RNA[i-2] == 'GG') else G2  
 
         if RNA[i] + RNA[j-2] == 'GA' or RNA[i] + RNA[j-2] == 'UU':
             G = G + hp_mismatch['GA']
@@ -181,71 +180,31 @@ def G_multi(i,i1,j1,i2,j2,j):
     if (i1-i-1 > maxM) or (i2-j1-1 > maxM) or (j2-j-1 > maxM):
         G = M
     else:
-        G = ilp_parameters_grb.c*(i1-i-1+i2-j1-1+j-j2-1) + b*2
+        G = cc*(ilp_parameters_grb.c*(i1-i-1+i2-j1-1+j-j2-1) + b*2)
     return round(G)
 
-
-# 1Q9A
-# generated -634
-# (((((..((........)).)))))
-# print(G_stem(1, 25))
-# print(G_stem(2, 24))
-# print(G_stem(3, 23))
-# print(G_stem(4, 22))
-# print(G_stem(8, 19))
-# print(G_hairpin(9, 18))
-# print(G_internal(5,8,19,21))
-# print('\\\TOTAL///')
-# print(G_stem(1, 25)+G_stem(2, 24)+G_stem(3, 23)+G_stem(4, 22)+G_stem(8, 19)+G_hairpin(9, 18)+G_internal(5,8,19,21))
+#RNA = 'AACCAUGUCAGGUCCGGAAGGAAGCAGCAU'
+# RNA = 'CAGACGCGGAGUG'
+# i=2
+# k=5
+# l=8
+# j=12
+# print(G_internal(RNA,i,k,l,j))
 
 
-# alternative -594 :: set H(11,16) == 1
-# (((((..((.(....).)).)))))
-# print(G_stem(1, 25))
-# print(G_stem(2, 24))
-# print(G_stem(3, 23))
-# print(G_stem(4, 22))
-# print(G_stem(8, 19))
-# print(G_hairpin(11, 16))
-# print(G_internal(5,8,19,21))
-# print(G_internal(9,11,16,18))
-# print('\\\TOTAL///')
-# print(G_stem(1, 25)+G_stem(2, 24)+G_stem(3, 23)+G_stem(4, 22)+G_stem(8, 19)+G_hairpin(11, 16)+G_internal(5,8,19,21)+G_internal(9,11,16,18))
+# common_term = initiation_df.loc[k-i-1+j-l-1,"internal"] + asymmetry * abs(k-i-1-(j-l-1))
+
+# print(initiation_df.loc[k-i-1+j-l-1,"internal"])
+# G = common_term + int23_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]] + int23_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]] + AU_end_penalty
+
+# print(initiation_df.loc[k-i-1+j-l-1,"internal"])
+# print(asymmetry * abs(k-i-1-(j-l-1)))
+# print(int23_df.loc[RNA[i-1] + RNA[j-1]][RNA[i] + RNA[j-2]])
+# print(int23_df.loc[RNA[l-1] + RNA[k-1]][RNA[l] + RNA[k-2]])
+# print(AU_end_penalty)
 
 
-# # 3sn2 test
 
-# # reference MFE
-# print(G_stem(1,29))
-# print(G_stem(2,28))
-# print(G_stem(3,27))
-# print(G_stem(4,26))
-# print(G_stem(5,25))
-# print(G_bulge(6,8,23,24))
-# print(G_stem(8,23))
-# print(G_stem(9,22))
-# print(G_stem(10,21))
-# print(G_stem(11,20))
-# print(G_bulge(12,13,17,19))
-# print(G_hairpin(13,17))
-
-# print('TOTAL REFERENCE')
-# print(f'{float(G_stem(1,29)) + float(G_stem(2,28)) + float(G_stem(3,27)) + float(G_stem(4,26)) + float(G_stem(5,25)) + float(G_bulge(6,8,23,24)) + float(G_stem(8,23)) + float(G_stem(9,22)) + float(G_stem(10,21))+float(G_stem(11,20)) + float(G_bulge(12,13,17,19)) + float(G_hairpin(13,17))}')
-
-# # generated MFE
-# print(G_stem(1,29))
-# print(G_stem(2,28))
-# print(G_stem(3,27))
-# print(G_stem(4,26))
-# print(G_internal(5,8,23,25))
-# print(G_stem(8,23))
-# print(G_stem(9,22))
-# print(G_stem(10,21))
-# print(G_stem(11,20))
-# print(G_hairpin(12,19))
-
-# print('TOTAL GENERATED')
-# print(f'{float(G_stem(1,29)) + float(G_stem(2,28)) + float(G_stem(3,27)) + float(G_stem(4,26)) + float(G_stem(8,23)) + float(G_stem(9,22)) + float(G_stem(10,21))+float(G_stem(11,20)) + float(G_internal(5,8,23,25)) + float(G_hairpin(12,19))}')
 
 
 

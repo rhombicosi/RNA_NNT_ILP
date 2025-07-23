@@ -198,8 +198,11 @@ def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_arc
 
     print(gen_brackets)
     print(gen_pairs)
-  
-    file_bracket = f'{dot_bracket_dir}/{lp_file_name + "-dotbrackets.txt"}'
+    
+    if s_start:
+        file_bracket = f'{dot_bracket_dir}/{lp_file_name}-dotbrackets-{s_start}.txt'
+    else: 
+        file_bracket = f'{dot_bracket_dir}/{lp_file_name}-dotbrackets.txt'
 
     # with open(file_bracket, 'a') as file:
     with open(file_bracket, 'w') as file:

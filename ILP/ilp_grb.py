@@ -6,7 +6,7 @@ import time
 from prepro_run import *
 
 
-def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_dir):
+def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, has_start = solstart_dir):
     
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -30,6 +30,8 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
         
         listP, listQ, listH, listI, listB, listM, listX = add_binary_vars(this_RNA, mip, 0)
 
+        print(f'P :: {len(listP)} :::: Q :: {len(listQ)} :::: H :: {len(listH)} :::: I :: {len(listI)} :::: B :: {len(listB)} :::: M :: {len(listM)}')
+
         mip.setObjective(objectiveTerm(this_RNA, listQ, listH, listI, listB, listM), GRB.MINIMIZE)
         
         # mip.addConstr(objectiveTerm(this_RNA, listQ, listH, listI, listB, listM) >= MFE,"CMFE")
@@ -42,7 +44,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
         # hairpinNTConstraints(this_RNA, mip)
         hairpinZeroConstraints(this_RNA, mip, maxH)
         hairpinIfThenConstraints(this_RNA, mip)
-        hairpinOnlyIfConstraints(this_RNA, mip)
+        # hairpinOnlyIfConstraints(this_RNA, mip)
         # numHairpinConstraints(this_RNA, numH, mip)
         # internalNTConstraints(this_RNA, mip)
         internalZeroConstraints(this_RNA, mip, maxI)
@@ -52,13 +54,13 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
         # bulgeNTConstraints(this_RNA, mip)
         bulgeZeroConstraints(this_RNA, mip, maxB)
         bulgeIfThenConstraints(this_RNA, mip)
-        bulgeOnlyIfConstraints(this_RNA, mip)
+        # bulgeOnlyIfConstraints(this_RNA, mip)
         # numBulgeConstraints(this_RNA, numB, mip)
         # multiNTConstraints(this_RNA, mip)
         multiZeroConstraints(this_RNA,mip,maxM)
         multiIfThenConstraints(this_RNA, mip)
-        multiOnlyIfConstraints(this_RNA, mip)
-        numMultiConstraints(this_RNA, numM, mip)
+        # multiOnlyIfConstraints(this_RNA, mip)
+        # numMultiConstraints(this_RNA, numM, mip)
         loopNTConstraints(this_RNA, mip)
 
         mip.update()   
@@ -78,13 +80,13 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
         # mip.setParam("CliqueCuts", 2)
         # mip.setParam("MIPFocus", 1)
 
-        if start:
+        if has_start:
 
             mip.NumStart = s_start
             mip.update()
 
             # iterate over all MIP starts
-            for s in range(0,mip.NumStart):
+            for s in range(mip.NumStart):
             
                 # set StartNumber
                 mip.params.StartNumber = s
@@ -93,7 +95,7 @@ def optimize(seq_files, seq_number, lp_dir, sol_dir, s_start, start = solstart_d
 
                 # now set MIP start values using the Start attribute, e.g.:
                 for v in mip.getVars(): 
-                    if v.varName in solvars.keys():         
+                    if v.varName in solvars.keys(): 
                         v.Start = round(int(solvars[v.varName]), 1)            
                     
             mip.update()
@@ -253,7 +255,7 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
     else:
         print("Object value was not assigned due to an error.")
 
-def optimize_multi_start(seq_files, seq_number, lpstart_dir, solstart_dir, s_start):
+def optimize_multi_start(seq_files, seq_number, lpstart_dir, solstart_dir, s_start, subseq_len):
     
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -265,7 +267,7 @@ def optimize_multi_start(seq_files, seq_number, lpstart_dir, solstart_dir, s_sta
     print(chain_name_without_ext)
     print(this_RNA)
 
-    subseq_len = round(len(this_RNA)*0.63)
+    # subseq_len = round(len(this_RNA)*0.63)
 
     mip = gp.Model(f'MIP-{seq_number}')
 
@@ -333,6 +335,7 @@ def optimize_multi_start(seq_files, seq_number, lpstart_dir, solstart_dir, s_sta
         # mip.setParam("PoolSearchMode", 2)
         # mip.setParam("SolFiles", f"{chain_f}-decomposition-grb")
         mip.setParam("LogFile", f'{grb_log_dir}/log-{lp_file_name}-{s_start}')
+        mip.setParam("IntegralityFocus", 1)
         # mip.setParam("MIPFocus", 2)
         # mip.setParam("ConcurrentMIP ", 5)
         # mip.setParam("Presolve", 2)
