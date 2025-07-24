@@ -69,11 +69,16 @@ def firstPairConstraints(RNA, mip):
                             mip.addConstr(inequality <= 0, f'CF0-{i}-{j}')
                             inequality = gp.LinExpr([2,-1,1],[mip.getVarByName(f'F({i},{j})'),mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'Q({i-1},{j+1})')])
                             mip.addConstr(inequality <= 1, f'CF1-{i}-{j}')
+                        else:
+                            inequality = gp.LinExpr([1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'F({i},{j})')])
+                            mip.addConstr(inequality <= 0, f'CF0-{i}-{j}')
+                            inequality = gp.LinExpr([2,-1],[mip.getVarByName(f'F({i},{j})'),mip.getVarByName(f'Q({i},{j})')])
+                            mip.addConstr(inequality <= 1, f'CF1-{i}-{j}')
                     else:
-                        inequality = gp.LinExpr([1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'F({i},{j})')])
-                        mip.addConstr(inequality <= 0, f'CF0-{i}-{j}')
-                        inequality = gp.LinExpr([2,-1],[mip.getVarByName(f'F({i},{j})'),mip.getVarByName(f'Q({i},{j})')])
-                        mip.addConstr(inequality <= 1, f'CF1-{i}-{j}')
+                            inequality = gp.LinExpr([1,-1],[mip.getVarByName(f'Q({i},{j})'),mip.getVarByName(f'F({i},{j})')])
+                            mip.addConstr(inequality <= 0, f'CF0-{i}-{j}')
+                            inequality = gp.LinExpr([2,-1],[mip.getVarByName(f'F({i},{j})'),mip.getVarByName(f'Q({i},{j})')])
+                            mip.addConstr(inequality <= 1, f'CF1-{i}-{j}')
 
     return inequality
 

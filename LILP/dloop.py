@@ -3,7 +3,7 @@ from enum import Enum
 from basepair import *
 from lilp_config import *
 
-class RNALoop:
+class Loop:
 
     def __init__(self, base_pairs: List[BasePair], RNA: str):
         self.RNA = RNA
@@ -58,7 +58,19 @@ class RNALoop:
         return size    
 
     def is_valid_size(self) -> bool:
-        return self.size <= MAX_LOOP_SIZES[self.type]
+        pairs = self.base_pairs
+        d = self.degree
+        is_valid = True
+        
+        if d == 1:
+            is_valid = self.size <= MAX_LOOP_SIZES[self.type]
+        else:
+            for k in range(d):
+                ik, jk = pairs[k].i, pairs[k].j
+                is_d_valid = is_valid and jk - ik - 1 <= MAX_LOOP_SIZES[self.type]
+                is_valid = is_d_valid
+
+        return is_valid
     
     def add_variable(self, model: gp.Model):       
             

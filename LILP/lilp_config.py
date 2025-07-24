@@ -17,7 +17,7 @@ MAX_LOOP_SIZES = {
         LoopType.MULTI: 10,
     }
 
-NUM_OF_LOOPS = {
+MAX_NUM_OF_LOOPS = {
         LoopType.HAIRPIN: 1,
         LoopType.INTERNAL: 2,
         LoopType.BULGE: 0,
