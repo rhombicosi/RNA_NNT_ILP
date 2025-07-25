@@ -9,6 +9,7 @@ from lilp_config import *
 from basepair import *
 from dloop import *
 from stemloop import *
+from hairpinloop import *
 
 class LILPModel:
     def __init__(self, rna_seq: str):
@@ -62,7 +63,7 @@ class LILPModel:
     def create_hairpin_loops(self) -> None:
 
         for bp in self.base_pairs:
-            hairpin = Loop([bp], self.rna_seq)
+            hairpin = HairpinLoop([bp], self.rna_seq)
             hairpin.add_variable(self.model)
             self.hairpin_loops.append(hairpin)
         self.model.update() 
@@ -121,16 +122,6 @@ class LILPModel:
                 BasePair.create_no_crossing_constraint(self.model, bp1, bp2)
         self.model.update()
 
-    # def create_no_crossing_constraints(self) -> None: 
-
-    #     for bp1 in self.base_pairs: 
-    #         for bp2 in self.base_pairs:
-    #             if bp2.i > bp1.i and bp2.i < bp1.j and bp2.j > bp1.j:
-    #                 inequality = gp.LinExpr(0)
-    #                 inequality.add(gp.LinExpr([1.0,1.0],[bp1.var,bp2. var]))
-    #                 self.model.addConstr(inequality <= 1, f'NC-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}')
-    #     self.model.update()
-
     def add_stem_constraints(self) -> None:
         for sl in self.stem_loops:
             sl.create_stem_constraints(self.model)
@@ -161,46 +152,23 @@ class LILPModel:
                 self.model.addConstr(inequality == 1, f'UN-{i}')
         self.model.update()
 
-    def create_hairpin_size_constraints(self) -> None:
-
+    def add_hairpin_size_constraints(self) -> None:
         for hl in self.hairpin_loops:
-            if not hl.is_valid_size():
-                inequality = gp.LinExpr([1],[hl.var])
-                self.model.addConstr(inequality == 0, f'HS-{hl.base_pairs[0].i}-{hl.base_pairs[0].j}')
+            hl.create_hairpin_size_constraint(self.model)
         self.model.update()
 
-    def create_hairpin_ifthen_constraints(self) -> None:
-
+    def add_hairpin_ifthen_constraints(self) -> None:
         for hl in self.hairpin_loops:
-            inequality = gp.LinExpr(0)
-            for u in range(hl.base_pairs[0].i + 1, hl.base_pairs[0].j):
-                inequality.add(gp.LinExpr([1],[self.nucleotides[u-1]]))
-            
-            inequality.add(gp.LinExpr([1, -1],[hl.base_pairs[0].var, hl.var]))            
-            self.model.addConstr(inequality <= hl.size, f'HIT-{hl.base_pairs[0].i}-{hl.base_pairs[0].j}')
+            hl.create_hairpin_ifthen_constraint(self.model, self.nucleotides)
         self.model.update()
 
-    def create_hairpin_onlyif_constraints(self) -> None:
-
+    def add_hairpin_onlyif_constraints(self) -> None:
         for hl in self.hairpin_loops:
-            for u in range(hl.base_pairs[0].i + 1, hl.base_pairs[0].j):
-                inequality = gp.LinExpr([2],[hl.var])
-                matches = self._find_base_pairs_with_index(self.base_pairs, u)
-
-                for bp in matches:
-                    inequality.add(gp.LinExpr([1],[bp.var]))
-                
-                inequality.add(gp.LinExpr([-1], [hl.base_pairs[0].var]))
-                self.model.addConstr(inequality <= 1, f'HOI-{hl.base_pairs[0].i}-{hl.base_pairs[0].j}-{u}')
+            hl.create_hairpin_onlyif_constraint(self.model, self.base_pairs)
         self.model.update()
 
-    def create_hairpin_max_number_constraints(self) -> None:
-        inequality = gp.LinExpr(0)
-
-        for hl in self.hairpin_loops:
-            inequality.add(gp.LinExpr([1],[hl.var]))
-        self.model.addConstr(inequality <= MAX_NUM_OF_LOOPS[hl.type], f'HMN')
-        self.model.update()
+    def add_hairpin_max_number_constraint(self) -> None:
+        HairpinLoop.create_hairpin_max_number_constraint(self.model, self.hairpin_loops)
 
     def create_internal_size_constraints(self) -> None:
 
@@ -272,10 +240,10 @@ rna_model.add_first_pair_constraints()
 rna_model.add_last_pair_constraints()
 rna_model.create_nucleotides()
 rna_model.create_unpaired_nucleotides_constraints()
-# rna_model.create_hairpin_size_constraints()
-# rna_model.create_hairpin_ifthen_constraints()
-# rna_model.create_hairpin_onlyif_constraints()
-# rna_model.create_hairpin_max_number_constraints()
+rna_model.add_hairpin_size_constraints()
+rna_model.add_hairpin_ifthen_constraints()
+rna_model.add_hairpin_onlyif_constraints()
+rna_model.add_hairpin_max_number_constraint()
 # rna_model.create_internal_size_constraints()
 
 rna_model.model.write(f'lilp-{seq_no}.lp')
