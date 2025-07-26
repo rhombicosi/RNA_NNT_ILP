@@ -11,6 +11,7 @@ from dloop import *
 from stemloop import *
 from hairpinloop import *
 from internalloop import *
+from bulgeloop import *
 
 class LILPModel:
     def __init__(self, rna_seq: str):
@@ -22,8 +23,8 @@ class LILPModel:
         self.last_pairs : List[BasePair] = []
         self.hairpin_loops : List[HairpinLoop] = []
         self.stem_loops : List[StemLoop] = []
-        self.internal_loops : List[InternalLoop]= []
-        self.bulge_loops = []
+        self.internal_loops : List[InternalLoop] = []
+        self.bulge_loops : List[BulgeLoop] = []
         self.multi_loops = []    
 
     def create_nucleotides(self) -> None:
@@ -94,7 +95,7 @@ class LILPModel:
         for bp1 in self.base_pairs:
             for bp2 in self.base_pairs:
                 if (bp2.i == bp1.i + 1 and bp2.j < bp1.j - 1) or (bp2.i > bp1.i + 1 and bp2.j == bp1.j - 1):
-                    bulge = Loop([bp1, bp2], self.rna_seq)
+                    bulge = BulgeLoop([bp1, bp2], self.rna_seq)
                     bulge.add_variable(self.model)
                     self.bulge_loops.append(bulge)
         self.model.update()
@@ -189,6 +190,23 @@ class LILPModel:
     def add_internal_max_number_constraint(self) -> None:
         InternalLoop.create_internal_max_number_constraint(self.model, self.internal_loops)
 
+    def add_bulge_size_constraints(self) -> None:
+        for il in self.bulge_loops:
+            il.create_bulge_size_constraint(self.model)
+        self.model.update()
+
+    def add_bulge_ifthen_constraints(self) -> None:
+        for bl in self.bulge_loops:
+            bl.create_bulge_ifthen_constraint(self.model, self.nucleotides)
+        self.model.update()
+
+    def add_bulge_onlyif_constraints(self) -> None:
+        for bl in self.bulge_loops:
+            bl.create_bulge_onlyif_constraint(self.model, self.base_pairs)
+        self.model.update()
+
+    def add_bulge_max_number_constraint(self) -> None:
+        BulgeLoop.create_bulge_max_number_constraint(self.model, self.bulge_loops)
 
 seq_len = 60
 seq_no = 1
@@ -234,6 +252,10 @@ rna_model.add_internal_size_constraints()
 rna_model.add_internal_ifthen_constraints()
 rna_model.add_internal_onlyif_constraints()
 rna_model.add_internal_max_number_constraint()
+rna_model.add_bulge_size_constraints()
+rna_model.add_bulge_ifthen_constraints()
+rna_model.add_bulge_onlyif_constraints()
+rna_model.add_bulge_max_number_constraint()
 
 rna_model.model.write(f'lilp-{seq_no}.lp')
 

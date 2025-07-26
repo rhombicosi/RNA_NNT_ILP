@@ -14,9 +14,10 @@ class InternalLoop(Loop):
             model.addConstr(inequality == 0, f'IS-{self.base_pairs[0].i}-{self.base_pairs[0].j}-{self.base_pairs[1].i}-{self.base_pairs[1].j}')
 
     def create_internal_ifthen_constraint(self, model: gp.Model, nucleotides: List[gp.Var]) -> None:
-        inequality = gp.LinExpr(0) 
         bp1 = self.base_pairs[0]
-        bp2 = self.base_pairs[1]                      
+        bp2 = self.base_pairs[1]
+        
+        inequality = gp.LinExpr(0)                       
 
         for u in range(bp1.i + 1, bp2.i):
             inequality.add(gp.LinExpr([1],[nucleotides[u - 1]]))
