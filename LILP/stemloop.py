@@ -20,10 +20,10 @@ class StemLoop(Loop):
 
     def create_stem_constraints(self, model: gp.Model) -> None:
         
-        inequality = gp.LinExpr([2,-1,-1],[self.var, self.first_pair.var, self.last_pair.var])
+        inequality = gp.LinExpr([2, -1, -1], [self.var, self.first_pair.var, self.last_pair.var])
         model.addConstr(inequality <= 0, f'SLIT-{self.first_pair.i}-{self.first_pair.j}')
 
-        inequality = gp.LinExpr([1,1,-1],[self.first_pair.var, self.last_pair.var, self.var])
+        inequality = gp.LinExpr([1, 1, -1], [self.first_pair.var, self.last_pair.var, self.var])
         model.addConstr(inequality <= 1, f'SLOI-{self.base_pairs[0].i}-{self.first_pair.j}')
 
     def create_first_pair_constraints(self, model: gp.Model, stem_loops: List["StemLoop"], first_pairs: List[BasePair]) -> None:
@@ -32,14 +32,14 @@ class StemLoop(Loop):
         first_pair = BasePair._find_base_pairs_matches(first_pairs, self.first_pair.i, self.first_pair.j)    
 
         if sl_prev:
-            inequality = gp.LinExpr([2,-1,1],[first_pair.var, self.var, sl_prev.var])
+            inequality = gp.LinExpr([2, -1, 1], [first_pair.var, self.var, sl_prev.var])
             model.addConstr(inequality <= 1, f'FPIT-{first_pair.i}-{first_pair.j}')
-            inequality = gp.LinExpr([1,-1,-1],[self.var, sl_prev.var, first_pair.var])
+            inequality = gp.LinExpr([1, -1, -1], [self.var, sl_prev.var, first_pair.var])
             model.addConstr(inequality <= 0, f'FPOI-{first_pair.i}-{first_pair.j}')
         else:
-            inequality = gp.LinExpr([2,-1],[first_pair.var, self.var])
+            inequality = gp.LinExpr([2, -1], [first_pair.var, self.var])
             model.addConstr(inequality <= 1, f'FPIT-{first_pair.i}-{first_pair.j}')
-            inequality = gp.LinExpr([1,-1],[self.var, first_pair.var])
+            inequality = gp.LinExpr([1, -1], [self.var, first_pair.var])
             model.addConstr(inequality <= 0, f'FPOI-{first_pair.i}-{first_pair.j}')
 
     def create_last_pair_constraints(self, model: gp.Model, stem_loops: List["StemLoop"], last_pairs: List[BasePair]) -> None:
@@ -48,13 +48,13 @@ class StemLoop(Loop):
         last_pair = BasePair._find_base_pairs_matches(last_pairs, self.last_pair.i, self.last_pair.j) 
 
         if sl_next:
-            inequality = gp.LinExpr([2,-1,1],[last_pair.var, self.var, sl_next.var])
+            inequality = gp.LinExpr([2, -1, 1], [last_pair.var, self.var, sl_next.var])
             model.addConstr(inequality <= 1, f'LPIT-{last_pair.i}-{last_pair.j}')
-            inequality = gp.LinExpr([1,-1,-1],[self.var, sl_next.var, self.last_pair.var])
+            inequality = gp.LinExpr([1, -1, -1], [self.var, sl_next.var, self.last_pair.var])
             model.addConstr(inequality <= 0, f'LPOI-{last_pair.i}-{last_pair.j}')                    
         else:
-            inequality = gp.LinExpr([1,-1],[self.var, last_pair.var])
+            inequality = gp.LinExpr([1, -1], [self.var, last_pair.var])
             model.addConstr(inequality <= 0, f'LPIT-{last_pair.i}-{last_pair.j}')
-            inequality = gp.LinExpr([2,-1],[last_pair.var, self.var])
+            inequality = gp.LinExpr([2, -1], [last_pair.var, self.var])
             model.addConstr(inequality <= 1, f'LPOI-{last_pair.i}-{last_pair.j}')        
     

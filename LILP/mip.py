@@ -10,20 +10,29 @@ from basepair import *
 from dloop import *
 from stemloop import *
 from hairpinloop import *
+from internalloop import *
 
 class LILPModel:
     def __init__(self, rna_seq: str):
         self.rna_seq = rna_seq
         self.model = gp.Model(f'MIP')
+        self.nucleotides : List[gp.Var] = []
         self.base_pairs : List[BasePair] = []
-        self.nucleotides = []
-        self.first_pairs = []
-        self.last_pairs = []
-        self.hairpin_loops = []
-        self.stem_loops = []
-        self.internal_loops = []
+        self.first_pairs : List[BasePair] = []
+        self.last_pairs : List[BasePair] = []
+        self.hairpin_loops : List[HairpinLoop] = []
+        self.stem_loops : List[StemLoop] = []
+        self.internal_loops : List[InternalLoop]= []
         self.bulge_loops = []
         self.multi_loops = []    
+
+    def create_nucleotides(self) -> None:
+        n = len(self.rna_seq)
+
+        for i in range(1, n + 1):
+            var = self.model.addVar(vtype=GRB.BINARY, name=f'X_{i}')   
+            self.nucleotides.append(var)     
+        self.model.update()
 
     def create_base_pairs(self) -> None:
         n = len(self.rna_seq)
@@ -52,14 +61,6 @@ class LILPModel:
             lp.add_variable(self.model,'L')
         self.model.update()
 
-    def create_nucleotides(self) -> None:
-        n = len(self.rna_seq)
-
-        for i in range(1, n + 1):
-            var = self.model.addVar(vtype=GRB.BINARY, name=f'X_{i}')   
-            self.nucleotides.append(var)     
-        self.model.update()
-
     def create_hairpin_loops(self) -> None:
 
         for bp in self.base_pairs:
@@ -83,7 +84,7 @@ class LILPModel:
         for bp1 in self.base_pairs:
             for bp2 in self.base_pairs:
                 if bp2.i > bp1.i + 1 and bp2.j < bp1.j - 1:
-                    internal = Loop([bp1, bp2], self.rna_seq)
+                    internal = InternalLoop([bp1, bp2], self.rna_seq)
                     internal.add_variable(self.model)
                     self.internal_loops.append(internal)
         self.model.update()
@@ -109,6 +110,21 @@ class LILPModel:
                         self.multi_loops.append(multi)
         self.model.update()
 
+    def add_unpaired_nucleotides_constraints(self) -> None:
+        n = len(self.rna_seq)
+
+        for i in range(1, n + 1):
+            inequality = gp.LinExpr(0)
+            matches = BasePair._find_base_pairs_with_index(self.base_pairs, i)
+
+            if matches:
+                for bp in matches:
+                    inequality.add(gp.LinExpr([1.0],[bp.var]))
+                
+                inequality.add(gp.LinExpr([1.0],[self.nucleotides[i-1]])) 
+                self.model.addConstr(inequality == 1, f'UN-{i}')
+        self.model.update()
+    
     def add_single_pair_constraints(self) -> None:
         n = len(self.rna_seq)
 
@@ -137,21 +153,6 @@ class LILPModel:
             sl.create_last_pair_constraints(self.model, self.stem_loops, self.last_pairs)
         self.model.update()
 
-    def create_unpaired_nucleotides_constraints(self) -> None:
-        n = len(self.rna_seq)
-
-        for i in range(1, n + 1):
-            inequality = gp.LinExpr(0)
-            matches = BasePair._find_base_pairs_with_index(self.base_pairs, i)
-
-            if matches:
-                for bp in matches:
-                    inequality.add(gp.LinExpr([1.0],[bp.var]))
-                
-                inequality.add(gp.LinExpr([1.0],[self.nucleotides[i-1]])) 
-                self.model.addConstr(inequality == 1, f'UN-{i}')
-        self.model.update()
-
     def add_hairpin_size_constraints(self) -> None:
         for hl in self.hairpin_loops:
             hl.create_hairpin_size_constraint(self.model)
@@ -170,38 +171,23 @@ class LILPModel:
     def add_hairpin_max_number_constraint(self) -> None:
         HairpinLoop.create_hairpin_max_number_constraint(self.model, self.hairpin_loops)
 
-    def create_internal_size_constraints(self) -> None:
-
+    def add_internal_size_constraints(self) -> None:
         for il in self.internal_loops:
-            if not il.is_valid_size():
-                inequality = gp.LinExpr([1],[il.var])
-                self.model.addConstr(inequality == 0, f'IS-{il.base_pairs[0].i}-{il.base_pairs[0].j}-{il.base_pairs[1].i}-{il.base_pairs[1].j}')
+            il.create_internal_size_constraint(self.model)
         self.model.update()
 
-#     def create_internal_ifthen_constaints(self) -> None:
+    def add_internal_ifthen_constraints(self) -> None:
+        for il in self.internal_loops:
+            il.create_internal_ifthen_constraint(self.model, self.nucleotides)
+        self.model.update()
 
+    def add_internal_onlyif_constraints(self) -> None:
+        for il in self.internal_loops:
+            il.create_internal_onlyif_constraint(self.model, self.base_pairs)
+        self.model.update()
 
-
-# def internalIfThenConstraints(RNA, mip):
-#     n = len(RNA)
-#     for i in range(1, n - minI - 1 - minD - 1 - minI - 1):
-#         for k in range(i + minI + 1, n - minI - 1 - minD - 1):
-#             for l in range(k + minD + 1, n - minI  - 1):
-#                 for j in range(l + minI + 1, n + 1):
-#                     if RNA[i-1] + RNA[j-1] in cbp_list and RNA[k-1] + RNA[l-1] in cbp_list:
-#                         inequality = gp.LinExpr(0)                        
-
-#                         for u in range(i+1,k):
-#                             inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
-
-#                         for u in range(l+1,j):
-#                             inequality.add(gp.LinExpr([1],[mip.getVarByName(f'X({u})')]))
-                            
-#                         inequality.add(gp.LinExpr([1,1,-1],[mip.getVarByName(f'P({k},{l})'),mip.getVarByName(f'P({i},{j})'),mip.getVarByName(f'I({i},{k},{l},{j})')]))
-
-#                         mip.addConstr(inequality <= k-i+j-l-1, f'CIIFT{i}-{k}-{l}-{j}')
-
-#     return inequality
+    def add_internal_max_number_constraint(self) -> None:
+        InternalLoop.create_internal_max_number_constraint(self.model, self.internal_loops)
 
 
 seq_len = 60
@@ -230,8 +216,8 @@ rna_model.create_first_pairs()
 rna_model.create_last_pairs()
 rna_model.create_hairpin_loops()
 rna_model.create_stem_loops()
-# rna_model.create_internal_loops()
-# rna_model.create_bulge_loops()
+rna_model.create_internal_loops()
+rna_model.create_bulge_loops()
 # rna_model.create_multi_loops()
 rna_model.add_single_pair_constraints()
 rna_model.add_no_crossing_constraints()
@@ -239,12 +225,15 @@ rna_model.add_stem_constraints()
 rna_model.add_first_pair_constraints()
 rna_model.add_last_pair_constraints()
 rna_model.create_nucleotides()
-rna_model.create_unpaired_nucleotides_constraints()
+rna_model.add_unpaired_nucleotides_constraints()
 rna_model.add_hairpin_size_constraints()
 rna_model.add_hairpin_ifthen_constraints()
 rna_model.add_hairpin_onlyif_constraints()
 rna_model.add_hairpin_max_number_constraint()
-# rna_model.create_internal_size_constraints()
+rna_model.add_internal_size_constraints()
+rna_model.add_internal_ifthen_constraints()
+rna_model.add_internal_onlyif_constraints()
+rna_model.add_internal_max_number_constraint()
 
 rna_model.model.write(f'lilp-{seq_no}.lp')
 
