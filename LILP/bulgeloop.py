@@ -10,7 +10,7 @@ class BulgeLoop(Loop):
 
     def create_bulge_size_constraint(self, model: gp.Model) -> None:        
         if not self.is_valid_size():
-            inequality = gp.LinExpr([1],[self.var])
+            inequality = gp.LinExpr([1], [self.var])
             model.addConstr(inequality == 0, f'BS-{self.base_pairs[0].i}-{self.base_pairs[0].j}-{self.base_pairs[1].i}-{self.base_pairs[1].j}')
 
     def create_bulge_ifthen_constraint(self, model: gp.Model, nucleotides: List[gp.Var]) -> None:

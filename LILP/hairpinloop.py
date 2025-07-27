@@ -15,6 +15,7 @@ class HairpinLoop(Loop):
 
     def create_hairpin_ifthen_constraint(self, model: gp.Model, nucleotides: List[gp.Var]) -> None:
         inequality = gp.LinExpr(0)
+        
         for u in range(self.base_pairs[0].i + 1, self.base_pairs[0].j):
             inequality.add(gp.LinExpr([1], [nucleotides[u - 1]]))
         

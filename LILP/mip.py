@@ -12,6 +12,7 @@ from stemloop import *
 from hairpinloop import *
 from internalloop import *
 from bulgeloop import *
+from multiloop import *
 
 class LILPModel:
     def __init__(self, rna_seq: str):
@@ -25,7 +26,7 @@ class LILPModel:
         self.stem_loops : List[StemLoop] = []
         self.internal_loops : List[InternalLoop] = []
         self.bulge_loops : List[BulgeLoop] = []
-        self.multi_loops = []    
+        self.multi_loops : List[MultiLoop] = []    
 
     def create_nucleotides(self) -> None:
         n = len(self.rna_seq)
@@ -106,7 +107,7 @@ class LILPModel:
             for bp2 in self.base_pairs:
                 for bp3 in self.base_pairs:
                     if bp2.i > bp1.i and bp3.i > bp2.j and bp1.j > bp3.j:
-                        multi = Loop([bp1, bp2, bp3], self.rna_seq)
+                        multi = MultiLoop([bp1, bp2, bp3], self.rna_seq)
                         multi.add_variable(self.model)
                         self.multi_loops.append(multi)
         self.model.update()
@@ -208,8 +209,26 @@ class LILPModel:
     def add_bulge_max_number_constraint(self) -> None:
         BulgeLoop.create_bulge_max_number_constraint(self.model, self.bulge_loops)
 
+    def add_multi_size_constraints(self) -> None:
+        for ml in self.multi_loops:
+            ml.create_multi_size_constraint(self.model)
+        self.model.update()
+
+    def add_multi_ifthen_constraints(self) -> None:
+        for ml in self.multi_loops:
+            ml.create_multi_ifthen_constraint(self.model, self.nucleotides)
+        self.model.update()
+
+    def add_multi_onlyif_constraints(self) -> None:
+        for ml in self.multi_loops:
+            ml.create_multi_onlyif_constraint(self.model, self.base_pairs)
+        self.model.update()
+
+    def add_multi_max_number_constraint(self) -> None:
+        MultiLoop.create_multi_max_number_constraint(self.model, self.multi_loops)
+
 seq_len = 60
-seq_no = 1
+seq_no = 0
 
 cwd = Path.cwd()
 code_path = Path(__file__).parent.parent
@@ -236,26 +255,37 @@ rna_model.create_hairpin_loops()
 rna_model.create_stem_loops()
 rna_model.create_internal_loops()
 rna_model.create_bulge_loops()
-# rna_model.create_multi_loops()
+rna_model.create_multi_loops()
+
 rna_model.add_single_pair_constraints()
 rna_model.add_no_crossing_constraints()
+
 rna_model.add_stem_constraints()
 rna_model.add_first_pair_constraints()
 rna_model.add_last_pair_constraints()
+
 rna_model.create_nucleotides()
 rna_model.add_unpaired_nucleotides_constraints()
+
 rna_model.add_hairpin_size_constraints()
 rna_model.add_hairpin_ifthen_constraints()
 rna_model.add_hairpin_onlyif_constraints()
 rna_model.add_hairpin_max_number_constraint()
+
 rna_model.add_internal_size_constraints()
 rna_model.add_internal_ifthen_constraints()
 rna_model.add_internal_onlyif_constraints()
 rna_model.add_internal_max_number_constraint()
+
 rna_model.add_bulge_size_constraints()
 rna_model.add_bulge_ifthen_constraints()
 rna_model.add_bulge_onlyif_constraints()
 rna_model.add_bulge_max_number_constraint()
+
+rna_model.add_multi_size_constraints()
+rna_model.add_multi_ifthen_constraints()
+rna_model.add_multi_onlyif_constraints()
+rna_model.add_multi_max_number_constraint()
 
 rna_model.model.write(f'lilp-{seq_no}.lp')
 
