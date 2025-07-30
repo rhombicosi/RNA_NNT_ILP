@@ -1,8 +1,6 @@
-##### needed only to get sequence for test #####
 import os
 from pathlib import Path
-import pandas as pd
-from prepro_utils import *
+from utils.prepro_utils import *
 import gurobipy as gp
 from gurobipy import GRB
 from lilp_config import *
@@ -26,7 +24,8 @@ class LILPModel:
         self.stem_loops : List[StemLoop] = []
         self.internal_loops : List[InternalLoop] = []
         self.bulge_loops : List[BulgeLoop] = []
-        self.multi_loops : List[MultiLoop] = []    
+        self.multi_loops : List[MultiLoop] = []
+        self.objective : gp.LinExpr   
 
     def create_nucleotides(self) -> None:
         n = len(self.rna_seq)
@@ -227,8 +226,17 @@ class LILPModel:
     def add_multi_max_number_constraint(self) -> None:
         MultiLoop.create_multi_max_number_constraint(self.model, self.multi_loops)
 
+    def create_stem_term(self) -> gp.LinExpr:
+        objective = gp.LinExpr([sl.energy for sl in self.stem_loops], [sl.var for sl in self.stem_loops])
+        return objective
+    
+    def create_first_pair_term(self) -> gp.LinExpr:
+        objective = gp.LinExpr([fp.pair_penalty_energy for fp in self.first_pairs], [fp.var for fp in self.first_pairs])
+        return objective
+
+
 seq_len = 60
-seq_no = 0
+seq_no = 1
 
 cwd = Path.cwd()
 code_path = Path(__file__).parent.parent
@@ -287,26 +295,28 @@ rna_model.add_multi_ifthen_constraints()
 rna_model.add_multi_onlyif_constraints()
 rna_model.add_multi_max_number_constraint()
 
+rna_model.model.setObjective(rna_model.create_stem_term(), GRB.MINIMIZE)
+
 rna_model.model.write(f'lilp-{seq_no}.lp')
 
-# counter = 0
+counter = 0
 
 # print(type(rna_model.base_pairs))
 
 # for bp in rna_model.base_pairs:    
-#     print(f"[{counter}]::Base pair: ({bp.i}, {bp.j}), Variable name: {bp.var.VarName}, Gurobi var: {bp.var}")
+#     print(f"[{counter}]::Base pair: ({bp.i}, {bp.j}), First pair {bp.nt1 + bp.nt2} energy: {bp.pair_penalty_energy}, Variable name: {bp.var.VarName}, Gurobi var: {bp.var}")
 #     counter+=1
 
 # for bp in rna_model.first_pairs:    
 #     print(f"[{counter}]::Base pair: ({bp.i}, {bp.j}), Variable name: {bp.var.VarName}, Gurobi var: {bp.var}")
 #     counter+=1
 
-# for h in rna_model.hairpin_loops:    
-#     print(f"[{counter}]:: Variable name: {h.var.VarName}, Gurobi var: {h.var}")
-#     counter+=1
+for h in rna_model.hairpin_loops:    
+    print(f"[{counter}]:: Variable name: {h.var.VarName}, Energy: {h.energy}, Gurobi var: {h.var}")
+    counter+=1
 
 # for s in rna_model.stem_loops:    
-#     print(f"[{counter}]:: Variable name: {s.var.VarName}, Gurobi var: {s.var}")
+#     print(f"[{counter}]:: Variable name: {s.var.VarName}, Energy of {rna[s.first_pair.i - 1] + rna[s.first_pair.j - 1]} followed by {rna[s.last_pair.i - 1] + rna[s.last_pair.j - 1]}: {s.energy}, Gurobi var: {s.var}")
 #     counter+=1
 
 # for i in rna_model.internal_loops:    

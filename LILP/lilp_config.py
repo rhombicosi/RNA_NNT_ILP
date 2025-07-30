@@ -2,6 +2,9 @@ from enum import Enum
 
 VALID_PAIRS = ['AU','UA','CG','GC','GU','UG']
 MIN_D = 3
+MFE = -1000
+SCALE = 100
+M = 10000
 
 class LoopType(Enum):
     HAIRPIN = "hairpin"
@@ -23,3 +26,5 @@ MAX_NUM_OF_LOOPS = {
         LoopType.BULGE: 0,
         LoopType.MULTI: 0,
     }
+
+

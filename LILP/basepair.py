@@ -2,22 +2,32 @@ from typing import List
 import gurobipy as gp
 from gurobipy import GRB
 from lilp_config import *
+from tnn_parameters.stem_parameters import *
 
 class BasePair:
 
-    def __init__(self, i: int, j: int, rna: str):
+    def __init__(self, i: int, j: int, RNA: str):
         self.i = i
         self.j = j
-        self.rna = rna
-        self.nt1 = rna[i-1]
-        self.nt2 = rna[j-1]
+        self.rna = RNA
+        self.nt1 = RNA[i-1]
+        self.nt2 = RNA[j-1]
         self.var = None
+        self.pair_penalty_energy = self.calculate_pair_penalty_energy()
+        # self.last_pair_energy = self.calculate_last_pair_energy()
 
     def distance(self) -> int:
         return self.j - self.i
 
     def is_valid(self) -> bool:
         return f'{self.nt1}{self.nt2}' in VALID_PAIRS and BasePair.distance(self) > MIN_D
+    
+    def calculate_pair_penalty_energy(self) -> int:
+        if self.nt1 + self.nt2 == 'AU' or self.nt1 + self.nt2 == 'UA' or self.nt1 + self.nt2 == 'GU' or self.nt1 + self.nt2 == 'UG':
+            G = wcf_AU_end_penalty
+        else:
+            G = 0
+        return round(G)
             
     def add_variable(self, model: gp.Model, label: str) -> gp.Var:
         if self.is_valid():

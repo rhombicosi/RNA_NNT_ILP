@@ -1,4 +1,6 @@
 from dloop import *
+from tnn_parameters.initiation_parameters import *
+from tnn_parameters.stem_parameters import *
 
 class StemLoop(Loop):
 
@@ -6,6 +8,7 @@ class StemLoop(Loop):
         super().__init__(base_pairs, RNA)  
         self.first_pair = base_pairs[0]  
         self.last_pair = base_pairs[1]
+        self.energy = self.calculate_energy()
             
     def _find_stem_neighbors(self, stem_loops: List[Loop], order: str) -> Loop:
         if order == "next":
@@ -15,8 +18,9 @@ class StemLoop(Loop):
             curr_loop_fp = self.first_pair
             return next((sl for sl in stem_loops if sl.last_pair.i == curr_loop_fp.i and sl.last_pair.j == curr_loop_fp.j), None)
 
-    def calculate_energy() -> int:
-        pass
+    def calculate_energy(self) -> int:
+        G = wcf_df.loc[self.first_pair.nt1 + self.first_pair.nt2, self.last_pair.nt1 + self.last_pair.nt2]
+        return round(G)
 
     def create_stem_constraints(self, model: gp.Model) -> None:
         
