@@ -13,6 +13,16 @@ class LoopType(Enum):
     BULGE = "bulge"
     MULTI = "multi"
 
+class InternalType(Enum):
+    INT11 = "int11"
+    INT12 = "int12"
+    INT21 = "int21"
+    INT1N = "int1n"
+    INT22 = "int22"
+    INT23 = "int23"
+    INT32 = "int32"
+    INTGEN = "general"
+
 MAX_LOOP_SIZES = {
         LoopType.HAIRPIN: 10,
         LoopType.INTERNAL: 10,
@@ -26,5 +36,3 @@ MAX_NUM_OF_LOOPS = {
         LoopType.BULGE: 0,
         LoopType.MULTI: 0,
     }
-
-

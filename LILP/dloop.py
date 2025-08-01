@@ -52,7 +52,7 @@ class Loop:
             size = i2 - i1 + (j1 - jd) - d
 
             for k in range(1, d - 1):
-                ik, jk = pairs[k].i, pairs[k].j
+                ik, jk = pairs[k + 1].i, pairs[k].j
                 size += (jk - ik)
 
         return size    
@@ -65,9 +65,10 @@ class Loop:
         if d == 1:
             is_valid = self.size <= MAX_LOOP_SIZES[self.type]
         else:
-            for k in range(d):
-                ik, jk = pairs[k].i, pairs[k].j
-                is_d_valid = is_valid and jk - ik - 1 <= MAX_LOOP_SIZES[self.type]
+            is_valid = pairs[1].i - pairs[0].i <= MAX_LOOP_SIZES[self.type] and pairs[0].j - pairs[d - 1].j <= MAX_LOOP_SIZES[self.type]
+            for k in range(1, d - 1):
+                ik, jk = pairs[k + 1].i, pairs[k].j
+                is_d_valid = is_valid and ik - jk - 1 <= MAX_LOOP_SIZES[self.type]
                 is_valid = is_d_valid
 
         return is_valid

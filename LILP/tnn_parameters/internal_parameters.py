@@ -5,10 +5,10 @@ bps = np.array(['AU','CG','GC','UA','GU','UG'])
 nucleotides = np.array(['A', 'C', 'G', 'U'])
 nps = np.array([x+y for x in nucleotides for y in nucleotides])
 
-c = 100
-asymmetry = 0.6 * c
-AU_end_penalty = 0.7 * c
-GU_end_penalty = 0.7 * c
+scale = 100
+asymmetry = 0.6 * scale
+AU_end_penalty = 0.7 * scale
+GU_end_penalty = 0.7 * scale
 
 # 1x1 internal loops energies
 
@@ -55,7 +55,7 @@ int11_data = int11_t.reshape(nucleotides.size*bps.size, nucleotides.size*bps.siz
 midx = pd.MultiIndex.from_product([bps, nucleotides])
 nidx = pd.MultiIndex.from_product([bps, nucleotides])
 
-int11_df = pd.DataFrame(int11_data * c, index=midx, columns=nidx) 
+int11_df = pd.DataFrame(int11_data * scale, index=midx, columns=nidx) 
 
 # print(int11_data)
 # print(int11_df)
@@ -217,7 +217,7 @@ int12_data = int12_t.reshape(bps.size*nucleotides.size, nucleotides.size*bps.siz
 midx = pd.MultiIndex.from_product([bps, nucleotides])
 nidx = pd.MultiIndex.from_product([nucleotides, bps, nucleotides])
 
-int12_df = pd.DataFrame(int12_data * c, index = midx, columns=nidx)
+int12_df = pd.DataFrame(int12_data * scale, index = midx, columns=nidx)
 
 # print(int12_df.iloc[0:24,0:36])
 
@@ -316,7 +316,7 @@ int22_data = int22_t.reshape(bps2.size*nps.size, bps2.size*nps.size)
 midx = pd.MultiIndex.from_product([bps2, nps])
 nidx = pd.MultiIndex.from_product([bps2, nps])
 
-int22_df = pd.DataFrame(int22_data * c, index = midx, columns=nidx)
+int22_df = pd.DataFrame(int22_data * scale, index = midx, columns=nidx)
 
 # print(int22_df)
 
@@ -345,7 +345,7 @@ for bp in bps:
     int23_df.loc['GG', bp] = -0.8
     int23_df.loc['UU', bp] = -0.4
 
-int23_df = int23_df.transpose() * c
+int23_df = int23_df.transpose() * scale
 
 # print(int23_df)
 
@@ -361,6 +361,6 @@ for bp in bps:
   intnn_df.loc['GG', bp] = -1.2
   intnn_df.loc['UU', bp] = -0.7
 
-intnn_df = intnn_df.transpose() * c
+intnn_df = intnn_df.transpose() * scale
 
 # print(intnn_df)

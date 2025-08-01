@@ -255,6 +255,7 @@ seq_data = parse_seq_file(chain_file)
 
 rna = seq_data['sequence']
 print(rna)
+
 rna_model = LILPModel(rna)
 rna_model.create_base_pairs()
 rna_model.create_first_pairs()
@@ -297,7 +298,8 @@ rna_model.add_multi_max_number_constraint()
 
 rna_model.model.setObjective(rna_model.create_stem_term(), GRB.MINIMIZE)
 
-rna_model.model.write(f'lilp-{seq_no}.lp')
+# rna_model.model.write(f'lilp-{seq_no}.lp')
+rna_model.model.write(f'lilp-test.lp')
 
 counter = 0
 
@@ -311,17 +313,21 @@ counter = 0
 #     print(f"[{counter}]::Base pair: ({bp.i}, {bp.j}), Variable name: {bp.var.VarName}, Gurobi var: {bp.var}")
 #     counter+=1
 
-for h in rna_model.hairpin_loops:    
-    print(f"[{counter}]:: Variable name: {h.var.VarName}, Energy: {h.energy}, Gurobi var: {h.var}")
-    counter+=1
+# for h in rna_model.hairpin_loops:    
+#     print(f"[{counter}]:: Variable name: {h.var.VarName}, Energy: {h.energy}, Gurobi var: {h.var}")
+#     counter+=1
 
 # for s in rna_model.stem_loops:    
 #     print(f"[{counter}]:: Variable name: {s.var.VarName}, Energy of {rna[s.first_pair.i - 1] + rna[s.first_pair.j - 1]} followed by {rna[s.last_pair.i - 1] + rna[s.last_pair.j - 1]}: {s.energy}, Gurobi var: {s.var}")
 #     counter+=1
 
-# for i in rna_model.internal_loops:    
-#     print(f"[{counter}]:: Variable name: {i.var.VarName}, Gurobi var: {i.var}")
-#     counter+=1
+for i in rna_model.internal_loops:
+    if i.is_valid_size():  
+        print(f"[{counter}]:: Variable name: {i.var.VarName}, Size: {i.size}, Energy {i.subtype}: {i.energy}, Gurobi var: {i.var}")
+    counter+=1
+
+# loop = rna_model.internal_loops[93]
+# print(loop.var.VarName)
 
 # for b in rna_model.bulge_loops:    
 #     print(f"[{counter}]:: Variable name: {b.var.VarName}, Gurobi var: {b.var}")
@@ -331,7 +337,7 @@ for h in rna_model.hairpin_loops:
 #     print(f"[{counter}]:: Variable name: {m.var.VarName}, Gurobi var: {m.var}")
 #     counter+=1
 
-dloop = Loop([rna_model.base_pairs[67], rna_model.base_pairs[90]],rna)
+# dloop = Loop([rna_model.base_pairs[67], rna_model.base_pairs[90]],rna)
 
 # P :: 113 :::: Q :: 24 :::: H :: 113 :::: I :: 1053 :::: B :: 387 :::: M :: 2694
 
