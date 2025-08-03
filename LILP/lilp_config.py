@@ -11,12 +11,20 @@ RT = 0.616
 Cbulge = -0.9
 
 # multiloop params
-# a = 3.4 # penalty for closing the multiloop
-# b = 0.9 # penalty per branch (base pair)
-# c = 0.4 # penalty per unpaired nucleotide
-A = 3.4 # penalty for closing the multiloop
-B = 0.91 # average symmetry (number of unpaired nucleotides)
-C = -0.63 # number of branching helices
+# Mathews
+A = 9.1 # intitiation
+B = -0.6 # branches
+C = 0.0 # unpaired nucleotides
+# Logarithmic
+A = 10.1 # intitiation
+B = -0.3 # branches
+C = -0.3 # unpaired nucleotides
+# A = 3.4 # penalty for closing the multiloop
+# B = 0.9 # penalty per branch (base pair)
+# C = 0.4 # penalty per unpaired nucleotide
+# A = 3.4 # penalty for closing the multiloop
+# B = 0.91 # average symmetry (number of unpaired nucleotides)
+# C = 0.63 # number of branching helices
 
 class LoopType(Enum):
     HAIRPIN = "hairpin"

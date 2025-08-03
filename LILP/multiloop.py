@@ -9,7 +9,10 @@ class MultiLoop(Loop):
 
     def calculate_energy(self) -> int:
         if self.is_valid_size():
-            G = SCALE * (B * self.size + C * self.degree)
+            if self.size <= 6:
+                G = SCALE * (A + B * self.degree + C * self.size)
+            else:
+                G = SCALE * (A + B * self.degree + C * 6 + 1.1 * np.log(self.size/6))
         else:
             G = M
         return round(G)
@@ -98,9 +101,9 @@ class MultiLoop(Loop):
         model.update 
 
 RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
-bp1 = BasePair(32,47,RNA)
-bp2 = BasePair(33,37,RNA)
-bp3 = BasePair(40,45,RNA)
+bp1 = BasePair(10,35,RNA)
+bp2 = BasePair(11,18,RNA)
+bp3 = BasePair(19,28,RNA)
 multi = MultiLoop((bp1,bp2,bp3), RNA)
 print(multi.size)
 print(multi.energy)
