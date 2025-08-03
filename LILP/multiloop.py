@@ -97,11 +97,11 @@ class MultiLoop(Loop):
         model.addConstr(inequality <= MAX_NUM_OF_LOOPS[ml.type], f'MMN')
         model.update 
 
-# RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
-# bp1 = BasePair(10,35,RNA)
-# bp2 = BasePair(11,18,RNA)
-# bp3 = BasePair(19,28,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
+RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
+bp1 = BasePair(32,47,RNA)
+bp2 = BasePair(33,37,RNA)
+bp3 = BasePair(40,45,RNA)
+multi = MultiLoop((bp1,bp2,bp3), RNA)
+print(multi.size)
+print(multi.energy)
 

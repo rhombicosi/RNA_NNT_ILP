@@ -245,7 +245,7 @@ class LILPModel:
         return objective
     
     def create_multi_term(self) -> gp.LinExpr:
-        objective = gp.LinExpr([ml.energy for ml in self.bulge_loops], [ml.var for ml in self.bulge_loops])
+        objective = gp.LinExpr([ml.energy for ml in self.multi_loops], [ml.var for ml in self.multi_loops])
         return objective
     
     def create_first_pair_term(self) -> gp.LinExpr:
@@ -311,7 +311,7 @@ rna_model.add_hairpin_ifthen_constraints()
 rna_model.add_internal_size_constraints()
 rna_model.add_internal_ifthen_constraints()
 rna_model.add_internal_onlyif_constraints()
-rna_model.add_internal_max_number_constraint()
+# rna_model.add_internal_max_number_constraint()
 
 rna_model.add_bulge_size_constraints()
 rna_model.add_bulge_ifthen_constraints()
