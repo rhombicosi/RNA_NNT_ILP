@@ -1,12 +1,18 @@
 from dloop import *
+from lilp_config import *
 
 class MultiLoop(Loop):
 
     def __init__(self, base_pairs, RNA):
         super().__init__(base_pairs, RNA)
+        self.energy = self.calculate_energy()
 
-    def calculate_energy() -> int:
-        pass
+    def calculate_energy(self) -> int:
+        if self.is_valid_size():
+            G = SCALE * (B * self.size + C * self.degree)
+        else:
+            G = M
+        return round(G)
 
     def create_multi_size_constraint(self, model: gp.Model) -> None: 
         bp1 = self.base_pairs[0]
@@ -90,4 +96,12 @@ class MultiLoop(Loop):
             inequality.add(gp.LinExpr([1], [ml.var]))
         model.addConstr(inequality <= MAX_NUM_OF_LOOPS[ml.type], f'MMN')
         model.update 
+
+# RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
+# bp1 = BasePair(10,35,RNA)
+# bp2 = BasePair(11,18,RNA)
+# bp3 = BasePair(19,28,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
 

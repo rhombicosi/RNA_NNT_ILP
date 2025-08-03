@@ -53,7 +53,7 @@ class Loop:
 
             for k in range(1, d - 1):
                 ik, jk = pairs[k + 1].i, pairs[k].j
-                size += (jk - ik)
+                size += ik - jk
 
         return size    
 

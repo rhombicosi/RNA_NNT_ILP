@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
-from utils.prepro_utils import *
+import time
 import gurobipy as gp
 from gurobipy import GRB
+from utils.prepro_utils import *
+from utils.sol_converter import *
 from lilp_config import *
 from basepair import *
 from dloop import *
@@ -230,13 +232,42 @@ class LILPModel:
         objective = gp.LinExpr([sl.energy for sl in self.stem_loops], [sl.var for sl in self.stem_loops])
         return objective
     
+    def create_hairpin_term(self) -> gp.LinExpr:
+        objective = gp.LinExpr([hl.energy for hl in self.hairpin_loops], [hl.var for hl in self.hairpin_loops])
+        return objective
+    
+    def create_internal_term(self) -> gp.LinExpr:
+        objective = gp.LinExpr([il.energy for il in self.internal_loops], [il.var for il in self.internal_loops])
+        return objective
+    
+    def create_bulge_term(self) -> gp.LinExpr:
+        objective = gp.LinExpr([bl.energy for bl in self.bulge_loops], [bl.var for bl in self.bulge_loops])
+        return objective
+    
+    def create_multi_term(self) -> gp.LinExpr:
+        objective = gp.LinExpr([ml.energy for ml in self.bulge_loops], [ml.var for ml in self.bulge_loops])
+        return objective
+    
     def create_first_pair_term(self) -> gp.LinExpr:
         objective = gp.LinExpr([fp.pair_penalty_energy for fp in self.first_pairs], [fp.var for fp in self.first_pairs])
         return objective
-
+    
+    def create_objective(self, stem, hairpin, internal, bulge, multi) -> gp.LinExpr:
+        objective = gp.LinExpr()
+        if stem:
+            objective.add(self.create_stem_term())
+        if hairpin:
+            objective.add(self.create_hairpin_term())
+        if internal:
+            objective.add(self.create_internal_term())
+        if bulge:
+            objective.add(self.create_bulge_term())
+        if multi:
+            objective.add(self.create_multi_term())
+        self.model.setObjective(objective, GRB.MINIMIZE)
 
 seq_len = 60
-seq_no = 1
+seq_no = 0
 
 cwd = Path.cwd()
 code_path = Path(__file__).parent.parent
@@ -258,8 +289,6 @@ print(rna)
 
 rna_model = LILPModel(rna)
 rna_model.create_base_pairs()
-rna_model.create_first_pairs()
-rna_model.create_last_pairs()
 rna_model.create_hairpin_loops()
 rna_model.create_stem_loops()
 rna_model.create_internal_loops()
@@ -270,16 +299,14 @@ rna_model.add_single_pair_constraints()
 rna_model.add_no_crossing_constraints()
 
 rna_model.add_stem_constraints()
-rna_model.add_first_pair_constraints()
-rna_model.add_last_pair_constraints()
 
 rna_model.create_nucleotides()
 rna_model.add_unpaired_nucleotides_constraints()
 
 rna_model.add_hairpin_size_constraints()
 rna_model.add_hairpin_ifthen_constraints()
-rna_model.add_hairpin_onlyif_constraints()
-rna_model.add_hairpin_max_number_constraint()
+# rna_model.add_hairpin_onlyif_constraints()
+# rna_model.add_hairpin_max_number_constraint()
 
 rna_model.add_internal_size_constraints()
 rna_model.add_internal_ifthen_constraints()
@@ -288,18 +315,34 @@ rna_model.add_internal_max_number_constraint()
 
 rna_model.add_bulge_size_constraints()
 rna_model.add_bulge_ifthen_constraints()
-rna_model.add_bulge_onlyif_constraints()
-rna_model.add_bulge_max_number_constraint()
+# rna_model.add_bulge_onlyif_constraints()
+# rna_model.add_bulge_max_number_constraint()
 
 rna_model.add_multi_size_constraints()
 rna_model.add_multi_ifthen_constraints()
-rna_model.add_multi_onlyif_constraints()
-rna_model.add_multi_max_number_constraint()
+# rna_model.add_multi_onlyif_constraints()
+# rna_model.add_multi_max_number_constraint()
 
-rna_model.model.setObjective(rna_model.create_stem_term(), GRB.MINIMIZE)
+rna_model.create_objective(1, 1, 1, 1, 1)
 
-# rna_model.model.write(f'lilp-{seq_no}.lp')
-rna_model.model.write(f'lilp-test.lp')
+rna_model.model.write(f'lilp-{seq_no}.lp')
+
+opt_start_time = time.time()
+rna_model.model.optimize()
+opt_time = time.time() - opt_start_time
+
+rna_model.model.write(f'lilp-{seq_no}.sol')
+
+print(f'Obj: {rna_model.model.ObjVal:g}')
+
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(script_dir)
+filepath = os.path.join(parent_dir, f'lilp-{seq_no}.sol')
+
+print(filepath)
+
+pairs2brackets(filepath, rna)
 
 counter = 0
 
@@ -321,20 +364,20 @@ counter = 0
 #     print(f"[{counter}]:: Variable name: {s.var.VarName}, Energy of {rna[s.first_pair.i - 1] + rna[s.first_pair.j - 1]} followed by {rna[s.last_pair.i - 1] + rna[s.last_pair.j - 1]}: {s.energy}, Gurobi var: {s.var}")
 #     counter+=1
 
-for i in rna_model.internal_loops:
-    if i.is_valid_size():  
-        print(f"[{counter}]:: Variable name: {i.var.VarName}, Size: {i.size}, Energy {i.subtype}: {i.energy}, Gurobi var: {i.var}")
-    counter+=1
+# for i in rna_model.internal_loops:
+#     if i.is_valid_size():  
+#         print(f"[{counter}]:: Variable name: {i.var.VarName}, Size: {i.size}, Energy {i.subtype}: {i.energy}, Gurobi var: {i.var}")
+#     counter+=1
 
 # loop = rna_model.internal_loops[93]
 # print(loop.var.VarName)
 
 # for b in rna_model.bulge_loops:    
-#     print(f"[{counter}]:: Variable name: {b.var.VarName}, Gurobi var: {b.var}")
+#     print(f"[{counter}]:: Variable name: {b.var.VarName}, Energy: {b.energy}, Gurobi var: {b.var}")
 #     counter+=1
 
 # for m in rna_model.multi_loops:    
-#     print(f"[{counter}]:: Variable name: {m.var.VarName}, Gurobi var: {m.var}")
+#     print(f"[{counter}]:: Variable name: {m.var.VarName}, Size: {m.size}, Energy: {m.energy}, Gurobi var: {m.var}")
 #     counter+=1
 
 # dloop = Loop([rna_model.base_pairs[67], rna_model.base_pairs[90]],rna)

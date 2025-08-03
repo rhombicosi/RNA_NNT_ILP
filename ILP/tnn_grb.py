@@ -166,14 +166,14 @@ def G_bulge(RNA,i,k,l,j):
     if k-i-1+j-l-1 <= noB:
         if k==i+1:
             if j-l-1 == 1:
-                G = initiation_df.loc[j-l-1,"bulge"] + wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[k-1] + RNA[l-1]] + Cbulge*(RNA[l] == "C") - RT*np.log(3)
+                G = initiation_df.loc[j-l-1,"bulge"] + wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[k-1] + RNA[l-1]] + Cbulge*(RNA[l] == "C" and (RNA[l-1] == "C" or RNA[j-1] == "C")) - RT*np.log(3)
             if j-l-1 > 1 and j-l-1 <= 6:
                 G = initiation_df.loc[j-l-1,"bulge"]
             if j-l-1 > 6:
                 G = initiation_df.loc[j-l-1,"bulge"] + 1.75*RT*np.log((j-l-1)/6)
         elif j==l+1:
             if k-i-1 == 1: 
-                G = initiation_df.loc[k-i-1,"bulge"] + wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[k-1] + RNA[l-1]] + Cbulge*(RNA[k] == "C") - RT*np.log(3)
+                G = initiation_df.loc[k-i-1,"bulge"] + wcf_df.loc[RNA[i-1] + RNA[j-1], RNA[k-1] + RNA[l-1]] + Cbulge*(RNA[k] == "C" and (RNA[k-1] == "C" or RNA[i-1] == "C")) - RT*np.log(3)
             if k-i-1 > 1 and k-i-1 <= 6:
                 G = initiation_df.loc[k-i-1,"bulge"]
             if k-i-1 > 6:

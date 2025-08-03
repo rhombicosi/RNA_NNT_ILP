@@ -1,5 +1,4 @@
 from pathlib import Path
-import pandas as pd
 
 # archive ii path
 # with .ct and .seq files
