@@ -9,6 +9,7 @@ class StemLoop(Loop):
         self.first_pair = base_pairs[0]  
         self.last_pair = base_pairs[1]
         self.energy = self.calculate_energy()
+        self.distance = self.first_pair.j - self.last_pair.i - 1
             
     def _find_stem_neighbors(self, stem_loops: List[Loop], order: str) -> Loop:
         if order == "next":

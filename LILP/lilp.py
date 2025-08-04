@@ -14,7 +14,7 @@ from internalloop import *
 from bulgeloop import *
 from multiloop import *
 
-class LILPModel:
+class LILP:
     def __init__(self, rna_seq: str):
         self.rna_seq = rna_seq
         self.model = gp.Model(f'MIP')
@@ -49,7 +49,6 @@ class LILPModel:
         self.model.update()
 
     def create_first_pairs(self) -> None:
-
         for bp in self.base_pairs:
             fp = BasePair(bp.i, bp.j, self.rna_seq)
             self.first_pairs.append(fp)
@@ -57,7 +56,6 @@ class LILPModel:
         self.model.update()
 
     def create_last_pairs(self) -> None:
-
         for bp in self.base_pairs:
             lp = BasePair(bp.i, bp.j, self.rna_seq)
             self.last_pairs.append(lp)
@@ -65,7 +63,6 @@ class LILPModel:
         self.model.update()
 
     def create_hairpin_loops(self) -> None:
-
         for bp in self.base_pairs:
             hairpin = HairpinLoop([bp], self.rna_seq)
             hairpin.add_variable(self.model)
@@ -73,7 +70,6 @@ class LILPModel:
         self.model.update() 
 
     def create_stem_loops(self) -> None:
-
         for bp1 in self.base_pairs:
             bp2 = BasePair._find_base_pairs_matches(self.base_pairs, bp1.i + 1, bp1.j - 1)
             if bp2:
@@ -83,7 +79,6 @@ class LILPModel:
         self.model.update()
 
     def create_internal_loops(self) -> None:
-
         for bp1 in self.base_pairs:
             for bp2 in self.base_pairs:
                 if bp2.i > bp1.i + 1 and bp2.j < bp1.j - 1:
@@ -93,7 +88,6 @@ class LILPModel:
         self.model.update()
 
     def create_bulge_loops(self) -> None:
-
         for bp1 in self.base_pairs:
             for bp2 in self.base_pairs:
                 if (bp2.i == bp1.i + 1 and bp2.j < bp1.j - 1) or (bp2.i > bp1.i + 1 and bp2.j == bp1.j - 1):
@@ -103,7 +97,6 @@ class LILPModel:
         self.model.update()
 
     def create_multi_loops(self) -> None:
-
         for bp1 in self.base_pairs:
             for bp2 in self.base_pairs:
                 for bp3 in self.base_pairs:
@@ -262,162 +255,45 @@ class LILPModel:
             objective.add(self.create_multi_term())
         self.model.setObjective(objective, GRB.MINIMIZE)
 
-seq_len = 60
-seq_no = 0
-
-cwd = Path.cwd()
-code_path = Path(__file__).parent.parent
-arch_rel_path = '../../ARCHIVE II/'
-archive_path = (code_path/arch_rel_path).resolve()
-seq_len_dir = f'RNA_seq_{seq_len}'
-
-chain_dir = os.path.join(archive_path, seq_len_dir)
-seq_files = get_filenames(chain_dir, '.seq')
-
-chain_file = seq_files[seq_no]
-chain_name_with_ext = os.path.basename(chain_file)        
-chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
-lp_file_name = chain_name_without_ext
-seq_data = parse_seq_file(chain_file)
-
-rna = seq_data['sequence']
-print(rna)
-
-rna_model = LILPModel(rna)
-rna_model.create_base_pairs()
-rna_model.create_stem_loops()
-rna_model.create_hairpin_loops()
-rna_model.create_internal_loops()
-rna_model.create_bulge_loops()
-rna_model.create_multi_loops()
-
-rna_model.add_single_pair_constraints()
-rna_model.add_no_crossing_constraints()
-
-rna_model.add_stem_constraints()
-
-rna_model.create_nucleotides()
-rna_model.add_unpaired_nucleotides_constraints()
-
-rna_model.add_hairpin_size_constraints()
-rna_model.add_hairpin_ifthen_constraints()
-# rna_model.add_hairpin_onlyif_constraints()
-# rna_model.add_hairpin_max_number_constraint()
-
-rna_model.add_internal_size_constraints()
-rna_model.add_internal_ifthen_constraints()
-rna_model.add_internal_onlyif_constraints()
-# rna_model.add_internal_max_number_constraint()
-# rna_model.model.addConstr(rna_model.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
-
-rna_model.add_bulge_size_constraints()
-rna_model.add_bulge_ifthen_constraints()
-# rna_model.add_bulge_onlyif_constraints()
-# rna_model.add_bulge_max_number_constraint()
-
-rna_model.add_multi_size_constraints()
-rna_model.add_multi_ifthen_constraints()
-# rna_model.add_multi_onlyif_constraints()
-# rna_model.add_multi_max_number_constraint()
-
-rna_model.create_objective(1, 1, 1, 1, 1)
-
-rna_model.model.write(f'lilp-{seq_no}.lp')
-
-opt_start_time = time.time()
-rna_model.model.optimize()
-opt_time = time.time() - opt_start_time
-
-rna_model.model.write(f'lilp-{seq_no}.sol')
-
-print(f'Obj: {rna_model.model.ObjVal:g}')
-
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(script_dir)
-filepath = os.path.join(parent_dir, f'lilp-{seq_no}.sol')
-
-print(filepath)
-
-pairs2brackets(filepath, rna)
-
-calculate_sol_energy(filepath, rna)
-
-
-
-# rna = "GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU"
-# bp1 = BasePair(1,43,rna)
-# bp2 = BasePair(2,42,rna)
-# bp3 = BasePair(3,41,rna)
-# bp4 = BasePair(4,40,rna)
-# bp5 = BasePair(5,39,rna)
-# bp6 = BasePair(11,36,rna)
-# bp7 = BasePair(12,35,rna)
-# bp8 = BasePair(13,34,rna)
-# bp9 = BasePair(19,28,rna)
-# bp10 = BasePair(20,27,rna)
-# bp11 = BasePair(21,26,rna)
-# loop1 = StemLoop((bp1,bp2),rna)
-# loop2 = StemLoop((bp2,bp3),rna)
-# loop3 = StemLoop((bp3,bp4),rna)
-# loop4 = StemLoop((bp4,bp5),rna)
-# loop5 = InternalLoop((bp5, bp6), rna)
-# loop6 = StemLoop((bp6,bp7),rna)
-# loop7 = StemLoop((bp7,bp8),rna)
-# loop8 = InternalLoop((bp8, bp9), rna)
-# loop9 = StemLoop((bp9,bp10),rna)
-# loop10 = StemLoop((bp10,bp11),rna)
-# loop11 = HairpinLoop([bp11],rna)
-
-# print(f'{loop1.energy}')
-# print(f'{loop2.energy}')
-# print(f'{loop3.energy}')
-# print(f'{loop4.energy}')
-# print(f'{loop5.energy}')
-# print(f'{loop6.energy}')
-# print(f'{loop7.energy}')
-# print(f'{loop8.energy}')
-# print(f'{loop9.energy}')
-# print(f'{loop10.energy}')
-# print(f'{loop11.energy}')
-
-counter = 0
-
-# print(type(rna_model.base_pairs))
-
-# for bp in rna_model.base_pairs:    
-#     print(f"[{counter}]::Base pair: ({bp.i}, {bp.j}), First pair {bp.nt1 + bp.nt2} energy: {bp.pair_penalty_energy}, Variable name: {bp.var.VarName}, Gurobi var: {bp.var}")
-#     counter+=1
-
-# for bp in rna_model.first_pairs:    
-#     print(f"[{counter}]::Base pair: ({bp.i}, {bp.j}), Variable name: {bp.var.VarName}, Gurobi var: {bp.var}")
-#     counter+=1
-
-# for h in rna_model.hairpin_loops:    
-#     print(f"[{counter}]:: Variable name: {h.var.VarName}, Energy: {h.energy}, Gurobi var: {h.var}")
-#     counter+=1
-
-# for s in rna_model.stem_loops:    
-#     print(f"[{counter}]:: Variable name: {s.var.VarName}, Energy of {rna[s.first_pair.i - 1] + rna[s.first_pair.j - 1]} followed by {rna[s.last_pair.i - 1] + rna[s.last_pair.j - 1]}: {s.energy}, Gurobi var: {s.var}")
-#     counter+=1
-
-# for i in rna_model.internal_loops:
-#     if i.is_valid_size():  
-#         print(f"[{counter}]:: Variable name: {i.var.VarName}, Size: {i.size}, Energy {i.subtype}: {i.energy}, Gurobi var: {i.var}")
-#     counter+=1
-
-# loop = rna_model.internal_loops[93]
-# print(loop.var.VarName)
-
-# for b in rna_model.bulge_loops:    
-#     print(f"[{counter}]:: Variable name: {b.var.VarName}, Energy: {b.energy}, Gurobi var: {b.var}")
-#     counter+=1
-
-# for m in rna_model.multi_loops:    
-#     print(f"[{counter}]:: Variable name: {m.var.VarName}, Size: {m.size}, Energy: {m.energy}, Gurobi var: {m.var}")
-#     counter+=1
-
-# dloop = Loop([rna_model.base_pairs[67], rna_model.base_pairs[90]],rna)
-
-# P :: 113 :::: Q :: 24 :::: H :: 113 :::: I :: 1053 :::: B :: 387 :::: M :: 2694
-
+    def create_variables(self, stem, hairpin, internal, bulge, multi):
+        self.create_base_pairs()
+        if stem:            
+            self.create_stem_loops()
+        self.create_nucleotides()
+        if hairpin:
+            self.create_hairpin_loops()
+        if internal:
+            self.create_internal_loops()
+        if bulge:
+            self.create_bulge_loops()
+        if multi:
+            self.create_multi_loops()
+    
+    def create_constraints(self, stem, hairpin, internal, bulge, multi):
+        self.add_single_pair_constraints()
+        self.add_no_crossing_constraints()
+        if stem:
+            self.add_stem_constraints()
+        self.add_unpaired_nucleotides_constraints()
+        if hairpin:
+            self.add_hairpin_size_constraints()
+            self.add_hairpin_ifthen_constraints()
+            # self.add_hairpin_onlyif_constraints()
+            # self.add_hairpin_max_number_constraint()
+        if internal:
+            self.add_internal_size_constraints()
+            self.add_internal_ifthen_constraints()
+            self.add_internal_onlyif_constraints()
+            # self.add_internal_max_number_constraint()
+            # self.model.addConstr(self.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
+        if bulge:
+            self.add_bulge_size_constraints()
+            self.add_bulge_ifthen_constraints()
+            # self.add_bulge_onlyif_constraints()
+            # self.add_bulge_max_number_constraint()
+        if multi:
+            self.add_multi_size_constraints()
+            self.add_multi_ifthen_constraints()
+            # self.add_multi_onlyif_constraints()
+            # self.add_multi_max_number_constraint()
+        

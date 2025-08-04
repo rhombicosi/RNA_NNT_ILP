@@ -13,7 +13,7 @@ from multiloop import *
 
 def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)
-    print(lngth)
+    # print(lngth)
 
     pattern = r'_(\d+)_(\d+)' #"\((.*?)\)"
 
@@ -27,29 +27,29 @@ def pairs2brackets(filepath, RNA):
         
         while line: 
             
-            if " 1" in line and "Q_" in line:
-                print("{}".format(line.strip()))
+            # if " 1" in line and "Q_" in line:
+            #     print("{}".format(line.strip()))
             
-            if " 1" in line and "F_" in line:
-                print("{}".format(line.strip()))
+            # if " 1" in line and "F_" in line:
+            #     print("{}".format(line.strip()))
 
-            if " 1" in line and "L_" in line:
-                print("{}".format(line.strip()))
+            # if " 1" in line and "L_" in line:
+            #     print("{}".format(line.strip()))
 
-            if " 1" in line and "H_" in line:
-                print("{}".format(line.strip()))
+            # if " 1" in line and "H_" in line:
+            #     print("{}".format(line.strip()))
             
-            if " 1" in line and "I_" in line:
-                print("{}".format(line.strip()))
+            # if " 1" in line and "I_" in line:
+            #     print("{}".format(line.strip()))
 
-            if " 1" in line and "B_" in line:
-                print("{}".format(line.strip()))
+            # if " 1" in line and "B_" in line:
+            #     print("{}".format(line.strip()))
 
-            if " 1" in line and "M_" in line:
-                print("{}".format(line.strip()))
+            # if " 1" in line and "M_" in line:
+            #     print("{}".format(line.strip()))
 
             if " 1" in line and "P_" in line:
-                print("{}".format(line.strip()))
+                # print("{}".format(line.strip()))
                 match = re.search(pattern, line)
                 i = int(match.group(1))
                 j = int(match.group(2))
