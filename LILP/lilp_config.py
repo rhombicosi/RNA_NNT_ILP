@@ -12,9 +12,9 @@ Cbulge = -0.9
 
 # multiloop params
 # Mathews
-A = 9.1 # intitiation
-B = -0.6 # branches
-C = 0.0 # unpaired nucleotides
+# A = 9.1 # intitiation
+# B = -0.6 # branches
+# C = 0.0 # unpaired nucleotides
 # Logarithmic
 A = 10.1 # intitiation
 B = -0.3 # branches

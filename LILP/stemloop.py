@@ -60,5 +60,14 @@ class StemLoop(Loop):
             inequality = gp.LinExpr([1, -1], [self.var, last_pair.var])
             model.addConstr(inequality <= 0, f'LPIT-{last_pair.i}-{last_pair.j}')
             inequality = gp.LinExpr([2, -1], [last_pair.var, self.var])
-            model.addConstr(inequality <= 1, f'LPOI-{last_pair.i}-{last_pair.j}')        
+            model.addConstr(inequality <= 1, f'LPOI-{last_pair.i}-{last_pair.j}')   
+
+# rna = "GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU"
+# bp1 = BasePair(20,27,rna)
+# bp2 = BasePair(21,26,rna)
+# i_loop = StemLoop((bp1, bp2), rna)
+
+# print(i_loop.energy)
+# print(i_loop.size)
+     
     

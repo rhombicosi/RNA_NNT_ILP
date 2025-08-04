@@ -43,7 +43,7 @@ class MultiLoop(Loop):
             inequality.add(gp.LinExpr([1],[nucleotides[u - 1]]))
             
         inequality.add(gp.LinExpr([1, 1, 1, -1],[bp1.var, bp2.var, bp3.var, self.var]))
-        model.addConstr(inequality <= self.size + 1, f'MIT-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}')
+        model.addConstr(inequality <= self.size + self.degree - 1, f'MIT-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}')
 
     def create_multi_onlyif_constraint(self, model: gp.Model, base_pairs: List[BasePair]) -> None:
         bp1 = self.base_pairs[0]
@@ -89,7 +89,7 @@ class MultiLoop(Loop):
                 for bp in matches:
                     inequality.add(gp.LinExpr([1], [bp.var]))
                 
-                inequality.add(gp.LinExpr([-1, -1, -1],[bp1.var, bp2.var, bp3.var]))
+                inequality.add(gp.LinExpr([-1, -1, -1], [bp1.var, bp2.var, bp3.var]))
                 model.addConstr(inequality <= 1, f'MOI-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}-{u}')
 
     def create_multi_max_number_constraint(model: gp.Model, multi_loops: List["MultiLoop"]) -> None:
@@ -98,13 +98,13 @@ class MultiLoop(Loop):
         for ml in multi_loops:
             inequality.add(gp.LinExpr([1], [ml.var]))
         model.addConstr(inequality <= MAX_NUM_OF_LOOPS[ml.type], f'MMN')
-        model.update 
+        model.update()
 
-RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
-bp1 = BasePair(10,35,RNA)
-bp2 = BasePair(11,18,RNA)
-bp3 = BasePair(19,28,RNA)
-multi = MultiLoop((bp1,bp2,bp3), RNA)
-print(multi.size)
-print(multi.energy)
+# RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
+# bp1 = BasePair(10,35,RNA)
+# bp2 = BasePair(11,18,RNA)
+# bp3 = BasePair(19,28,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
 

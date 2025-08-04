@@ -1,15 +1,21 @@
 import re
+import math
+from stemloop import *
+from hairpinloop import *
+from internalloop import *
+from bulgeloop import *
+from multiloop import *
 # from binary_variables_grb import *
 # from utils.constants_paths import *
 # from utils.prepro_run import *
 # from utils.prepro_utils import *
-import math
+
 
 def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)
     print(lngth)
 
-    pattern = "_(\d+)_(\d+)\s+1" #"\((.*?)\)"
+    pattern = r'_(\d+)_(\d+)' #"\((.*?)\)"
 
     fold = ["." for _ in range(lngth)] 
         
@@ -44,7 +50,7 @@ def pairs2brackets(filepath, RNA):
 
             if " 1" in line and "P_" in line:
                 print("{}".format(line.strip()))
-                match = re.search(r'_(\d+)_(\d+)', line)
+                match = re.search(pattern, line)
                 i = int(match.group(1))
                 j = int(match.group(2))
 
@@ -97,6 +103,64 @@ def compare2folds(generated, reference):
         MCC = math.sqrt(PPV*STY)
 
     return (f1,fbeta,MCC)
+
+def calculate_sol_energy(filepath, rna):
+    energy = 0
+    with open(filepath, 'r') as file:
+        lines = file.readlines()
+
+    # Process lines
+    for line in lines:
+        if line.strip().endswith('1'):
+            # Extract type strictly as a whole word before the first underscore
+            type_match = re.match(r'^(STEM|HAIRPIN|INTERNAL|BULGE|MULTI)_', line)
+            if type_match:
+                element_type = type_match.group(1)
+                
+                # Extract all numbers after underscores
+                numbers = re.findall(r'_(\d+)', line)
+                indices = [int(num) for num in numbers]
+
+                if element_type == 'STEM':
+                    i1, j1, i2, j2 = indices
+                    bp1 = BasePair(i1, j1, rna)
+                    bp2 = BasePair(i2, j2, rna)
+                    stemloop = StemLoop((bp1, bp2), rna)
+                    print(f'{element_type} :: ({i1}, {j1}), ({i2}, {j2}) :: {stemloop.energy}')
+                    energy += stemloop.energy
+
+                if element_type == 'HAIRPIN':
+                    i1, j1 = indices
+                    bp1 = BasePair(i1, j1, rna)
+                    hairpinloop = HairpinLoop([bp1], rna)
+                    print(f'{element_type} :: ({i1}, {j1}) :: {hairpinloop.energy}')
+                    energy += hairpinloop.energy
+
+                if element_type == 'INTERNAL':
+                    i1, j1, i2, j2 = indices
+                    bp1 = BasePair(i1, j1, rna)
+                    bp2 = BasePair(i2, j2, rna)
+                    internalloop = InternalLoop((bp1, bp2), rna)
+                    print(f'{element_type} :: ({i1}, {j1}), ({i2}, {j2}) :: {internalloop.energy}')
+                    energy += internalloop.energy
+                
+                if element_type == 'BULGE':
+                    i1, j1, i2, j2 = indices
+                    bp1 = BasePair(i1, j1, rna)
+                    bp2 = BasePair(i2, j2, rna)
+                    bulgeloop = BulgeLoop((bp1, bp2), rna)
+                    print(f'{element_type} :: ({i1}, {j1}), ({i2}, {j2}) :: {bulgeloop.energy}')
+                    energy += bulgeloop.energy
+
+                if element_type == 'MULTI':
+                    i1, j1, i2, j2, i3, j3 = indices
+                    bp1 = BasePair(i1, j1, rna)
+                    bp2 = BasePair(i2, j2, rna)
+                    bp3 = BasePair(i3, j3, rna)
+                    multiloop = MultiLoop((bp1, bp2, bp3), rna)
+                    print(f'{element_type} :: ({i1}, {j1}), ({i2}, {j2}) , ({i3}, {j3}) :: {multiloop.energy}')
+                    energy += multiloop.energy
+    print(energy)
 
 # def sol_analyse(seq_files, seq_number, sol_dir, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, start, s_start = 1):
 

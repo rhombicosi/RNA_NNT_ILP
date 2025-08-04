@@ -62,3 +62,11 @@ class HairpinLoop(Loop):
             inequality.add(gp.LinExpr([1], [hl.var]))
         model.addConstr(inequality <= MAX_NUM_OF_LOOPS[hl.type], f'HMN')
         model.update()    
+
+
+# rna = "GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU"
+# bp1 = BasePair(21,26,rna)
+# h_loop = HairpinLoop([bp1], rna)
+
+# print(h_loop.energy)
+# print(h_loop.size)

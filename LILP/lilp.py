@@ -248,10 +248,6 @@ class LILPModel:
         objective = gp.LinExpr([ml.energy for ml in self.multi_loops], [ml.var for ml in self.multi_loops])
         return objective
     
-    def create_first_pair_term(self) -> gp.LinExpr:
-        objective = gp.LinExpr([fp.pair_penalty_energy for fp in self.first_pairs], [fp.var for fp in self.first_pairs])
-        return objective
-    
     def create_objective(self, stem, hairpin, internal, bulge, multi) -> gp.LinExpr:
         objective = gp.LinExpr()
         if stem:
@@ -289,8 +285,8 @@ print(rna)
 
 rna_model = LILPModel(rna)
 rna_model.create_base_pairs()
-rna_model.create_hairpin_loops()
 rna_model.create_stem_loops()
+rna_model.create_hairpin_loops()
 rna_model.create_internal_loops()
 rna_model.create_bulge_loops()
 rna_model.create_multi_loops()
@@ -312,6 +308,7 @@ rna_model.add_internal_size_constraints()
 rna_model.add_internal_ifthen_constraints()
 rna_model.add_internal_onlyif_constraints()
 # rna_model.add_internal_max_number_constraint()
+# rna_model.model.addConstr(rna_model.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
 
 rna_model.add_bulge_size_constraints()
 rna_model.add_bulge_ifthen_constraints()
@@ -343,6 +340,46 @@ filepath = os.path.join(parent_dir, f'lilp-{seq_no}.sol')
 print(filepath)
 
 pairs2brackets(filepath, rna)
+
+calculate_sol_energy(filepath, rna)
+
+
+
+# rna = "GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU"
+# bp1 = BasePair(1,43,rna)
+# bp2 = BasePair(2,42,rna)
+# bp3 = BasePair(3,41,rna)
+# bp4 = BasePair(4,40,rna)
+# bp5 = BasePair(5,39,rna)
+# bp6 = BasePair(11,36,rna)
+# bp7 = BasePair(12,35,rna)
+# bp8 = BasePair(13,34,rna)
+# bp9 = BasePair(19,28,rna)
+# bp10 = BasePair(20,27,rna)
+# bp11 = BasePair(21,26,rna)
+# loop1 = StemLoop((bp1,bp2),rna)
+# loop2 = StemLoop((bp2,bp3),rna)
+# loop3 = StemLoop((bp3,bp4),rna)
+# loop4 = StemLoop((bp4,bp5),rna)
+# loop5 = InternalLoop((bp5, bp6), rna)
+# loop6 = StemLoop((bp6,bp7),rna)
+# loop7 = StemLoop((bp7,bp8),rna)
+# loop8 = InternalLoop((bp8, bp9), rna)
+# loop9 = StemLoop((bp9,bp10),rna)
+# loop10 = StemLoop((bp10,bp11),rna)
+# loop11 = HairpinLoop([bp11],rna)
+
+# print(f'{loop1.energy}')
+# print(f'{loop2.energy}')
+# print(f'{loop3.energy}')
+# print(f'{loop4.energy}')
+# print(f'{loop5.energy}')
+# print(f'{loop6.energy}')
+# print(f'{loop7.energy}')
+# print(f'{loop8.energy}')
+# print(f'{loop9.energy}')
+# print(f'{loop10.energy}')
+# print(f'{loop11.energy}')
 
 counter = 0
 

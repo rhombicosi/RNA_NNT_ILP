@@ -133,12 +133,12 @@ class InternalLoop(Loop):
 
         for il in internal_loops:
             inequality.add(gp.LinExpr([1], [il.var]))
-        model.addConstr(inequality <= MAX_NUM_OF_LOOPS[il.type], f'IMN')
-        model.update
+        model.addConstr(inequality == MAX_NUM_OF_LOOPS[il.type], f'IMN')
+        model.update()
 
-# rna = "AACCAUGUCAGGUCCGGAAGGAAGCAGCAU"
-# bp1 = BasePair(9,24,rna)
-# bp2 = BasePair(13,17,rna)
+# rna = "GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU"
+# bp1 = BasePair(14,30,rna)
+# bp2 = BasePair(19,28,rna)
 # i_loop = InternalLoop((bp1, bp2), rna)
 
 # print(i_loop.energy)
