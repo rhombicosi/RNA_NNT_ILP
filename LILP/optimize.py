@@ -7,42 +7,50 @@ from lilp import *
 
 def optimize(rna: str, model_name: str, stem: bool, hairpin: bool, internal: bool, bulge: bool, multi: bool, lp_dir: str, incumbent_dir: str, sol_dir: str, start = None, start_name = None, solstart_dir = None) -> None:
     
+    model_start_time = time.time()
     rna_model = LILP(rna, model_name)
     rna_model.create_variables(stem, hairpin, internal, bulge, multi)
     rna_model.create_constraints(stem, hairpin, internal, bulge, multi)
-    rna_model.create_objective(stem, hairpin, internal, bulge, multi)  
-    
+    rna_model.create_objective(stem, hairpin, internal, bulge, multi)        
+    model_time = time.time() - model_start_time
+    print(f'MODEL CONSTRUCTION TIME :: {model_time}')
+
     rna_model.model.write(f'{lp_dir}/{lp_file_name}-{model_name}.lp')
 
     rna_model.model.setParam("LogFile", f'{grb_log_dir}/{lp_file_name}-log-{model_name}')
-    rna_model.model.setParam(GRB.Param.SolFiles, f'{incumbent_dir}/{lp_file_name}-incumbent-{model_name}.lp')
+    rna_model.model.setParam(GRB.Param.SolFiles, f'{incumbent_dir}/{lp_file_name}-incumbent-{model_name}.lp') 
+    rna_model.model.setParam("Seed", 1234567890)   
+    # rna_model.model.Params.Threads = 96
+
     # rna_model.model.setParam("CliqueCuts", 1)
     # rna_model.model.setParam("RLTCuts", 1)
     # rna_model.model.setParam("ZeroHalfCuts", 1)
     # rna_model.model.setParam("RelaxLiftCuts", 2)
     # rna_model.model.setParam("MIPFocus", 2)
-    rna_model.model.setParam("Heuristics", 0)
+    # rna_model.model.setParam("Heuristics", 0)
 
-    sorted_internals = sorted(rna_model.internal_loops, key=lambda x: x.size)
-    sorted_hairpins = sorted(rna_model.hairpin_loops, key=lambda x: x.size)
-    sorted_bulges = sorted(rna_model.bulge_loops, key=lambda x: x.size)
-    sorted_multis = sorted(rna_model.multi_loops, key=lambda x: x.size)
-    sorted_stems = sorted(rna_model.stem_loops, key=lambda x: x.distance)
+    # if  internal:
+    #     sorted_internals = sorted(rna_model.internal_loops, key=lambda x: x.size)
+    #     for il in sorted_internals:
+    #         il.var.setAttr("BranchPriority", round(200/il.size))
 
-    for il in sorted_internals:
-        il.var.setAttr("BranchPriority", round(200/il.size))
+    # if hairpin:
+    #     sorted_hairpins = sorted(rna_model.hairpin_loops, key=lambda x: x.size)
+    #     for hl in sorted_hairpins:
+    #         hl.var.setAttr("BranchPriority", round(200/hl.size))
 
-    for hl in sorted_hairpins:
-        hl.var.setAttr("BranchPriority", round(200/hl.size))
+    # sorted_bulges = sorted(rna_model.bulge_loops, key=lambda x: x.size)
+    # sorted_multis = sorted(rna_model.multi_loops, key=lambda x: x.size)
+    # sorted_stems = sorted(rna_model.stem_loops, key=lambda x: x.distance)    
 
-    for bl in sorted_bulges:
-        bl.var.setAttr("BranchPriority", round(100/hl.size))
+    # for bl in sorted_bulges:
+    #     bl.var.setAttr("BranchPriority", round(100/hl.size))
 
-    for ml in sorted_multis:
-        ml.var.setAttr("BranchPriority", round(100/hl.size))
+    # for ml in sorted_multis:
+    #     ml.var.setAttr("BranchPriority", round(100/hl.size))
 
-    for sl in sorted_stems:
-        sl.var.setAttr("BranchPriority", 10 * sl.distance)
+    # for sl in sorted_stems:
+    #     sl.var.setAttr("BranchPriority", 10 * sl.distance)
 
     if start:
         rna_model.model.NumStart = 1
@@ -64,7 +72,7 @@ def optimize(rna: str, model_name: str, stem: bool, hairpin: bool, internal: boo
 
     print(f'Obj: {rna_model.model.ObjVal:g}')
 
-seq_number = 1
+seq_number = 0
 
 chain_file = seq_files[seq_number]
 chain_name_with_ext = os.path.basename(chain_file)
