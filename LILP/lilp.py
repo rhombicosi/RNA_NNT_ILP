@@ -253,14 +253,14 @@ class LILP:
         self.model.setObjective(objective, GRB.MINIMIZE)
 
     def create_variables(self, stem, hairpin, internal, bulge, multi):
-        self.create_base_pairs()
-        if stem:            
-            self.create_stem_loops()
-        self.create_nucleotides()
+        self.create_base_pairs()    
         if hairpin:
-            self.create_hairpin_loops()
+            self.create_hairpin_loops()      
+        if stem:            
+            self.create_stem_loops()                              
+        self.create_nucleotides()                        
         if internal:
-            self.create_internal_loops()
+            self.create_internal_loops()   
         if bulge:
             self.create_bulge_loops()
         if multi:

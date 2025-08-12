@@ -14,6 +14,7 @@ class BasePair:
         self.nt2 = RNA[j-1]
         self.var = None
         self.pair_penalty_energy = self.calculate_pair_penalty_energy()
+        self.distance = self.j - self.i - 1
 
     def distance(self) -> int:
         return self.j - self.i
