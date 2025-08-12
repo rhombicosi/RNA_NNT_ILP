@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-import time
 import gurobipy as gp
 from gurobipy import GRB
 from utils.prepro_utils import *
@@ -15,9 +12,9 @@ from bulgeloop import *
 from multiloop import *
 
 class LILP:
-    def __init__(self, rna_seq: str):
+    def __init__(self, rna_seq: str, name: str):
         self.rna_seq = rna_seq
-        self.model = gp.Model(f'MIP')
+        self.model = gp.Model(name)
         self.nucleotides : List[gp.Var] = []
         self.base_pairs : List[BasePair] = []
         self.first_pairs : List[BasePair] = []

@@ -1,6 +1,6 @@
 import os
-from prepro_utils import *
-from constants_paths import *
+from utils.prepro_utils import *
+from utils.constants_paths import *
 
 # create folders to write .lp model and optimization .sol results
 lp_dir = create_dir(lp_path, lp_folder_name)
@@ -86,4 +86,4 @@ if __name__ == "__main__":
 chain_dir = os.path.join(archive_path, seq_len_dir)
 seq_files = get_filenames(chain_dir, '.seq')
 
-print(f'# of sequences of lengths <= {seq_len} :: {len(seq_files)}')
+print(f' # of sequences of lengths <= {seq_len} :: {len(seq_files)}')

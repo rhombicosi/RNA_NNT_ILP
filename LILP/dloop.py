@@ -65,7 +65,7 @@ class Loop:
         if d == 1:
             is_valid = self.size <= MAX_LOOP_SIZES[self.type]
         else:
-            is_valid = pairs[1].i - pairs[0].i <= MAX_LOOP_SIZES[self.type] and pairs[0].j - pairs[d - 1].j <= MAX_LOOP_SIZES[self.type]
+            is_valid = pairs[1].i - pairs[0].i - 1 <= MAX_LOOP_SIZES[self.type] and pairs[0].j - pairs[d - 1].j - 1 <= MAX_LOOP_SIZES[self.type]
             for k in range(1, d - 1):
                 ik, jk = pairs[k + 1].i, pairs[k].j
                 is_d_valid = is_valid and ik - jk - 1 <= MAX_LOOP_SIZES[self.type]

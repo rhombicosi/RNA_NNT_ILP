@@ -218,7 +218,7 @@ def optimize_start(seq_files, seq_number, lpstart_dir, solstart_dir):
         # mip.setParam("PoolSolutions", 20)
         # mip.setParam("PoolSearchMode", 2)
         # mip.setParam("SolFiles", f"{chain_f}-decomposition-grb")
-        mip.setParam("LogFile", f'{grb_log_dir}/log-{lp_file_name}')
+        mip.setParam("LogFile", f'{grb_log_dir}/log-{lp_file_name}-start')
         # mip.setParam("MIPFocus", 2)
         # mip.setParam("ConcurrentMIP ", 5)
         # mip.setParam("Presolve", 2)

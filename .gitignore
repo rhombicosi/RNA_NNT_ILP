@@ -10,13 +10,10 @@ __pycache__/
 /sol_start
 /lp_multi
 /sol_multi
+/incumbent
+/incumbent_start
 /lp
 /sol
 /gurobi_log
 ILP/__pycache__/
-lilp-0.lp
-lilp-1.lp
-lilp-0.sol
-lilp-1.sol
-log-0
-log-1
+tune.prm

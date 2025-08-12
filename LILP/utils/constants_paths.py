@@ -4,7 +4,7 @@ from pathlib import Path
 # with .ct and .seq files
 cwd = Path.cwd()
 code_path = Path(__file__).parent.parent
-arch_rel_path = '../../ARCHIVE II/'
+arch_rel_path = '../../../ARCHIVE II/'
 archive_path = (code_path/arch_rel_path).resolve()
 
 # folder name for files that should be excluded from test
@@ -19,7 +19,7 @@ ct_len_dir = f'RNA_ct_{seq_len}'
 
 # folders to save lp models and solutions
 ilp_parent_dir = Path(__file__).parent
-lp_rel_path = '../'
+lp_rel_path = '../../'
 lp_path = (ilp_parent_dir/lp_rel_path).resolve()
 lp_folder_name = 'lp_multi'
 sol_folder_name = 'sol_multi'
@@ -38,12 +38,3 @@ grb_log = f'gurobi_log'
 
 # RNAstructure path
 rnastruct_path = "C:/Program Files/RNAstructure6.5/exe"
-
-# index of the sequence from archive ii currently under test
-# seq_number = 51
-
-# objective val
-# obj_val = 0
-
-# store generated .lp files
-# lp_files = []
