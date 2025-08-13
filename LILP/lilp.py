@@ -64,7 +64,12 @@ class LILP:
             hairpin = HairpinLoop([bp], self.rna_seq)
             hairpin.add_variable(self.model)
             self.hairpin_loops.append(hairpin)
-        self.model.update() 
+        self.model.update()
+
+    def create_hairpin_vars(self) -> None:        
+        sorted_hairpins = sorted(self.hairpin_loops, key=lambda x: (x.size, x.energy))
+        for hl in sorted_hairpins:
+            hl.add_variable(self.model)
 
     def create_stem_loops(self) -> None:
         for bp1 in self.base_pairs:
@@ -75,6 +80,11 @@ class LILP:
                 self.stem_loops.append(stem)
         self.model.update()
 
+    def create_stem_vars(self) -> None:
+        sorted_stems = sorted(self.stem_loops, key=lambda x: x.distance, reverse=True)   
+        for sl in sorted_stems:
+            sl.add_variable(self.model)
+
     def create_internal_loops(self) -> None:
         for bp1 in self.base_pairs:
             for bp2 in self.base_pairs:
@@ -83,6 +93,11 @@ class LILP:
                     internal.add_variable(self.model)
                     self.internal_loops.append(internal)
         self.model.update()
+
+    def create_internal_vars(self) -> None:
+        sorted_internals = sorted(self.internal_loops, key=lambda x: (x.size, x.energy))
+        for il in sorted_internals:
+            il.add_variable(self.model)
 
     def create_bulge_loops(self) -> None:
         for bp1 in self.base_pairs:
@@ -177,7 +192,15 @@ class LILP:
     def add_internal_onlyif_constraints(self) -> None:
         for il in self.internal_loops:
             il.create_internal_onlyif_constraint(self.model, self.base_pairs)
-        self.model.update()
+        self.model.update()    
+    
+    def add_internal_constraints(self)-> None:
+        for il in self.internal_loops:
+            if il.energy > 0:
+                il.create_internal_ifthen_constraint(self.model, self.nucleotides)
+            else:
+                il.create_internal_onlyif_constraint(self.model, self.base_pairs)
+
 
     def add_internal_max_number_constraint(self) -> None:
         InternalLoop.create_internal_max_number_constraint(self.model, self.internal_loops)
@@ -253,14 +276,14 @@ class LILP:
         self.model.setObjective(objective, GRB.MINIMIZE)
 
     def create_variables(self, stem, hairpin, internal, bulge, multi):
-        self.create_base_pairs()    
+        self.create_base_pairs()       
         if hairpin:
-            self.create_hairpin_loops()      
+            self.create_hairpin_loops() 
         if stem:            
-            self.create_stem_loops()                              
-        self.create_nucleotides()                        
+            self.create_stem_loops()                                
+        self.create_nucleotides()                            
         if internal:
-            self.create_internal_loops()   
+            self.create_internal_loops()  
         if bulge:
             self.create_bulge_loops()
         if multi:
@@ -279,10 +302,11 @@ class LILP:
             # self.add_hairpin_max_number_constraint()
         if internal:
             self.add_internal_size_constraints()
-            self.add_internal_ifthen_constraints()
-            self.add_internal_onlyif_constraints()
-            # self.add_internal_max_number_constraint()
-            # self.model.addConstr(self.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
+            self.add_internal_constraints()
+            # self.add_internal_ifthen_constraints()
+            # self.add_internal_onlyif_constraints()
+            # # self.add_internal_max_number_constraint()
+            # # self.model.addConstr(self.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
         if bulge:
             self.add_bulge_size_constraints()
             self.add_bulge_ifthen_constraints()

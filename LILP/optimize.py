@@ -32,8 +32,11 @@ def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal
 
     rna_model.model.setParam("LogFile", f'{grb_log_dir}/{lp_file_name}-log-{model_name}')
     rna_model.model.setParam(GRB.Param.SolFiles, f'{incumbent_dir}/{lp_file_name}-incumbent-{model_name}') 
-    # rna_model.model.setParam("Seed", 1234567890)   
-    # rna_model.model.Params.Threads = 96
+    
+    # rna_model.model.setParam("Cuts", 3)
+    # rna_model.model.setParam("BQPCuts", 2)
+    # rna_model.model.setParam("PSDCuts", 2)
+    # rna_model.model.setParam("ModKCuts", 2)    
     # rna_model.model.setParam("CliqueCuts", 1)
     # rna_model.model.setParam("RLTCuts", 1)
     # rna_model.model.setParam("ZeroHalfCuts", 1)
@@ -43,22 +46,22 @@ def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal
     
     # sorted_bp = sorted(rna_model.base_pairs, key=lambda x: x.distance)
     # for bp in sorted_bp:
-    #     bp.var.setAttr("BranchPriority", 0 * bp.distance)
-
-    # if stem:
-    #     sorted_stems = sorted(rna_model.stem_loops, key=lambda x: x.distance)   
-    #     for sl in sorted_stems:
-    #         sl.var.setAttr("BranchPriority", 10 * sl.distance)
+    #     bp.var.setAttr("BranchPriority", 10 * bp.distance)
 
     # if hairpin:
-    #     sorted_hairpins = sorted(rna_model.hairpin_loops, key=lambda x: x.size)
-    #     for hl in sorted_hairpins:
-    #         hl.var.setAttr("BranchPriority", round(100/hl.size))
-
-    # if  internal:
-    #     sorted_internals = sorted(rna_model.internal_loops, key=lambda x: x.size)
-    #     for il in sorted_internals:
-    #         il.var.setAttr("BranchPriority", round(100/il.size))    
+    #     for hl in rna_model.hairpin_loops:
+    #         if hl.is_valid_size():
+    #             hl.var.setAttr("BranchPriority", round(200/hl.size))
+    #         else:
+    #             hl.var.setAttr("BranchPriority", 0)
+    
+    # if stem:
+    #     # sorted_stems = sorted(rna_model.stem_loops, key=lambda x: x.distance)   
+    #     for sl in rna_model.stem_loops:
+    #         sl.var.setAttr("BranchPriority", 10 * sl.distance)
+  
+    # for il in rna_model.internal_loops:
+    #     il.var.setAttr("BranchPriority", round(2000/(il.energy+1)))    
 
     # if bulge:
     #     sorted_bulges = sorted(rna_model.bulge_loops, key=lambda x: x.size)
@@ -108,21 +111,21 @@ print(len(rna))
 
 # start_name = 'lilp-start'
 # stem = True
-# hairpin = True
+# hairpin = False
 # internal = False
 # bulge = False
 # multi = False
 # start = False
-# optimize(rna, start_name, stem, hairpin, internal, bulge, multi, lpstart_dir, incumbent_start_dir, solstart_dir)
-model_name = 'lilp'
+# optimize_lilp(rna, start_name, stem, hairpin, internal, bulge, multi, lpstart_dir, incumbent_start_dir, solstart_dir)
+model_name = 'lilp-varprior-start'
 stem = True
 hairpin = True
 internal = True
 bulge = True
 multi = True
-# start = True
+start = False
 optimize_lilp(rna, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir)
-# optimize(rna, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir, start, start_name, solstart_dir)
+# optimize_lilp(rna, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir, start, start_name, solstart_dir)
 
 # process solution(s) to dot-bracket
 filepath = f'{sol_dir}/{lp_file_name}-{model_name}.sol'
