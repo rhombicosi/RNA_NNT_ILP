@@ -28,23 +28,23 @@ print(rna)
 # bp1 = BasePair(3,54,rna)
 # bp2 = BasePair(12,53,rna)
 
-model_name = 'lilp'
-# for f in range(5):
-#     # filepath = f'{incumbent_dir}\lilp_{seq_number}_incumbent_{f}.sol'
-#     filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_{f}.sol'
-#     pairs2brackets(filepath, rna)
+model_name = 'lilp-constraints'
+for f in range(7):
+    # filepath = f'{incumbent_dir}\lilp_{seq_number}_incumbent_{f}.sol'
+    filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_{f}.sol'
+    pairs2brackets(filepath, rna)
 
 # filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_3.sol'
 # pairs2brackets(filepath, rna)
 # calculate_sol_energy(filepath, rna)
 
-rna_model = LILP(rna, model_name)
-rna_model.create_variables(1, 1, 1, 1, 1)
+# rna_model = LILP(rna, model_name)
+# rna_model.create_variables(1, 1, 1, 1, 1)
 
-sorted_hairpins = sorted(rna_model.hairpin_loops, key=lambda x: (x.size, x.energy))
-for hl in sorted_hairpins:
-    if hl.is_valid_size():
-        print(f'{hl.var} :: {hl.size} :: {hl.energy}')
+# sorted_hairpins = sorted(rna_model.hairpin_loops, key=lambda x: (x.size, x.energy))
+# for hl in sorted_hairpins:
+#     if hl.is_valid_size():
+#         print(f'{hl.var} :: {hl.size} :: {hl.energy}')
 
 # sorted_stems = sorted(rna_model.stem_loops, key=lambda x: x.distance)   
 # for sl in sorted_stems:

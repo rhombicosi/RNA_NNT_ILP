@@ -60,8 +60,9 @@ def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal
     #     for sl in rna_model.stem_loops:
     #         sl.var.setAttr("BranchPriority", 10 * sl.distance)
   
-    # for il in rna_model.internal_loops:
-    #     il.var.setAttr("BranchPriority", round(2000/(il.energy+1)))    
+    # if internal:
+    #     for il in rna_model.internal_loops:
+    #         il.var.setAttr("BranchPriority", round(2000/(il.energy+1)))    
 
     # if bulge:
     #     sorted_bulges = sorted(rna_model.bulge_loops, key=lambda x: x.size)
@@ -69,8 +70,7 @@ def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal
     #         bl.var.setAttr("BranchPriority", round(100/bl.size))
 
     # if multi:
-    #     sorted_multis = sorted(rna_model.multi_loops, key=lambda x: x.size)
-    #     for ml in sorted_multis:
+    #     for ml in rna_model.multi_loops:
     #         if ml.size == 0:
     #             ml.var.setAttr("BranchPriority", round(100/(ml.size + 1)))
     #         else:
@@ -96,7 +96,8 @@ def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal
 
     print(f'Obj: {rna_model.model.ObjVal:g}')
 
-seq_number = 0
+seq_number = 0#46
+#34#19#29#18
 
 chain_file = seq_files[seq_number]
 chain_name_with_ext = os.path.basename(chain_file)
@@ -111,13 +112,13 @@ print(len(rna))
 
 # start_name = 'lilp-start'
 # stem = True
-# hairpin = False
-# internal = False
+# hairpin = True
+# internal = True
 # bulge = False
 # multi = False
 # start = False
 # optimize_lilp(rna, start_name, stem, hairpin, internal, bulge, multi, lpstart_dir, incumbent_start_dir, solstart_dir)
-model_name = 'lilp-varprior-start'
+model_name = 'lilp-constraints'
 stem = True
 hairpin = True
 internal = True

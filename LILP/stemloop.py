@@ -23,12 +23,19 @@ class StemLoop(Loop):
         G = wcf_df.loc[self.first_pair.nt1 + self.first_pair.nt2, self.last_pair.nt1 + self.last_pair.nt2]
         return round(G)
 
-    def create_stem_constraints(self, model: gp.Model) -> None:
+    def create_stem_ifthen_constraint(self, model: gp.Model) -> None:
+        inequality = gp.LinExpr([1, 1, -1], [self.first_pair.var, self.last_pair.var, self.var])
+        model.addConstr(inequality <= 1, f'SLIT-{self.base_pairs[0].i}-{self.first_pair.j}')
 
-        if self.energy > 0:
+    def create_stem_onlyif_constraint(self, model: gp.Model) -> None:
+        inequality = gp.LinExpr([2, -1, -1], [self.var, self.first_pair.var, self.last_pair.var])
+        model.addConstr(inequality <= 0, f'SLOI-{self.first_pair.i}-{self.first_pair.j}')
+    
+    def create_stem_constraints(self, model: gp.Model) -> None:
+        # if self.energy > 0:
             inequality = gp.LinExpr([1, 1, -1], [self.first_pair.var, self.last_pair.var, self.var])
             model.addConstr(inequality <= 1, f'SLIT-{self.base_pairs[0].i}-{self.first_pair.j}')
-        else:        
+        # else:        
             inequality = gp.LinExpr([2, -1, -1], [self.var, self.first_pair.var, self.last_pair.var])
             model.addConstr(inequality <= 0, f'SLOI-{self.first_pair.i}-{self.first_pair.j}')
 
