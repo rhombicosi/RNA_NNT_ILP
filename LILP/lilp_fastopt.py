@@ -64,12 +64,7 @@ class LILP:
             hairpin = HairpinLoop([bp], self.rna_seq)
             hairpin.add_variable(self.model)
             self.hairpin_loops.append(hairpin)
-        self.model.update()
-
-    def create_hairpin_vars(self) -> None:        
-        # sorted_hairpins = sorted(self.hairpin_loops, key=lambda x: (x.size, x.energy))
-        for hl in self.hairpin_loops:
-            hl.add_variable(self.model)
+        self.model.update() 
 
     def create_stem_loops(self) -> None:
         for bp1 in self.base_pairs:
@@ -80,11 +75,6 @@ class LILP:
                 self.stem_loops.append(stem)
         self.model.update()
 
-    def create_stem_vars(self) -> None:
-        sorted_stems = sorted(self.stem_loops, key=lambda x: x.distance, reverse=True)   
-        for sl in sorted_stems:
-            sl.add_variable(self.model)
-
     def create_internal_loops(self) -> None:
         for bp1 in self.base_pairs:
             for bp2 in self.base_pairs:
@@ -93,11 +83,6 @@ class LILP:
                     internal.add_variable(self.model)
                     self.internal_loops.append(internal)
         self.model.update()
-
-    def create_internal_vars(self) -> None:
-        sorted_internals = sorted(self.internal_loops, key=lambda x: (x.size, x.energy))
-        for il in sorted_internals:
-            il.add_variable(self.model)
 
     def create_bulge_loops(self) -> None:
         for bp1 in self.base_pairs:
@@ -146,22 +131,8 @@ class LILP:
                 BasePair.create_no_crossing_constraint(self.model, bp1, bp2)
         self.model.update()
 
-    def add_stem_ifthen_constraints(self) -> None:
-        for sl in self.stem_loops:
-            sl.create_stem_ifthen_constraint(self.model)
-        self.model.update()
-
-    def add_stem_onlyif_constraints(self) -> None:
-        for sl in self.stem_loops:
-            sl.create_stem_onlyif_constraint(self.model)
-        self.model.update()
-
     def add_stem_constraints(self) -> None:
         for sl in self.stem_loops:
-        #     if sl.energy > 0:
-        #         sl.create_stem_ifthen_constraint(self.model)
-        #     else:
-        #         sl.create_stem_onlyif_constraint(self.model)
             sl.create_stem_constraints(self.model)
         self.model.update()
         
@@ -190,13 +161,6 @@ class LILP:
             hl.create_hairpin_onlyif_constraint(self.model, self.base_pairs)
         self.model.update()
 
-    def add_hairpin_constraints(self) -> None:
-        for hl in self.hairpin_loops: 
-            if hl.energy > 0:
-                hl.create_hairpin_ifthen_constraint(self.model, self.nucleotides)
-            else:
-                hl.create_hairpin_onlyif_constraint(self.model, self.base_pairs)
-
     def add_hairpin_max_number_constraint(self) -> None:
         HairpinLoop.create_hairpin_max_number_constraint(self.model, self.hairpin_loops)
 
@@ -213,14 +177,7 @@ class LILP:
     def add_internal_onlyif_constraints(self) -> None:
         for il in self.internal_loops:
             il.create_internal_onlyif_constraint(self.model, self.base_pairs)
-        self.model.update()    
-    
-    def add_internal_constraints(self)-> None:        
-        for il in self.internal_loops:                
-            if il.energy > 0:
-                il.create_internal_ifthen_constraint(self.model, self.nucleotides)
-            else:
-                il.create_internal_onlyif_constraint(self.model, self.base_pairs)
+        self.model.update()
 
     def add_internal_max_number_constraint(self) -> None:
         InternalLoop.create_internal_max_number_constraint(self.model, self.internal_loops)
@@ -240,13 +197,6 @@ class LILP:
             bl.create_bulge_onlyif_constraint(self.model, self.base_pairs)
         self.model.update()
 
-    def add_bulge_constraints(self) -> None:
-        for bl in self.bulge_loops:
-            if bl.energy > 0:
-                bl.create_bulge_ifthen_constraint(self.model, self.nucleotides)
-            else:
-                bl.create_bulge_onlyif_constraint(self.model, self.base_pairs)
-
     def add_bulge_max_number_constraint(self) -> None:
         BulgeLoop.create_bulge_max_number_constraint(self.model, self.bulge_loops)
 
@@ -263,14 +213,6 @@ class LILP:
     def add_multi_onlyif_constraints(self) -> None:
         for ml in self.multi_loops:
             ml.create_multi_onlyif_constraint(self.model, self.base_pairs)
-        self.model.update()
-    
-    def add_multi_constraints(self) -> None:
-        for ml in self.multi_loops:
-            if ml.energy > 0:
-                ml.create_multi_ifthen_constraint(self.model, self.nucleotides)
-            else:
-                ml.create_multi_onlyif_constraint(self.model, self.base_pairs)
         self.model.update()
 
     def add_multi_max_number_constraint(self) -> None:
@@ -311,14 +253,14 @@ class LILP:
         self.model.setObjective(objective, GRB.MINIMIZE)
 
     def create_variables(self, stem, hairpin, internal, bulge, multi):
-        self.create_base_pairs()       
+        self.create_base_pairs()    
         if hairpin:
-            self.create_hairpin_loops() 
+            self.create_hairpin_loops()      
         if stem:            
-            self.create_stem_loops()                                
-        self.create_nucleotides()
-        if internal:  
-            self.create_internal_loops()  
+            self.create_stem_loops()                              
+        self.create_nucleotides()                        
+        if internal:
+            self.create_internal_loops()   
         if bulge:
             self.create_bulge_loops()
         if multi:
@@ -328,33 +270,27 @@ class LILP:
         self.add_single_pair_constraints()
         self.add_no_crossing_constraints()
         if stem:
-            # self.add_stem_ifthen_constraints()
-            # self.add_stem_onlyif_constraints()
             self.add_stem_constraints()
         self.add_unpaired_nucleotides_constraints()
         if hairpin:
             self.add_hairpin_size_constraints()
-            self.add_hairpin_constraints()
-            # self.add_hairpin_ifthen_constraints()
+            self.add_hairpin_ifthen_constraints()
             # self.add_hairpin_onlyif_constraints()
             # self.add_hairpin_max_number_constraint()
         if internal:
             self.add_internal_size_constraints()
-            self.add_internal_constraints()
-            # self.add_internal_ifthen_constraints()
-            # self.add_internal_onlyif_constraints()
-            # # self.add_internal_max_number_constraint()
-            # # self.model.addConstr(self.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
+            self.add_internal_ifthen_constraints()
+            self.add_internal_onlyif_constraints()
+            # self.add_internal_max_number_constraint()
+            # self.model.addConstr(self.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
         if bulge:
             self.add_bulge_size_constraints()
-            self.add_bulge_constraints()
-            # self.add_bulge_ifthen_constraints()
+            self.add_bulge_ifthen_constraints()
             # self.add_bulge_onlyif_constraints()
             # self.add_bulge_max_number_constraint()
         if multi:
             self.add_multi_size_constraints()
-            self.add_multi_constraints()
-            # self.add_multi_ifthen_constraints()
+            self.add_multi_ifthen_constraints()
             # self.add_multi_onlyif_constraints()
             # self.add_multi_max_number_constraint()
         

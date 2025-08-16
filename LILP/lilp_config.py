@@ -45,8 +45,8 @@ class InternalType(Enum):
 
 MAX_LOOP_SIZES = {
         LoopType.HAIRPIN: 10,
-        LoopType.INTERNAL: 8,
-        LoopType.BULGE: 8,
+        LoopType.INTERNAL: 6,
+        LoopType.BULGE: 10,
         LoopType.MULTI: 7,
     }
 
