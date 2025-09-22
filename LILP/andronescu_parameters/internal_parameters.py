@@ -65,6 +65,7 @@ int11 = np.array([
 
 int11_t=int11.transpose(0,2,1,3)
 int11_data = int11_t.reshape(nucleotides.size*bps.size, nucleotides.size*bps.size)
+# print(int11_t)
 
 midx = pd.MultiIndex.from_product([bps, nucleotides])
 nidx = pd.MultiIndex.from_product([bps, nucleotides])

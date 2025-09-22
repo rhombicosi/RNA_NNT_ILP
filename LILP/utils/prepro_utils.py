@@ -109,6 +109,24 @@ def get_seq_of_len(seq_list, seq_len, ct_list):
             ct_len_list.append(ct_data)
     return seq_len_files,ct_len_files
 
+# selects sequences of length between x nts and y nts
+def get_seq_btwn_len(seq_list, len_start, len_end, ct_list):
+    seq_len_list = []
+    ct_len_list = []
+    seq_len_files = []
+    ct_len_files = []
+
+    for (seq,ct) in zip(seq_list, ct_list):
+        seq_data = parse_seq_file(seq)
+        ct_data = parse_ct_file(ct)        
+
+        if len(seq_data['sequence']) >= len_start and len(seq_data['sequence']) <= len_end:
+            seq_len_files.append(seq)
+            ct_len_files.append(ct)
+            seq_len_list.append(seq_data)
+            ct_len_list.append(ct_data)
+    return seq_len_files,ct_len_files
+
 # new_dir_name = 'lp'; rel_path_to_save = '../'
 def create_dir(path_to_save, new_dir_name):
     # file_parent_dir = Path(__file__).parent

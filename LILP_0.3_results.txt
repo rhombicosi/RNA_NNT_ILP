@@ -1,0 +1,2 @@
+RNA sequence name                            	# of nts  	Time(s)   	MFE ILP   	MFE ARCHIVE	MFE RNAstr	MFE RNAFold	F1 ILP    	F1 RNAstr 	F1 RNAFold	Fb ILP    	Fb RNAstr 	Fb RNAFold	INF ILP   	INF RNAstr	INF RNAFold
+srp_Baci.amyl._CP000560                      	30        	0.21      	-7.63     	-5.00     	-5.00     	-5.00     	1.00      	1.00      	1.00      	1.00      	1.00      	1.00      	1.00      	1.00      	1.00      

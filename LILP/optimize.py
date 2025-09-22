@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 import time
 from utils.constants_paths import *
 from utils.prepro_run import *
@@ -18,16 +16,17 @@ def cut_callback(model, where):
         obj_bound = model.cbGet(GRB.Callback.MIP_OBJBND)
         print(f'Cuts used so far: {cuts}, At MIP callback: Best={obj_best}, Bound={obj_bound}')
 
-def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal: bool, bulge: bool, multi: bool, lp_dir: str, incumbent_dir: str, sol_dir: str, start = None, start_name = None, solstart_dir = None) -> None:
+def optimize_lilp(rna: str, lp_file_name: str, model_name: str, stem: bool, hairpin: bool, internal: bool, bulge: bool, multi: bool, lp_dir: str, incumbent_dir: str, sol_dir: str, start = None, start_name = None, solstart_dir = None) -> None:
     
     model_start_time = time.time()
     rna_model = LILP(rna, model_name)
     rna_model.create_variables(stem, hairpin, internal, bulge, multi)
     rna_model.create_constraints(stem, hairpin, internal, bulge, multi)
-    rna_model.create_objective(stem, hairpin, internal, bulge, multi)        
+    rna_model.create_objective(stem, hairpin, internal, bulge, multi)    
+    # rna_model.model.addConstr(rna_model.model.getVarByName(f'HAIRPIN_32_39') == 0)
+
     model_time = time.time() - model_start_time
     print(f'MODEL CONSTRUCTION TIME :: {model_time}')
-
     rna_model.model.write(f'{lp_dir}/{lp_file_name}-{model_name}.lp')
 
     rna_model.model.setParam("LogFile", f'{grb_log_dir}/{lp_file_name}-log-{model_name}')
@@ -41,8 +40,9 @@ def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal
     # rna_model.model.setParam("RLTCuts", 1)
     # rna_model.model.setParam("ZeroHalfCuts", 1)
     # rna_model.model.setParam("RelaxLiftCuts", 2)
-    # rna_model.model.setParam("MIPFocus", 1)
+    # rna_model.model.setParam("MIPFocus", 3)
     # rna_model.model.setParam("Heuristics", 0)
+    rna_model.model.setParam("TimeLimit", 1800)
     
     # sorted_bp = sorted(rna_model.base_pairs, key=lambda x: x.distance)
     # for bp in sorted_bp:
@@ -96,41 +96,46 @@ def optimize_lilp(rna: str, model_name: str, stem: bool, hairpin: bool, internal
 
     print(f'Obj: {rna_model.model.ObjVal:g}')
 
-seq_number = 0#46
-#34#19#29#18
+    if rna_model.model.ObjVal is not None:
+        return rna_model.model.ObjVal, lp_file_name, opt_time
+    else:
+        print("Object value was not assigned due to an error.")
 
-chain_file = seq_files[seq_number]
-chain_name_with_ext = os.path.basename(chain_file)
-chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
-lp_file_name = chain_name_without_ext
-seq_data = parse_seq_file(chain_file)
+# seq_number = 7
+# #46/39/34#19#29#18
 
-rna = seq_data['sequence']
-print(chain_file)
-print(rna)
-print(len(rna))
+# chain_file = seq_files[seq_number]
+# chain_name_with_ext = os.path.basename(chain_file)
+# chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
+# lp_file_name = chain_name_without_ext
+# seq_data = parse_seq_file(chain_file)
 
-# start_name = 'lilp-start'
+# rna = seq_data['sequence']
+# print(chain_file)
+# print(rna)
+# print(len(rna))
+
+# start_name = 'lilp-H1start'
 # stem = True
 # hairpin = True
-# internal = True
+# internal = False
 # bulge = False
 # multi = False
 # start = False
-# optimize_lilp(rna, start_name, stem, hairpin, internal, bulge, multi, lpstart_dir, incumbent_start_dir, solstart_dir)
-model_name = 'lilp-constraints'
-stem = True
-hairpin = True
-internal = True
-bulge = True
-multi = True
-start = False
-optimize_lilp(rna, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir)
+# optimize_lilp(rna, start_name, stem, hairpin, internal, bulge, multi, lpstart_dir, incumbent_start_dir, solstart_dir, start)
+# model_name = 'lilp'
+# stem = True
+# hairpin = True
+# internal = True
+# bulge = True
+# multi = True
+# start = True
+# optimize_lilp(rna, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir)
 # optimize_lilp(rna, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir, start, start_name, solstart_dir)
 
 # process solution(s) to dot-bracket
-filepath = f'{sol_dir}/{lp_file_name}-{model_name}.sol'
-pairs2brackets(filepath, rna)
+# filepath = f'{sol_dir}/{lp_file_name}-{model_name}.sol'
+# pairs2brackets(filepath, rna)
 
 # calculate_sol_energy(filepath, rna)
 

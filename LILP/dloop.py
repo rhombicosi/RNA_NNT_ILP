@@ -61,7 +61,7 @@ class Loop:
         pairs = self.base_pairs
         d = self.degree
         is_valid = True
-        
+                
         if d == 1:
             is_valid = self.size <= MAX_LOOP_SIZES[self.type]
         else:

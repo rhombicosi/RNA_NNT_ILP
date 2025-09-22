@@ -11,11 +11,13 @@ archive_path = (code_path/arch_rel_path).resolve()
 badfiles_dir = 'noctfiles'  
 
 # length for sequences to be tested
-seq_len = 60
+# seq_len = 60
+len_start = 50
+len_end = 60
 
 # folders to save .seq and .ct files with sequences of seq_len
-seq_len_dir = f'RNA_seq_{seq_len}'
-ct_len_dir = f'RNA_ct_{seq_len}'
+seq_len_dir = f'RNA_seq_{len_start}_{len_end}'
+ct_len_dir = f'RNA_ct_{len_start}_{len_end}'
 
 # folders to save lp models and solutions
 ilp_parent_dir = Path(__file__).parent
@@ -27,13 +29,13 @@ lpstart_folder_name = 'lp_start'
 solstart_folder_name = 'sol_start'
 incumbent_folder_name = 'incumbent'
 incumbent_start_folder_name = 'incumbent_start'
-dot_bracket_folder_name = f'dot_bracket_{seq_len}'
-dot_bracket_start_folder_name = f'dot_bracket_start_{seq_len}'
-dot_bracket_archive_folder_name = f'dot_bracket_archive_{seq_len}'
-dot_bracket_viennaRNA_folder_name = f'dot_bracket_viennaRNA_{seq_len}'
-rnastructure_folder_name = f'RNAstructure_fold_{seq_len}'
-dot_bracket_rnastructure_folder_name = f'dot_bracket_RNAstructure_{seq_len}'
-efn2_archive_folder_name = f'efn2_archive_{seq_len}'
+dot_bracket_folder_name = f'dot_bracket_{len_start}_{len_end}'
+dot_bracket_start_folder_name = f'dot_bracket_start_{len_start}_{len_end}'
+dot_bracket_archive_folder_name = f'dot_bracket_archive_{len_start}_{len_end}'
+dot_bracket_viennaRNA_folder_name = f'dot_bracket_viennaRNA_{len_start}_{len_end}'
+rnastructure_folder_name = f'RNAstructure_fold_{len_start}_{len_end}'
+dot_bracket_rnastructure_folder_name = f'dot_bracket_RNAstructure_{len_start}_{len_end}'
+efn2_archive_folder_name = f'efn2_archive_{len_start}_{len_end}'
 grb_log = f'gurobi_log'
 
 # RNAstructure path

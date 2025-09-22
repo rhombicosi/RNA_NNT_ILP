@@ -158,10 +158,10 @@ class LILP:
 
     def add_stem_constraints(self) -> None:
         for sl in self.stem_loops:
-        #     if sl.energy > 0:
-        #         sl.create_stem_ifthen_constraint(self.model)
-        #     else:
-        #         sl.create_stem_onlyif_constraint(self.model)
+            # if sl.energy > 0:
+            #     sl.create_stem_ifthen_constraint(self.model)
+            # else:
+            #     sl.create_stem_onlyif_constraint(self.model)
             sl.create_stem_constraints(self.model)
         self.model.update()
         
@@ -194,6 +194,7 @@ class LILP:
         for hl in self.hairpin_loops: 
             if hl.energy > 0:
                 hl.create_hairpin_ifthen_constraint(self.model, self.nucleotides)
+                hl.create_hairpin_onlyif_constraint(self.model, self.base_pairs)
             else:
                 hl.create_hairpin_onlyif_constraint(self.model, self.base_pairs)
 
@@ -219,6 +220,7 @@ class LILP:
         for il in self.internal_loops:                
             if il.energy > 0:
                 il.create_internal_ifthen_constraint(self.model, self.nucleotides)
+                il.create_internal_onlyif_constraint(self.model, self.base_pairs)
             else:
                 il.create_internal_onlyif_constraint(self.model, self.base_pairs)
 
@@ -336,15 +338,15 @@ class LILP:
             self.add_hairpin_size_constraints()
             self.add_hairpin_constraints()
             # self.add_hairpin_ifthen_constraints()
-            # self.add_hairpin_onlyif_constraints()
-            # self.add_hairpin_max_number_constraint()
+            # self.add_hairpin_onlyif_constraints()            
+            self.add_hairpin_max_number_constraint()
         if internal:
             self.add_internal_size_constraints()
             self.add_internal_constraints()
-            # self.add_internal_ifthen_constraints()
             # self.add_internal_onlyif_constraints()
-            # # self.add_internal_max_number_constraint()
-            # # self.model.addConstr(self.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
+            # self.add_internal_ifthen_constraints()            
+            self.add_internal_max_number_constraint()
+            # self.model.addConstr(self.model.getVarByName(f'INTERNAL_5_39_11_36') == 1)
         if bulge:
             self.add_bulge_size_constraints()
             self.add_bulge_constraints()

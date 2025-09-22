@@ -1,10 +1,16 @@
 /loops
 __pycache__/
 /generated_models
+/dot_bracket_30_50
 /dot_bracket_50
+/dot_bracket_50_60
 /dot_bracket_60
+/dot_bracket_60_70
 /dot_brakcet_70
+/dot_bracket_start_30_50
+/dot_bracket_start_50_60
 /dot_bracket_start_60
+/dot_bracket_start_60_70
 /data
 /lp_start
 /sol_start

@@ -6,7 +6,7 @@ from utils.prepro_run import *
 from lilp import *
 
 
-seq_len = 60
+len_start = 60
 seq_no = 0
 
 chain_file = seq_files[seq_no]

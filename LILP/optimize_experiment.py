@@ -1,11 +1,11 @@
 import os
-from pathlib import Path
+# from pathlib import Path
 from lilp import *
-from utils.prepro_run import *
+# from utils.prepro_run import *
 from utils.sol_converter import *
 
-seq_len = 60
-seq_number = 0
+len_start = 60
+seq_number = 17
 
 # cwd = Path.cwd()
 # code_path = Path(__file__).parent.parent
@@ -28,15 +28,27 @@ print(rna)
 # bp1 = BasePair(3,54,rna)
 # bp2 = BasePair(12,53,rna)
 
-model_name = 'lilp-constraints'
-for f in range(7):
-    # filepath = f'{incumbent_dir}\lilp_{seq_number}_incumbent_{f}.sol'
+model_name = 'lilp'
+start_name = 'lilp-H0start'
+for f in range(10):
     filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_{f}.sol'
-    pairs2brackets(filepath, rna)
+    fold, pairs,lngth = pairs2brackets(filepath, rna)
+    calculate_sol_energy(filepath, rna)
+    print(fold)
+# filepath = f'{solstart_dir}/{lp_file_name}-{start_name}.sol'
+filepath = f'{sol_dir}/{lp_file_name}-{model_name}.sol'
+fold, pairs,lngth = pairs2brackets(filepath, rna)
+print(fold)
 
 # filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_3.sol'
 # pairs2brackets(filepath, rna)
 # calculate_sol_energy(filepath, rna)
+
+# filepath = f'{dot_bracket_archive_dir}/{lp_file_name}.txt'
+# print(filepath)
+# print(dot_from_txt(filepath))
+# print(brackets2pairs(dot_from_txt(filepath)))
+
 
 # rna_model = LILP(rna, model_name)
 # rna_model.create_variables(1, 1, 1, 1, 1)

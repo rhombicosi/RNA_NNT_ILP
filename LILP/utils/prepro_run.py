@@ -1,6 +1,8 @@
 import os
 from utils.prepro_utils import *
 from utils.constants_paths import *
+# from prepro_utils import *
+# from constants_paths import *
 
 # create folders to write .lp model and optimization .sol results
 lp_dir = create_dir(lp_path, lp_folder_name)
@@ -46,7 +48,8 @@ if __name__ == "__main__":
 
     create_directory_and_move_selected_files(source_directory, destination_directory, badfiles_dir, selected_files)
 
-    seq_len_files,ct_len_files = get_seq_of_len(seq_list,seq_len,ct_list)
+    # seq_len_files,ct_len_files = get_seq_of_len(seq_list,seq_len,ct_list)
+    seq_len_files,ct_len_files = get_seq_btwn_len(seq_list, len_start, len_end, ct_list)
 
     create_directory_and_copy_selected_files(source_directory, destination_directory, seq_len_dir, seq_len_files)
     create_directory_and_copy_selected_files(source_directory, destination_directory, ct_len_dir, ct_len_files)    
@@ -86,4 +89,5 @@ if __name__ == "__main__":
 chain_dir = os.path.join(archive_path, seq_len_dir)
 seq_files = get_filenames(chain_dir, '.seq')
 
-print(f' # of sequences of lengths <= {seq_len} :: {len(seq_files)}')
+#print(f' # of sequences of lengths <= {seq_len} :: {len(seq_files)}')
+print(f' # of sequences between {len_start} and {len_end} :: {len(seq_files)}')
