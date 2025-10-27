@@ -38,6 +38,9 @@ class BasePair:
     def _find_base_pairs_with_index(base_pairs: List["BasePair"], index: int) -> List["BasePair"]:
         return [bp for bp in base_pairs if bp.i == index or bp.j == index]
     
+    def _find_base_pair_with_indices(base_pairs: List["BasePair"], index1: int, index2: int) -> List["BasePair"]:
+        return [bp for bp in base_pairs if bp.i == index1 and bp.j == index2]
+    
     def _find_base_pairs_matches(base_pairs: List["BasePair"], i: int, j: int) -> "BasePair":
         return next((bp for bp in base_pairs if bp.i == i and bp.j == j), None)
     

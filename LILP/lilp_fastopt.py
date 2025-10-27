@@ -6,7 +6,7 @@ from lilp_config import *
 from basepair import *
 from dloop import *
 from stemloop import *
-from hairpinloop import *
+from LILP.hairpinloop import *
 from internalloop import *
 from bulgeloop import *
 from multiloop import *
@@ -153,7 +153,7 @@ class LILP:
 
     def add_hairpin_ifthen_constraints(self) -> None:
         for hl in self.hairpin_loops:
-            hl.create_hairpin_ifthen_constraint(self.model, self.nucleotides)
+            hl.create_hairpin_ifthen_constraint(self.model)
         self.model.update()
 
     def add_hairpin_onlyif_constraints(self) -> None:
@@ -171,7 +171,7 @@ class LILP:
 
     def add_internal_ifthen_constraints(self) -> None:
         for il in self.internal_loops:
-            il.create_internal_ifthen_constraint(self.model, self.nucleotides)
+            il.create_internal_ifthen_constraint(self.model)
         self.model.update()
 
     def add_internal_onlyif_constraints(self) -> None:
@@ -189,7 +189,7 @@ class LILP:
 
     def add_bulge_ifthen_constraints(self) -> None:
         for bl in self.bulge_loops:
-            bl.create_bulge_ifthen_constraint(self.model, self.nucleotides)
+            bl.create_bulge_ifthen_constraint(self.model)
         self.model.update()
 
     def add_bulge_onlyif_constraints(self) -> None:
@@ -207,7 +207,7 @@ class LILP:
 
     def add_multi_ifthen_constraints(self) -> None:
         for ml in self.multi_loops:
-            ml.create_multi_ifthen_constraint(self.model, self.nucleotides)
+            ml.create_multi_ifthen_constraint(self.model)
         self.model.update()
 
     def add_multi_onlyif_constraints(self) -> None:

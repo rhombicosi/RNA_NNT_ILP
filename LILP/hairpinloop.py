@@ -35,11 +35,12 @@ class HairpinLoop(Loop):
             inequality = gp.LinExpr([1], [self.var])
             model.addConstr(inequality == 0, f'HS-{self.base_pairs[0].i}-{self.base_pairs[0].j}')
             
-    def create_hairpin_ifthen_constraint(self, model: gp.Model, nucleotides: List[gp.Var]) -> None:
+    def create_hairpin_ifthen_constraint(self, model: gp.Model) -> None:
         inequality = gp.LinExpr(0)
         
         for u in range(self.base_pairs[0].i + 1, self.base_pairs[0].j):
-            inequality.add(gp.LinExpr([1], [nucleotides[u - 1]]))
+            nucleotide = model.getVarByName(f'X_{u}')
+            inequality.add(gp.LinExpr([1], [nucleotide]))
         
         inequality.add(gp.LinExpr([1, -1],[self.base_pairs[0].var, self.var]))            
         model.addConstr(inequality <= self.size, f'HIT-{self.base_pairs[0].i}-{self.base_pairs[0].j}')
@@ -64,9 +65,9 @@ class HairpinLoop(Loop):
         model.update()    
 
 
-# rna = "GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU"
-# bp1 = BasePair(21,26,rna)
-# h_loop = HairpinLoop([bp1], rna)
+rna = "GGGGGUAUAGUAUAAUUGGUAGUACAGCAAUCUUGCUCAUUGCUUGUCAAGGUUCAAAUCCUUGUAUCUCCACCA"
+bp1 = BasePair(31,39,rna)
+h_loop = HairpinLoop([bp1], rna)
 
-# print(h_loop.energy)
-# print(h_loop.size)
+print(h_loop.energy)
+print(h_loop.size)

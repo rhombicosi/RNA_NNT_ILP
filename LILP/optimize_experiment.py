@@ -5,7 +5,7 @@ from lilp import *
 from utils.sol_converter import *
 
 len_start = 60
-seq_number = 17
+seq_number = 0
 
 # cwd = Path.cwd()
 # code_path = Path(__file__).parent.parent
@@ -28,17 +28,25 @@ print(rna)
 # bp1 = BasePair(3,54,rna)
 # bp2 = BasePair(12,53,rna)
 
-model_name = 'lilp'
-start_name = 'lilp-H0start'
-for f in range(10):
-    filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_{f}.sol'
-    fold, pairs,lngth = pairs2brackets(filepath, rna)
-    calculate_sol_energy(filepath, rna)
-    print(fold)
+model_name = 'lilp-nomulti'
+start_name = 'cut-start'
+# for f in range(1,10):
+#     filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_{f}.sol'
+#     fold, pairs,lngth = pairs2brackets(filepath, rna)
+#     print(fold)
+#     calculate_sol_energy(filepath, rna)
+
 # filepath = f'{solstart_dir}/{lp_file_name}-{start_name}.sol'
+# fold, pairs,lngth = pairs2brackets(filepath, rna)
+# print(fold)
+# calculate_sol_energy(filepath, rna)
+# lp_file_name = 'tRNA_tdbR00000009-Escherichia_coli-562-Ala-VGC'
+# rna = 'GGGGGCAUAGCUCAGCUGGGAGAGCGCCUGCUUUGCACGCAGGAGGUCUGCGGUUCGAUCCCGCGCGCUCCCACCA'
+
 filepath = f'{sol_dir}/{lp_file_name}-{model_name}.sol'
 fold, pairs,lngth = pairs2brackets(filepath, rna)
 print(fold)
+calculate_sol_energy(filepath, rna)
 
 # filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_3.sol'
 # pairs2brackets(filepath, rna)

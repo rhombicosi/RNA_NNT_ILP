@@ -35,7 +35,7 @@ class BulgeLoop(Loop):
             inequality = gp.LinExpr([1], [self.var])
             model.addConstr(inequality == 0, f'BS-{self.base_pairs[0].i}-{self.base_pairs[0].j}-{self.base_pairs[1].i}-{self.base_pairs[1].j}')
 
-    def create_bulge_ifthen_constraint(self, model: gp.Model, nucleotides: List[gp.Var]) -> None:
+    def create_bulge_ifthen_constraint(self, model: gp.Model) -> None:
         bp1 = self.base_pairs[0]
         bp2 = self.base_pairs[1]  
 
@@ -43,14 +43,16 @@ class BulgeLoop(Loop):
             inequality = gp.LinExpr(0)   
         
             for u in range(bp2.j + 1, bp1.j):
-                inequality.add(gp.LinExpr([1], [nucleotides[u - 1]]))
+                nucleotide = model.getVarByName(f'X_{u}')
+                inequality.add(gp.LinExpr([1], [nucleotide]))
             inequality.add(gp.LinExpr([1, 1, -1], [bp1.var, bp2.var, self.var]))
             model.addConstr(inequality <= self.size + 1, f'BIT-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}')
         elif bp2.j == bp1.j - 1:
             inequality = gp.LinExpr(0)
 
             for u in range(bp1.i + 1, bp2.i):
-                inequality.add(gp.LinExpr([1], [nucleotides[u - 1]]))
+                nucleotide = model.getVarByName(f'X_{u}')
+                inequality.add(gp.LinExpr([1], [nucleotide]))
             inequality.add(gp.LinExpr([1, 1, -1], [bp1.var, bp2.var, self.var]))
             model.addConstr(inequality <= self.size + 1, f'BIT-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}')
 

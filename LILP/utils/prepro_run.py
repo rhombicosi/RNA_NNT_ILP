@@ -16,9 +16,11 @@ dot_bracket_start_dir = create_dir(lp_path, dot_bracket_start_folder_name)
 dot_bracket_archive_dir = create_dir(archive_path, dot_bracket_archive_folder_name)
 dot_bracket_viennaRNA_dir = create_dir(archive_path, dot_bracket_viennaRNA_folder_name)
 rnastructure_fold_dir =  create_dir(archive_path, rnastructure_folder_name)
+unafold_fold_dir =  create_dir(archive_path, unafold_folder_name)
 dot_bracket_rnastructure_dir = create_dir(archive_path, dot_bracket_rnastructure_folder_name)
 efn2_archive_dir = create_dir(archive_path, efn2_archive_folder_name)
 grb_log_dir = create_dir(lp_path, grb_log)
+results_dir = create_dir(lp_path, results_folder_name)
 
 # get .seq and .ct files after clearing redundant files
 seq_list = get_filenames(archive_path, ".seq")

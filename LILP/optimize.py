@@ -16,13 +16,16 @@ def cut_callback(model, where):
         obj_bound = model.cbGet(GRB.Callback.MIP_OBJBND)
         print(f'Cuts used so far: {cuts}, At MIP callback: Best={obj_best}, Bound={obj_bound}')
 
-def optimize_lilp(rna: str, lp_file_name: str, model_name: str, stem: bool, hairpin: bool, internal: bool, bulge: bool, multi: bool, lp_dir: str, incumbent_dir: str, sol_dir: str, start = None, start_name = None, solstart_dir = None) -> None:
+def optimize_lilp(rna: str, lp_file_name: str, model_name: str, stem: bool, hairpin: bool, internal: bool, bulge: bool, multi: bool, lp_dir: str, incumbent_dir: str, sol_dir: str, first = None, last = None, start = None, start_name = None, solstart_dir = None) -> None:
     
     model_start_time = time.time()
     rna_model = LILP(rna, model_name)
-    rna_model.create_variables(stem, hairpin, internal, bulge, multi)
-    rna_model.create_constraints(stem, hairpin, internal, bulge, multi)
-    rna_model.create_objective(stem, hairpin, internal, bulge, multi)    
+    rna_model.create_variables(stem, hairpin, internal, bulge, multi, first, last)
+    rna_model.create_constraints(stem, hairpin, internal, bulge, multi, first, last)
+    rna_model.create_objective(stem, hairpin, internal, bulge, multi)
+
+    # rna_model.create_cut(stem, hairpin, internal, bulge, 0, -1523)
+      
     # rna_model.model.addConstr(rna_model.model.getVarByName(f'HAIRPIN_32_39') == 0)
 
     model_time = time.time() - model_start_time
@@ -42,7 +45,7 @@ def optimize_lilp(rna: str, lp_file_name: str, model_name: str, stem: bool, hair
     # rna_model.model.setParam("RelaxLiftCuts", 2)
     # rna_model.model.setParam("MIPFocus", 3)
     # rna_model.model.setParam("Heuristics", 0)
-    rna_model.model.setParam("TimeLimit", 1800)
+    rna_model.model.setParam("TimeLimit", 3600)
     
     # sorted_bp = sorted(rna_model.base_pairs, key=lambda x: x.distance)
     # for bp in sorted_bp:

@@ -5,7 +5,6 @@ from hairpinloop import *
 from internalloop import *
 from bulgeloop import *
 from multiloop import *
-# from binary_variables_grb import *
 from utils.constants_paths import *
 from utils.prepro_run import *
 from utils.prepro_utils import *
@@ -13,10 +12,7 @@ from utils.prepro_utils import *
 
 def pairs2brackets(filepath, RNA): 
     lngth = len(RNA)
-    # print(lngth)
-
     pattern = r'_(\d+)_(\d+)' #"\((.*?)\)"
-
     fold = ["." for _ in range(lngth)] 
         
     with open(filepath) as fp:
@@ -26,28 +22,6 @@ def pairs2brackets(filepath, RNA):
         pairs = []
         
         while line: 
-            
-            # if " 1" in line and "Q_" in line:
-            #     print("{}".format(line.strip()))
-            
-            # if " 1" in line and "F_" in line:
-            #     print("{}".format(line.strip()))
-
-            # if " 1" in line and "L_" in line:
-            #     print("{}".format(line.strip()))
-
-            # if " 1" in line and "H_" in line:
-            #     print("{}".format(line.strip()))
-            
-            # if " 1" in line and "I_" in line:
-            #     print("{}".format(line.strip()))
-
-            # if " 1" in line and "B_" in line:
-            #     print("{}".format(line.strip()))
-
-            # if " 1" in line and "M_" in line:
-            #     print("{}".format(line.strip()))
-
             if " 1" in line and "P_" in line:
                 # print("{}".format(line.strip()))
                 match = re.search(pattern, line)
@@ -62,8 +36,6 @@ def pairs2brackets(filepath, RNA):
             cnt += 1
 
     fold = ''.join([str(elem) for elem in fold])
-    # print(fold)
-
     return(fold,pairs,lngth)
 
 def brackets2pairs(dot_bracket):
@@ -223,7 +195,7 @@ def calculate_sol_energy(filepath, rna):
 
 #     return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct
 
-def sol_analyse(seq_files, seq_number, sol_dir, model_name, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, start, s_start = 1):
+def sol_analyse(seq_files, seq_number, sol_dir, model_name, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, dot_bracket_unafold_dir, start, s_start = 1):
 
     chain_file = seq_files[seq_number]
     chain_name_with_ext = os.path.basename(chain_file)        
@@ -256,6 +228,12 @@ def sol_analyse(seq_files, seq_number, sol_dir, model_name, dot_bracket_dir, dot
         lines = file.readlines()        
         veinnaRNA_brackets = str(lines[0]).strip()        
 
+    # UNAfold reference
+    unafold_bracket_path = f'{dot_bracket_unafold_dir}/{lp_file_name}_db.txt'
+    with open(unafold_bracket_path, 'r') as file:
+        # Read all lines into a list
+        lines = file.readlines()        
+        unafold_brackets = str(lines[0]).strip()
 
     (gen_brackets,gen_pairs,rna_len) = pairs2brackets(filepath, this_RNA)
 
@@ -277,6 +255,7 @@ def sol_analyse(seq_files, seq_number, sol_dir, model_name, dot_bracket_dir, dot
     reference = set(brackets2pairs(ref_brackets))
     rnastruct = set(brackets2pairs(rnastruct_brackets))
     viennaRNA = set(brackets2pairs(veinnaRNA_brackets))
+    unafold = set(brackets2pairs(unafold_brackets))
 
     print(generated)
     print(reference)
@@ -286,6 +265,7 @@ def sol_analyse(seq_files, seq_number, sol_dir, model_name, dot_bracket_dir, dot
     (f1_lilp,fbeta_lilp,MCC_lilp) = compare2folds(generated, reference)
     (f1_rnastruct,fbeta_rnastruct,MCC_rnastruct) = compare2folds(rnastruct, reference)
     (f1_viennaRNA,fbeta_viennaRNA,MCC_viennaRNA) = compare2folds(viennaRNA, reference)
+    (f1_unafold,fbeta_unafold,MCC_unafold) = compare2folds(unafold, reference)
 
     print(f1_lilp)
     print(fbeta_lilp)
@@ -299,4 +279,8 @@ def sol_analyse(seq_files, seq_number, sol_dir, model_name, dot_bracket_dir, dot
     print(fbeta_viennaRNA)
     print(MCC_viennaRNA)
 
-    return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_viennaRNA, fbeta_viennaRNA, MCC_viennaRNA, rna_len
+    print(f1_unafold)
+    print(fbeta_unafold)
+    print(MCC_unafold)
+
+    return f1_lilp, fbeta_lilp, MCC_lilp, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_viennaRNA, fbeta_viennaRNA, MCC_viennaRNA, f1_unafold, fbeta_unafold, MCC_unafold

@@ -20,13 +20,17 @@ rna_MFEs = [get_energy_from_ct_file(f) for f in rna_mfe_names]
 vienna_mfe_names = get_filenames(dot_bracket_viennaRNA_dir, '_enrg.txt')
 vienna_MFEs = [float(open(f).read().strip()) for f in vienna_mfe_names] 
 
+unafold_mfe_names = get_filenames(unafold_fold_dir, '_enrg.txt')
+unafold_MFEs = [float(open(f).read().strip()) for f in unafold_mfe_names]
+
 add_column(results_df, 'MFE_ref', ref_MFEs)
 add_column(results_df, 'MFE_rna', rna_MFEs)
 add_column(results_df, 'MFE_vienna', vienna_MFEs)
+add_column(results_df, 'MFE_unafold', unafold_MFEs)
 print(results_df)
 
-n1 = 7
-n2 = 8
+n1 = 0
+n2 = len(seq_files)
 
 for seq_no in range (n1, n2):
 
@@ -35,12 +39,15 @@ for seq_no in range (n1, n2):
     chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
     lp_file_name = chain_name_without_ext
     seq_data = parse_seq_file(chain_file)
-    rna = seq_data['sequence']
+    rna = seq_data['sequence'].upper()
+
+    first = 1
+    last = len(rna)
 
     print(chain_name_without_ext)
     print(rna)
     print(len(rna))
-
+    
     # subseq_len = round(len(this_RNA)*0.95)
     # s_start = len(this_RNA)-subseq_len+1
 
@@ -55,23 +62,52 @@ for seq_no in range (n1, n2):
     # for i in range(s_start):
     #     f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_vienna, fbeta_vienna, MCC_vienna,rna_len = sol_analyse(seq_files, seq_no, sol_dir, dot_bracket_start_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, 1, i)
 
-    # gen_MFE, lp_name, opt_time = optimize_lilp(seq_files, seq_no, lp_dir, sol_dir, s_start, solstart_dir) 
+    # gen_MFE, lp_name, opt_time = optimize_lilp(seq_files, seq_no, lp_dir, sol_dir, s_start, solstart_dir)
+    
+    # model_name = 'cut'
+    # stem = True
+    # hairpin = True
+    # internal = True
+    # bulge = True
+    # multi = True 
+    # window = 30
+    # cut_MFEs = []
+    # first = 1
+    # last = len(rna)
+    # first = 4
+    # last = 50
+    
+    # for i in range(1, len(rna) - window):
+    #     frst = i 
+    #     lst = i + window
+    #     model_name = f'cut_{i}'
+    #     cut_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir, frst, lst)
+    #     cut_MFEs.append(round(cut_MFE))
 
-    model_name = 'lilp'
-    start_name = 'lilp-start'
+    # cut_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir)
+    
+    # start_name = 'cut-start'
+    # stem = True
+    # hairpin = False
+    # internal = False
+    # bulge = False
+    # multi = False 
+    # cut_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, start_name, stem, hairpin, internal, bulge, multi, lpstart_dir, incumbent_dir, solstart_dir)
+
+    model_name = 'lilp-multi'    
     stem = True
     hairpin = True
     internal = True
-    bulge = False
-    multi = False
-    start = True
-    gen_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir)
-    # gen_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir, start, start_name, solstart_dir)
+    bulge = True
+    multi = True
+    start = True 
+    gen_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir, first, last)
+    # gen_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, multi, lp_dir, incumbent_dir, sol_dir, None, start, start_name, solstart_dir)
 
     # f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, rna_len, MCC_rnastruct = sol_analyse(seq_files, seq_no, sol_dir,dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, 0)
 
-    f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_vienna, fbeta_vienna, MCC_vienna,rna_len = sol_analyse(seq_files, seq_no, sol_dir, model_name, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, 0)
+    f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_vienna, fbeta_vienna, MCC_vienna, f1_unafold, fbeta_unafold, MCC_unafold = sol_analyse(seq_files, seq_no, sol_dir, model_name, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, unafold_fold_dir, 0)
 
     # write_results_to_file(lp_name, rna_len, opt_time, gen_MFE/100, ref_MFEs[seq_no], rna_MFEs[seq_no], round(f1_gen,2), round(f1_rnastruct,2), round(fbeta_gen,2), round(fbeta_rnastruct,2), round(MCC_gen,2), round(MCC_rnastruct,2), filename="ilp_LILP_0.2_results.txt")
 
-    write_results_to_file(lp_name, rna_len, opt_time, gen_MFE/100, ref_MFEs[seq_no], rna_MFEs[seq_no], vienna_MFEs[seq_no], round(f1_gen,2), round(f1_rnastruct,2), round(f1_vienna,2), round(fbeta_gen,2), round(fbeta_rnastruct,2), round(fbeta_vienna,2), round(MCC_gen,2), round(MCC_rnastruct,2), round(MCC_vienna,2), filename="LILP_50_60_results.txt")
+    write_results_to_file(lp_name, len(rna), opt_time, gen_MFE/100, ref_MFEs[seq_no], rna_MFEs[seq_no], vienna_MFEs[seq_no], unafold_MFEs[seq_no], round(f1_gen,2), round(f1_rnastruct,2), round(f1_vienna,2), round(f1_unafold,2), round(fbeta_gen,2), round(fbeta_rnastruct,2), round(fbeta_vienna,2), round(fbeta_unafold,2), round(MCC_gen,2), round(MCC_rnastruct,2), round(MCC_vienna,2), round(MCC_unafold,2), results_dir, f'LILP_{len_start}_{len_end}_{model_name}.txt')

@@ -25,8 +25,17 @@ class MultiLoop(Loop):
         if not self.is_valid_size():
             inequality = gp.LinExpr([1], [self.var])
             model.addConstr(inequality == 0, f'MS-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}')
+
+    def create_multi_energy_constraint(self, model: gp.Model, energy: int) -> None: 
+        bp1 = self.base_pairs[0]
+        bp2 = self.base_pairs[1]
+        bp3 = self.base_pairs[2]
+
+        if self.energy >= energy:
+            inequality = gp.LinExpr([1], [self.var])
+            model.addConstr(inequality == 0, f'MS-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}')
     
-    def create_multi_ifthen_constraint(self, model: gp.Model, nucleotides: List[gp.Var]) -> None:
+    def create_multi_ifthen_constraint(self, model: gp.Model) -> None:
         bp1 = self.base_pairs[0]
         bp2 = self.base_pairs[1]
         bp3 = self.base_pairs[2]
@@ -34,13 +43,16 @@ class MultiLoop(Loop):
         inequality = gp.LinExpr(0)                       
 
         for u in range(bp1.i + 1, bp2.i):
-            inequality.add(gp.LinExpr([1],[nucleotides[u - 1]]))
+            nucleotide = model.getVarByName(f'X_{u}')
+            inequality.add(gp.LinExpr([1],[nucleotide]))
 
         for u in range(bp2.j + 1, bp3.i):
-            inequality.add(gp.LinExpr([1],[nucleotides[u - 1]]))
+            nucleotide = model.getVarByName(f'X_{u}')
+            inequality.add(gp.LinExpr([1],[nucleotide]))
         
         for u in range(bp3.j + 1, bp1.j):
-            inequality.add(gp.LinExpr([1],[nucleotides[u - 1]]))
+            nucleotide = model.getVarByName(f'X_{u}')
+            inequality.add(gp.LinExpr([1],[nucleotide]))
             
         inequality.add(gp.LinExpr([1, 1, 1, -1],[bp1.var, bp2.var, bp3.var, self.var]))
         model.addConstr(inequality <= self.size + self.degree - 1, f'MIT-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}')
@@ -100,11 +112,85 @@ class MultiLoop(Loop):
         model.addConstr(inequality <= MAX_NUM_OF_LOOPS[ml.type], f'MMN')
         model.update()
 
-# RNA = 'GCCGCGAACCCCGCCAGGCCCGGAAGGGAGCAACGGUAGUGGUGGAU'
-# bp1 = BasePair(10,35,RNA)
-# bp2 = BasePair(11,18,RNA)
-# bp3 = BasePair(19,28,RNA)
+
+# RNA = 'GGACGUUAAAUAGAUAAGCUAUGCCUAGUUACGGGCUGGGAAGAGAGUCGUCUUCCA'
+# bp1 = BasePair(5,49,RNA)
+# bp2 = BasePair(10,22,RNA)
+# bp3 = BasePair(24,40,RNA)
 # multi = MultiLoop((bp1,bp2,bp3), RNA)
 # print(multi.size)
 # print(multi.energy)
+
+# bp1 = BasePair(5,49,RNA)
+# bp2 = BasePair(6,17,RNA)
+# bp3 = BasePair(18,48,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(7,46,RNA)
+# bp2 = BasePair(10,22,RNA)
+# bp3 = BasePair(24,40,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(5,49,RNA)
+# bp2 = BasePair(7,16,RNA)
+# bp3 = BasePair(18,48,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(5,49,RNA)
+# bp2 = BasePair(6,17,RNA)
+# bp3 = BasePair(19,45,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(7,47,RNA)
+# bp2 = BasePair(10,22,RNA)
+# bp3 = BasePair(24,40,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(5,49,RNA)
+# bp2 = BasePair(11,21,RNA)
+# bp3 = BasePair(24,40,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(5,49,RNA)
+# bp2 = BasePair(6,12,RNA)
+# bp3 = BasePair(18,48,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(5,49,RNA)
+# bp2 = BasePair(6,14,RNA)
+# bp3 = BasePair(18,48,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(6,47,RNA)
+# bp2 = BasePair(10,22,RNA)
+# bp3 = BasePair(24,40,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+# bp1 = BasePair(7,45,RNA)
+# bp2 = BasePair(10,22,RNA)
+# bp3 = BasePair(24,40,RNA)
+# multi = MultiLoop((bp1,bp2,bp3), RNA)
+# print(multi.size)
+# print(multi.energy)
+
+
+
 

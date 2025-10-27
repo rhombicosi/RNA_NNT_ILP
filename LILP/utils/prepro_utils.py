@@ -4,6 +4,14 @@ from collections import defaultdict
 from icecream import ic
 import shutil
 import subprocess
+import re
+from utils.constants_paths import *
+# from constants_paths import *
+
+def sort_numeric_alpha(lst):
+    def numeric_alpha_key(s):
+        return [int(part) if part.isdigit() else part for part in re.findall(r'\d+|\D+', s)]
+    return sorted(lst, key=numeric_alpha_key)
 
 # gets all filenames of a given type in a given directory
 def get_filenames(dir_path, f_type):
@@ -109,6 +117,28 @@ def get_seq_of_len(seq_list, seq_len, ct_list):
             ct_len_list.append(ct_data)
     return seq_len_files,ct_len_files
 
+def ct_has_pairs(ct_path):
+    """
+    Check if a CT file has any base pairs.
+    Returns True if at least one base pair exists, otherwise False.
+    """
+    with open(ct_path) as f:
+        for line in f:
+            parts = line.strip().split()
+
+            # skip empty or non-data lines (header lines like 'through 511')
+            if not parts or not parts[0].isdigit() or len(parts) < 5:
+                continue
+
+            try:
+                j = int(parts[4])
+                if j > 0:
+                    return True  # found at least one pairing
+            except ValueError:
+                continue  # skip lines like 'through'
+
+    return False  # no base pairs found
+
 # selects sequences of length between x nts and y nts
 def get_seq_btwn_len(seq_list, len_start, len_end, ct_list):
     seq_len_list = []
@@ -118,9 +148,14 @@ def get_seq_btwn_len(seq_list, len_start, len_end, ct_list):
 
     for (seq,ct) in zip(seq_list, ct_list):
         seq_data = parse_seq_file(seq)
-        ct_data = parse_ct_file(ct)        
+        ct_data = parse_ct_file(ct)
 
-        if len(seq_data['sequence']) >= len_start and len(seq_data['sequence']) <= len_end:
+        pairs = ct_has_pairs(ct)
+
+        if not pairs:
+            print('no pairs')
+        
+        if pairs and len(seq_data['sequence']) >= len_start and len(seq_data['sequence']) <= len_end:
             seq_len_files.append(seq)
             ct_len_files.append(ct)
             seq_len_list.append(seq_data)
@@ -208,12 +243,58 @@ def read_sol(f_name):
     return solvars
 
 # store optimization results
-def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rna, mfe_vienna, f1_gen, f1_rna, f1_vienna, fb_gen, fb_rna, fb_vienna, mcc_gen, mcc_rna, mcc_vienna, filename="ilp_results.txt"):
+# def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rna, mfe_vienna, f1_gen, f1_rna, f1_vienna, fb_gen, fb_rna, fb_vienna, mcc_gen, mcc_rna, mcc_vienna, filename="ilp_results.txt"):
     
-    headers = ["RNA sequence name", "# of nts", "Time(s)", "MFE ILP", "MFE ARCHIVE", "MFE RNAstr", "MFE RNAFold",
-               "F1 ILP", "F1 RNAstr", "F1 RNAFold", "Fb ILP", "Fb RNAstr", "Fb RNAFold", "INF ILP", "INF RNAstr", "INF RNAFold"]    
+#     headers = ["RNA sequence name", "# of nts", "Time(s)", "MFE ILP", "MFE ARCHIVE", "MFE RNAstr", "MFE RNAFold",
+#                "F1 ILP", "F1 RNAstr", "F1 RNAFold", "Fb ILP", "Fb RNAstr", "Fb RNAFold", "INF ILP", "INF RNAstr", "INF RNAFold"]    
+    
+#     # parent_path = os.path.join("..", filename) # for linux
+    
+#     # Check if the file exists and is not empty
+#     file_exists = os.path.exists(filename) and os.path.getsize(filename) > 0
+    
+#     # Format the floating point numbers to 2 decimal places and ensure all values are strings
+#     values = [
+#         sequence_name, 
+#         rna_len,
+#         f"{time:.2f}",
+#         f"{mfe_gen:.2f}", 
+#         f"{mfe_ref:.2f}", 
+#         f"{mfe_rna:.2f}", 
+#         f"{mfe_vienna:.2f}",
+#         f"{f1_gen:.2f}", 
+#         f"{f1_rna:.2f}",
+#         f"{f1_vienna:.2f}",
+#         f"{fb_gen:.2f}", 
+#         f"{fb_rna:.2f}",
+#         f"{fb_vienna:.2f}",
+#         f"{mcc_gen:.2f}",
+#         f"{mcc_rna:.2f}",
+#         f"{mcc_vienna:.2f}"
+#     ]
+
+#     headers_line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*headers)
+    
+#     line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
+    
+#     with open(filename, 'a') as file:
+#         if not file_exists:
+#             file.write(headers_line)
+        
+#         file.write(line)
+
+# store optimization results
+def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rna, mfe_vienna, mfe_unafold, f1_gen, f1_rna, f1_vienna, f1_unafold, fb_gen, fb_rna, fb_vienna, fb_unafold, mcc_gen, mcc_rna, mcc_vienna, mcc_unafold, results_dir, results_filename):
+    
+    headers = ["RNAseqname", "numofnts", "Time(s)", "MFEILP", "MFEARCHIVE", "MFERNAstr", "MFERNAFold", "MFEUNAfold", "F1ILP", "F1RNAstr", "F1RNAFold", "F1UNAFold", "FbILP", "FbRNAstr", "FbRNAFold", "FbUNAFold", "INFILP", "INFRNAstr", "INFRNAFold", "INFUNAFold"]    
     
     # parent_path = os.path.join("..", filename) # for linux
+    
+    filename = f'{results_dir}/{results_filename}'
+    print(filename)
+    
+    # Check if the file exists and is not empty
+    file_exists = os.path.exists(filename) and os.path.getsize(filename) > 0
     
     # Check if the file exists and is not empty
     file_exists = os.path.exists(filename) and os.path.getsize(filename) > 0
@@ -227,23 +308,28 @@ def write_results_to_file(sequence_name, rna_len, time, mfe_gen, mfe_ref, mfe_rn
         f"{mfe_ref:.2f}", 
         f"{mfe_rna:.2f}", 
         f"{mfe_vienna:.2f}",
+        f"{mfe_unafold:.2f}",
         f"{f1_gen:.2f}", 
         f"{f1_rna:.2f}",
         f"{f1_vienna:.2f}",
+        f"{f1_unafold:.2f}",
         f"{fb_gen:.2f}", 
         f"{fb_rna:.2f}",
         f"{fb_vienna:.2f}",
+        f"{fb_unafold:.2f}",
         f"{mcc_gen:.2f}",
         f"{mcc_rna:.2f}",
-        f"{mcc_vienna:.2f}"
+        f"{mcc_vienna:.2f}",
+        f"{mcc_unafold:.2f}"
     ]
 
-    headers_line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*headers)
+    headers_line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*headers)
     
-    line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
+    line = "{:<45}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\n".format(*values)
     
     with open(filename, 'a') as file:
         if not file_exists:
             file.write(headers_line)
         
         file.write(line)
+

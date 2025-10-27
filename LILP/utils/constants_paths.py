@@ -12,8 +12,8 @@ badfiles_dir = 'noctfiles'
 
 # length for sequences to be tested
 # seq_len = 60
-len_start = 50
-len_end = 60
+len_start = 70
+len_end = 80
 
 # folders to save .seq and .ct files with sequences of seq_len
 seq_len_dir = f'RNA_seq_{len_start}_{len_end}'
@@ -34,9 +34,12 @@ dot_bracket_start_folder_name = f'dot_bracket_start_{len_start}_{len_end}'
 dot_bracket_archive_folder_name = f'dot_bracket_archive_{len_start}_{len_end}'
 dot_bracket_viennaRNA_folder_name = f'dot_bracket_viennaRNA_{len_start}_{len_end}'
 rnastructure_folder_name = f'RNAstructure_fold_{len_start}_{len_end}'
+unafold_folder_name = f'UNAfold_fold_{len_start}_{len_end}'
 dot_bracket_rnastructure_folder_name = f'dot_bracket_RNAstructure_{len_start}_{len_end}'
 efn2_archive_folder_name = f'efn2_archive_{len_start}_{len_end}'
 grb_log = f'gurobi_log'
+results_folder_name = f'results'
+results_file = f'LILP_{len_start}_{len_end}_results.txt'
 
 # RNAstructure path
 rnastruct_path = "C:/Program Files/RNAstructure6.5/exe"
