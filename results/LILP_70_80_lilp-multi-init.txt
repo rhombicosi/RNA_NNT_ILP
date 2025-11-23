@@ -1,0 +1,2 @@
+RNAseqname                                   	numofnts  	Time(s)   	MFEILP    	MFEARCHIVE	MFERNAstr 	MFERNAFold	MFEUNAfold	F1ILP     	F1RNAstr  	F1RNAFold 	F1UNAFold 	FbILP     	FbRNAstr  	FbRNAFold 	FbUNAFold 	INFILP    	INFRNAstr 	INFRNAFold	INFUNAFold
+srp_Lact.case._CP000423                      	79        	5401.41   	-25.64    	-4.80     	-26.10    	-25.70    	-24.30    	0.00      	0.60      	0.60      	0.60      	0.00      	0.71      	0.71      	0.71      	0.00      	0.62      	0.62      	0.62      

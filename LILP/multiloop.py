@@ -9,10 +9,11 @@ class MultiLoop(Loop):
 
     def calculate_energy(self) -> int:
         if self.is_valid_size():
-            if self.size <= 6:
-                G = SCALE * (A + B * self.degree + C * self.size)
-            else:
-                G = SCALE * (A + B * self.degree + C * 6 + 1.1 * np.log(self.size/6))
+            G = SCALE * (A + B * (self.degree - 1))
+            # if self.size <= 6:
+            #     G = SCALE * (A + B * self.degree + C * self.size)
+            # else:
+            #     G = SCALE * (A + B * self.degree + C * 6 + 1.1 * np.log(self.size/6))
         else:
             G = M
         return round(G)
@@ -21,10 +22,13 @@ class MultiLoop(Loop):
         bp1 = self.base_pairs[0]
         bp2 = self.base_pairs[1]
         bp3 = self.base_pairs[2]
-
-        if not self.is_valid_size():
-            inequality = gp.LinExpr([1], [self.var])
-            model.addConstr(inequality == 0, f'MS-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}')
+        
+        n = len(self.RNA)
+        if not self.is_valid_size():            
+            if bp1.distance > MULTI_MIN_D and bp2.distance > MULTI_MIN_D and bp3.distance > MULTI_MIN_D:
+                if bp1.i >= MULTI_BOUND and bp1.j <= n - MULTI_BOUND:
+                    inequality = gp.LinExpr([1], [self.var])
+                    model.addConstr(inequality == 0, f'MS-{bp1.i}-{bp1.j}-{bp2.i}-{bp2.j}-{bp3.i}-{bp3.j}')
 
     def create_multi_energy_constraint(self, model: gp.Model, energy: int) -> None: 
         bp1 = self.base_pairs[0]
@@ -121,75 +125,11 @@ class MultiLoop(Loop):
 # print(multi.size)
 # print(multi.energy)
 
-# bp1 = BasePair(5,49,RNA)
-# bp2 = BasePair(6,17,RNA)
-# bp3 = BasePair(18,48,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
 
-# bp1 = BasePair(7,46,RNA)
-# bp2 = BasePair(10,22,RNA)
-# bp3 = BasePair(24,40,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
 
-# bp1 = BasePair(5,49,RNA)
-# bp2 = BasePair(7,16,RNA)
-# bp3 = BasePair(18,48,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
 
-# bp1 = BasePair(5,49,RNA)
-# bp2 = BasePair(6,17,RNA)
-# bp3 = BasePair(19,45,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
 
-# bp1 = BasePair(7,47,RNA)
-# bp2 = BasePair(10,22,RNA)
-# bp3 = BasePair(24,40,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
 
-# bp1 = BasePair(5,49,RNA)
-# bp2 = BasePair(11,21,RNA)
-# bp3 = BasePair(24,40,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
-
-# bp1 = BasePair(5,49,RNA)
-# bp2 = BasePair(6,12,RNA)
-# bp3 = BasePair(18,48,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
-
-# bp1 = BasePair(5,49,RNA)
-# bp2 = BasePair(6,14,RNA)
-# bp3 = BasePair(18,48,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
-
-# bp1 = BasePair(6,47,RNA)
-# bp2 = BasePair(10,22,RNA)
-# bp3 = BasePair(24,40,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
-
-# bp1 = BasePair(7,45,RNA)
-# bp2 = BasePair(10,22,RNA)
-# bp3 = BasePair(24,40,RNA)
-# multi = MultiLoop((bp1,bp2,bp3), RNA)
-# print(multi.size)
-# print(multi.energy)
 
 
 

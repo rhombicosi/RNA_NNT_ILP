@@ -65,9 +65,9 @@ class HairpinLoop(Loop):
         model.update()    
 
 
-rna = "GGGGGUAUAGUAUAAUUGGUAGUACAGCAAUCUUGCUCAUUGCUUGUCAAGGUUCAAAUCCUUGUAUCUCCACCA"
-bp1 = BasePair(31,39,rna)
-h_loop = HairpinLoop([bp1], rna)
+# rna = "GGGGGUAUAGUAUAAUUGGUAGUACAGCAAUCUUGCUCAUUGCUUGUCAAGGUUCAAAUCCUUGUAUCUCCACCA"
+# bp1 = BasePair(31,39,rna)
+# h_loop = HairpinLoop([bp1], rna)
 
-print(h_loop.energy)
-print(h_loop.size)
+# print(h_loop.energy)
+# print(h_loop.size)

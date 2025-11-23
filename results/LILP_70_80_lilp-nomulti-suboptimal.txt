@@ -1,0 +1,3 @@
+RNAseqname                                   	numofnts  	Time(s)   	MFEILP    	MFEARCHIVE	MFERNAstr 	MFERNAFold	MFEUNAfold	F1ILP     	F1RNAstr  	F1RNAFold 	F1UNAFold 	FbILP     	FbRNAstr  	FbRNAFold 	FbUNAFold 	INFILP    	INFRNAstr 	INFRNAFold	INFUNAFold
+srp_Aqui.aeol._AE000657                      	77        	5400.24   	-46.79    	-44.80    	-45.90    	-45.90    	-42.00    	1.00      	0.57      	0.57      	1.00      	1.00      	0.59      	0.59      	1.00      	1.00      	0.57      	0.57      	1.00      
+srp_Aqui.aeol._AE000657                      	77        	602.50    	-46.79    	-44.80    	-45.90    	-45.90    	-42.00    	1.00      	0.57      	0.57      	1.00      	1.00      	0.59      	0.59      	1.00      	1.00      	0.57      	0.57      	1.00      

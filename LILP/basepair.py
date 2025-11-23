@@ -13,7 +13,6 @@ class BasePair:
         self.nt1 = RNA[i-1]
         self.nt2 = RNA[j-1]
         self.var = None
-        self.pair_penalty_energy = self.calculate_pair_penalty_energy()
         self.distance = self.j - self.i - 1
 
     def distance(self) -> int:
@@ -21,13 +20,6 @@ class BasePair:
 
     def is_valid(self) -> bool:
         return f'{self.nt1}{self.nt2}' in VALID_PAIRS and BasePair.distance(self) > MIN_D
-    
-    def calculate_pair_penalty_energy(self) -> int:
-        if self.nt1 + self.nt2 == 'AU' or self.nt1 + self.nt2 == 'UA' or self.nt1 + self.nt2 == 'GU' or self.nt1 + self.nt2 == 'UG':
-            G = wcf_AU_end_penalty
-        else:
-            G = 0
-        return round(G)
             
     def add_variable(self, model: gp.Model, label: str) -> gp.Var:
         if self.is_valid():

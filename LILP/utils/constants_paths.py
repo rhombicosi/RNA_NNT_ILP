@@ -12,8 +12,8 @@ badfiles_dir = 'noctfiles'
 
 # length for sequences to be tested
 # seq_len = 60
-len_start = 70
-len_end = 80
+len_start = 50
+len_end = 60
 
 # folders to save .seq and .ct files with sequences of seq_len
 seq_len_dir = f'RNA_seq_{len_start}_{len_end}'

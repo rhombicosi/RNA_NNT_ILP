@@ -1,0 +1,2 @@
+RNAseqname                                   	numofnts  	Time(s)   	MFEILP    	MFEARCHIVE	MFERNAstr 	MFERNAFold	MFEUNAfold	F1ILP     	F1RNAstr  	F1RNAFold 	F1UNAFold 	FbILP     	FbRNAstr  	FbRNAFold 	FbUNAFold 	INFILP    	INFRNAstr 	INFRNAFold	INFUNAFold
+srp_Acin.spec._CR543861                      	47        	33.60     	-15.03    	-14.30    	-14.30    	-15.30    	-16.60    	1.00      	1.00      	0.55      	0.67      	1.00      	1.00      	0.55      	0.70      	1.00      	1.00      	0.55      	0.67      
