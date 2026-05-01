@@ -29,8 +29,8 @@ add_column(results_df, 'MFE_vienna', vienna_MFEs)
 add_column(results_df, 'MFE_unafold', unafold_MFEs)
 print(results_df)
 
-n1 = 16
-n2 = 17 #len(seq_files)
+n1 = 0
+n2 = 1 #len(seq_files)
 
 for seq_no in range (n1, n2):
 
@@ -68,13 +68,13 @@ for seq_no in range (n1, n2):
     internal = True
     bulge = True
     branch = True
-    start = True 
+    start = False 
 
     #### NO START VERSION ####
     gen_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, branch, lp_dir, incumbent_dir, sol_dir, first, last)
     #### WITH START VERSION ####
     # gen_MFE, lp_name, opt_time = optimize_lilp(rna, lp_file_name, model_name, stem, hairpin, internal, bulge, branch, lp_dir, incumbent_dir, sol_dir, first, last, start, start_name, solstart_dir)
    
-    f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_vienna, fbeta_vienna, MCC_vienna, f1_unafold, fbeta_unafold, MCC_unafold = sol_analyse(seq_files, seq_no, sol_dir, model_name, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, unafold_fold_dir, 0)
+    f1_gen, fbeta_gen, MCC_gen, f1_rnastruct, fbeta_rnastruct, MCC_rnastruct, f1_vienna, fbeta_vienna, MCC_vienna, f1_unafold, fbeta_unafold, MCC_unafold = sol_analyse(seq_files, seq_no, sol_dir, model_name, dot_bracket_dir, dot_bracket_archive_dir, dot_bracket_rnastructure_dir, dot_bracket_viennaRNA_dir, unafold_fold_dir, start)
 
     write_results_to_file(lp_name, len(rna), opt_time, gen_MFE/100, ref_MFEs[seq_no], rna_MFEs[seq_no], vienna_MFEs[seq_no], unafold_MFEs[seq_no], round(f1_gen,2), round(f1_rnastruct,2), round(f1_vienna,2), round(f1_unafold,2), round(fbeta_gen,2), round(fbeta_rnastruct,2), round(fbeta_vienna,2), round(fbeta_unafold,2), round(MCC_gen,2), round(MCC_rnastruct,2), round(MCC_vienna,2), round(MCC_unafold,2), results_dir, f'LILP_{len_start}_{len_end}_{model_name}.txt')

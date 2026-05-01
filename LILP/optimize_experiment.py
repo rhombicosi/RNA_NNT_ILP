@@ -5,7 +5,7 @@ from lilp import *
 from utils.sol_converter import *
 
 len_start = 60
-seq_number = 40
+seq_number = 0
 
 # cwd = Path.cwd()
 # code_path = Path(__file__).parent.parent
@@ -19,7 +19,7 @@ seq_number = 40
 chain_file = seq_files[seq_number]
 chain_name_with_ext = os.path.basename(chain_file)        
 chain_name_without_ext = os.path.splitext(chain_name_with_ext)[0]
-lp_file_name = chain_name_without_ext
+lp_file_name =  '16s_C.elegans_domain4' #'tRNA_tdbR00000592-Ascaris_suum-6253-Gln-UG' #chain_name_without_ext
 seq_data = parse_seq_file(chain_file)
 
 rna = seq_data['sequence'].upper()
@@ -30,11 +30,11 @@ print(rna)
 
 model_name = 'lilp-branch'
 start_name = 'cut-start'
-for f in range(1,13):
+for f in range(18):
     filepath = f'{incumbent_dir}\{lp_file_name}-incumbent-{model_name}_{f}.sol'
-    fold, pairs,lngth = pairs2brackets(filepath, rna)
+    fold, pairs = pairs2brackets(filepath, rna)
     print(fold)
-    calculate_sol_energy(filepath, rna)
+    # calculate_sol_energy(filepath, rna)
 
 
 # filepath = f'{solstart_dir}/{lp_file_name}-{start_name}.sol'
@@ -42,8 +42,10 @@ for f in range(1,13):
 # print(fold)
 # calculate_sol_energy(filepath, rna)
 
-# lp_file_name = 'tRNA_tdbR00000009-Escherichia_coli-562-Ala-VGC'
+# lp_file_name ='tRNA_tdbR00000592-Ascaris_suum-6253-Gln-UG'
+# 'tRNA_tdbR00000009-Escherichia_coli-562-Ala-VGC'
 # rna = 'GGGGGCAUAGCUCAGCUGGGAGAGCGCCUGCUUUGCACGCAGGAGGUCUGCGGUUCGAUCCCGCGCGCUCCCACCA'
+
 
 # filepath = f'{sol_dir}/{lp_file_name}-{model_name}.sol'
 # fold, pairs,lngth = pairs2brackets(filepath, rna)

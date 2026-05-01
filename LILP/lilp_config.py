@@ -19,10 +19,10 @@ Cbulge = -0.9
 # B = -0.6 # branches
 # C = 0.0 # unpaired nucleotides
 # Logarithmic
-A = 3.4#10.1 # intitiation
-B = 0.4#-0.3 # branches
+A = 9.3#3.4#10.1 # intitiation
+B = -0.6#0.4#-0.3 # branches
 C = -0.3 # unpaired nucleotides
-BB = 1.2 # branch weight
+BB = 0.6 # branch weight
 # A = 3.4 # penalty for closing the multiloop
 # B = 0.9 # penalty per branch (base pair)
 # C = 0.4 # penalty per unpaired nucleotide

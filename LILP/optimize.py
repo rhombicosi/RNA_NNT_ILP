@@ -45,7 +45,7 @@ def optimize_lilp(rna: str, lp_file_name: str, model_name: str, stem: bool, hair
     # rna_model.model.setParam("RelaxLiftCuts", 2)
     # rna_model.model.setParam("MIPFocus", 3)
     # rna_model.model.setParam("Heuristics", 0)
-    rna_model.model.setParam("TimeLimit", 5400)
+    rna_model.model.setParam("TimeLimit", 1200)
     
     # sorted_bp = sorted(rna_model.base_pairs, key=lambda x: x.distance)
     # for bp in sorted_bp:
